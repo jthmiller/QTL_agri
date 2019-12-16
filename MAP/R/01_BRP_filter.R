@@ -74,9 +74,9 @@ pars <- c('BRP_BRP1M','BRP_BRP8F','BRP_BRP1F','BRP_BRP8M')
 ##diag(cpgt) <- NA
 ##cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
 ##################################################################################
-png(paste0('~/public_html/BRP_relat.png'))
- hist(cpgt)
-dev.off()
+## png(paste0('~/public_html/BRP_relat.png'))
+##  hist(cpgt)
+## dev.off()
 ################################################################################
 toss.missing <- c("BRP_2535","BRP_2410","BRP_2687")
 ################################################################################
