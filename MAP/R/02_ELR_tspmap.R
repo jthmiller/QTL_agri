@@ -7,14 +7,15 @@
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
+pop <- 'ELR'
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
+
+
 i <- commandArgs(TRUE)[commandArgs(TRUE) %in% c(1:24)]
 
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
-
-pop <- 'ELR'
-source("/home/jmiller1/QTL_Final/MAP/control_file.R")
-mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
 
 fl <- file.path('ELR_unmapped_filtered.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
@@ -23,7 +24,7 @@ cross <- subset(cross,chr=i)
 ################################################################################
 ## SEX
 
-sex <- read.table("/home/jmiller1/QTL_Map_Raw/popgen/rQTL/data/sex.txt",stringsAsFactors=F)
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
 rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
