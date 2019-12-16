@@ -4,6 +4,8 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
+fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
 
 ################################################################################
 ## put chromosomes together
@@ -46,7 +48,6 @@ write.table(to_write,file.path(mpath,'brp.mapped.tsp.csv'),sep=',',row.names=F,q
 
 ##############################################################################
 ################################################################################
-fl <- file.path(mpath,'brp.mapped.tsp.csv')
 
 cross <- read.cross(
  file = fl,
@@ -74,10 +75,6 @@ scan.normT.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5
 ## non-parametric
 scan.np.em.b <- scanone(cross, method = "em", model = "np", pheno.col = 4, maxit = 5000)
 scan.np.em.n <- scanone(cross, method = "em", model = "np", pheno.col = 5, maxit = 5000)
-
-################################################################################
-
-save.image(file.path(mpath,'single_scans.brp.rsave'))
 
 ####################################################################################
 ## PERMS WITH ALL LOCI

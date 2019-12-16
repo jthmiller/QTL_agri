@@ -4,6 +4,8 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
+fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
 
 ################################################################################
 ## put chromosomes together
@@ -46,7 +48,6 @@ write.table(to_write,file.path(mpath,'NEW.mapped.tsp.csv'),sep=',',row.names=F,q
 
 ################################################################################
 ################################################################################
-fl <- file.path(mpath,'NEW.mapped.tsp.csv')
 
 cross <- read.cross(
  file = fl,
@@ -77,20 +78,8 @@ scan.bin.sex <- scanone(cross, method = "em", model = "binary", pheno.col = 2)
 ################################################################################
 
 ################################################################################
-
-save.image(file.path(mpath,'single_scans.new.rsave'))
-
-################################################################################
-
-################################################################################
 ## step-wise
 full.norm.add_only <- stepwiseqtl(cross, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
-##full.bin.add_only <- stepwiseqtl(cross, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=8)
-
-################################################################################
-
-################################################################################
-save.image(file.path(mpath,'single_scans.new.rsave'))
 ################################################################################
 
 ####################################################################################
