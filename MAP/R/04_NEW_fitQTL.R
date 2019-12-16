@@ -1,11 +1,9 @@
 #!/bin/R
-### Map QTLs 1 of 3
-#debug.cross <- T
-#source("/home/jmiller1/QTL_Map_Raw/popgen/rQTL/scripts/QTL_remap/MAP/control_file.R")
+
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 library('qtl')
-pop <- 'NEW'
-source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
-mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
 
 ################################################################################
 ## put chromosomes together
