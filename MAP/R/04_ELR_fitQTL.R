@@ -102,7 +102,14 @@ perms.bin.em <- scanone(cross, method = "em", model = "binary", maxit = 10000,
 save.image(file.path(mpath,'single_scans.elr.rsave'))
 
 ########################
-## Add ahr loci
+## Add ahr markers to current cross ind, then the empty ind
+
+## extra ind 78 inds
+
+ahr2a <- pull.map(cross,1)[[1]]["ahr2a"]
+
+
+
 filename <- file.path("~/QTL_Map_Raw/ELR_final_map",'AHR_markers.csv')
 
 cross_ahr <- read.cross(
@@ -111,8 +118,38 @@ cross_ahr <- read.cross(
  estimate.map = FALSE
 )
 
+cross <- subset(cross, ind=intersect(cross$pheno$ID,cross_ahr$pheno$ID))
 
-gi <- pull.geno(pull.markers(cross_ahr,"AHR2a_del"))
 
-    # add marker to cross
-fake.f2 <- addmarker(cross, gi, "AHR2a_del", "1", 0)
+
+mpath <- '~/QTL_Map_Raw/ELR_final_map'
+fl <- file.path(mpath,'ELR_unmapped_filtered_added_markers.csv')
+
+cross2 <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("AA","AB","BB"), alleles=c("A","B"),
+ estimate.map = FALSE
+)
+
+
+marks <- intersect(markernames(cross),markernames(cross2))
+cross <- pull.markers(cross, marks)
+cross2 <- pull.markers(cross2, marks)
+
+
+
+female_map <- pull.map(cross)
+for (chrs in names(female_map)) {
+    pos <- female_map[[chrs]]
+    markers <- names(pos)
+    for(i in seq_along(pos)) { cross2 <- movemarker(cross2, markers[i], chrs, pos[i])}
+}
+
+
+
+
+
+
+cross2 <- subset(cross2,ind=!cross2$pheno$ID %in% cross$pheno$ID)
+
+try <- c(cross,cross2)

@@ -20,9 +20,7 @@ rownames(gts) <- cross.df[c(4:length(cross.df[,1])),'V3']
 colnames(gts) <- as.character(cross.df[1,6:length(cross.df[1,])])
 ## gts 88x19856
 nmars <- length(gts[1,])
-
 phenotpyes <- cross.df[,1:5]
-
 rownames(phenotpyes ) <- c('info','chr','map',c(cross.df[4:length(cross.df[,1]),'V3']))
 ### phen 89x5
 
@@ -104,6 +102,18 @@ cross2 <- read.cross(
 )
 ########
 
+
+
+
+
+
+
+
+#### Write markers only (for mapped ind) and then for the missing gt ind
+
+
+
+
 marks <- intersect(markernames(cross2),markernames(cross))
 
 add_ind <- subset(cross2,ind=!cross2$pheno$ID %in% cross$pheno$ID)
@@ -128,6 +138,9 @@ try <- c(add_ind,cross)
 
 #####
 ahr <- pull.markers(cross2,c("AHR2a_del","AIP_252","AIP_261"))
+ahr <- subset(ahr, ind=intersect(ahr$pheno$ID, cross$pheno$ID))
+
+
 filename <- file.path(mpath,'AHR_markers')
 write.cross(ahr,filestem=filename,format="csv")
 
