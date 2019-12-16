@@ -1,8 +1,8 @@
 #!/bin/R
 ### Map QTLs 1 of 3
 pop <- 'NEW'
-source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
 
+source("/home/jmiller1/QTL_Final/MAP/control_file.R")
 ################################################################################
 ## read in the QTL cross
 cross <- read.cross.jm(file = file.path(indpops, paste0(pop, ".unphased.f2.csvr")),

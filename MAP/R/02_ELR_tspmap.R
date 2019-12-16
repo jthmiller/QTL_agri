@@ -1,7 +1,7 @@
 #!/bin/R
 ### Map QTLs 1 of 3
 #debug.cross <- T
-#source("/home/jmiller1/QTL_Map_Raw/popgen/rQTL/scripts/QTL_remap/MAP/control_file.R")
+#source("/home/jmiller1/QTL_Final/MAP/control_file.R")
 #Sys.setenv(TAR = "/bin/tar")
 ##install_github("kbroman/ASMap")
 ##install_github("jtlovell/qtlTools")
@@ -13,7 +13,7 @@ libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 pop <- 'ELR'
-source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
+source("/home/jmiller1/QTL_Final/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
 
 fl <- file.path('ELR_unmapped_filtered.csv')
