@@ -1,7 +1,7 @@
 #!/bin/R
-### Map QTLs 1 of 3
 
 pop <- 'ELR'
+
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 

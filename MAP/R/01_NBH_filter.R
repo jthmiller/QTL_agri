@@ -1,5 +1,4 @@
 #!/bin/R
-### Map QTLs 1 of 3
 
 pop <- 'NBH'
 
