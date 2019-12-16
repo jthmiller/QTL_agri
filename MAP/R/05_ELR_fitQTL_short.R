@@ -46,3 +46,5 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
 ## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),
 ##             perms=sc2_normal_imp_perms, alphas, lodcolumn=1,
 ##             pvalues=FALSE, allpairs=TRUE)
+
+save.image(file.path(mpath,'scantwo.scans.elr.short.rsave'))

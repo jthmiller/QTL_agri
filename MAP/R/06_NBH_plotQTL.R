@@ -41,6 +41,10 @@ png(paste0('~/public_html/NBHR_rf_tsp.png'))
 dev.off()
 
 
+png("/home/jmiller1/public_html/NBH_full.norm.add_only")
+plot(full.norm.add_only)
+dev.off()
+
 
 png("/home/jmiller1/public_html/NBH_map.png")
 plot(pull.map(cross))
