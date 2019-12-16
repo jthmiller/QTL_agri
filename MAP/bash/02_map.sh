@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH -t 48:00:00
-#SBATCH -p med
+#SBATCH -p high
 #SBATCH --array=1-24
 #SBATCH --mem=30G
 
