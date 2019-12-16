@@ -26,6 +26,7 @@ phenotpyes <- cross.df[,1:5]
 rownames(phenotpyes ) <- c('info','chr','map',c(cross.df[4:length(cross.df[,1]),'V3']))
 ### phen 89x5
 
+################################################################################
 fla <-file.path(mpath, 'ER_ahr_aip_whoi_gt.csv')
 cross.df.ahr <- read.csv(fla,header=FALSE,stringsAsFactors=F)
 ahr_mark_nms <- cross.df.ahr[1,4:length(cross.df.ahr[1,])]
@@ -36,28 +37,49 @@ rownames(ahr_gts) <- cross.df.ahr[c(4:length(cross.df.ahr[,1])),'V3']
 colnames(ahr_gts) <- cross.df.ahr[1,c(4:6)]
 ### ahr.gts 87x3
 
-
 ##pheno data with blank rows included
 phen.ah <- cross.df.ahr[,1:3]
 rownames(phen.ah) <- c('info','chr','map',phen.ah[4:length(phen.ah[,1]),'V3'])
 ## phen.ah 90x3
+################################################################################
 
-gts.2 <- cbind(gts, ahr_gts[rownames(gts),])
-## 88x19859  CONTAINS ATSM and AHR marks
+### add ind to ahr data to make df even number of ind
+all_ind <- rownames(gts)[which(!rownames(gts) %in% rownames(ahr_gts))]
+b <- matrix('-',ncol=ncol(ahr_gts),nrow=length(all_ind))
+rownames(b) <- all_ind
+colnames(b) <- colnames(ahr_gts)
+ahr_gts <- rbind(ahr_gts, b)
 
-new <- rownames(ahr_gts)[!rownames(ahr_gts) %in% rownames(gts.2)]
 
-a <- matrix('-',ncol=nmars,nrow=length(new))
-a <- cbind(a,ahr_gts[new,])
-## 2x19859  CONTAINS ATSM and AHR marks
-a <- cbind(phen.ah[rownames(a),],NA,NA,a)
-colnames(a) <- c('Pheno','sex','ID','bin','pheno_norm',colnames(gts.2))
-# 2x19864 (a incluedes ahr genos)
+ahr_ind <- rownames(ahr_gts)[which(!rownames(ahr_gts) %in% rownames(gts))]
+##new <- rownames(ahr_gts)[!which(rownames(ahr_gts) %in% rownames(gts.2))]
+a <- matrix('-',ncol=nmars,nrow=length(ahr_ind))
+rownames(a) <- ahr_ind
+colnames(a) <- colnames(gts)
 
-gts.2 <- cbind(phen.ah[rownames(gts.2),],gts.2)
+
+gts.2 <- rbind(gts, a)
+## add ahr genotypes
+gts.2 <- cbind(gts.2, ahr_gts[rownames(gts.2),])
+
+gts.2 <- cbind(phen.ah[rownames(gts.2),],NA,NA,gts.2)
 colnames(gts.2)[1:5] <- c('Pheno','sex','ID','bin','pheno_norm')
 
-final.gts <- rbind(gts.2[colnames(gts.2)],a)
+
+
+
+## 88x19859  CONTAINS ATSM and AHR marks
+#a <- matrix('-',ncol=nmars,nrow=length(new))
+#a <- cbind(a,ahr_gts[new,])
+## 2x19859  CONTAINS ATSM and AHR marks
+##a <- cbind(phen.ah[rownames(a),],NA,NA,a)
+##colnames(a) <- c('Pheno','sex','ID','bin','pheno_norm',colnames(gts.2))
+### 2x19864 (a incluedes ahr genos)
+##gts.2 <- cbind(phen.ah[rownames(gts.2),],gts.2)
+##colnames(gts.2)[1:5] <- c('Pheno','sex','ID','bin','pheno_norm')
+##final.gts <- rbind(gts.2[colnames(gts.2)],a)
+
+final.gts <- gts.2
 
 row1 <- colnames(gts.2)
 row2 <- c(cross.df[2,],c(1,2,2))
@@ -72,10 +94,47 @@ write.table(final.gts, fl,col.names=F,row.names=F,quote=F,sep=',')
 
 ################################################################################
 ################################################################################
+mpath <- '~/QTL_Map_Raw/ELR_final_map'
 fl <- file.path(mpath,'ELR_unmapped_filtered_added_markers.csv')
 
-cross <- read.cross(
+cross2 <- read.cross(
  file = fl,
+ format = "csv", genotypes=c("AA","AB","BB"), alleles=c("A","B"),
+ estimate.map = FALSE
+)
+########
+
+marks <- intersect(markernames(cross2),markernames(cross))
+
+add_ind <- subset(cross2,ind=!cross2$pheno$ID %in% cross$pheno$ID)
+
+add_ind <- pull.markers(add_ind, marks)
+cross <- pull.markers(cross, marks)
+try <- c(cross,add_ind)
+
+wh <- pull.map(cross)
+try  <- replace.map(try,wh)
+
+
+
+gt <- geno.table(cross)
+
+ add_ind <- switch.order(add_ind, gt$chr, c(1,3,2,4:7))
+
+
+try  <- replace.map(try,pull.map(cross))
+
+try <- c(add_ind,cross)
+
+#####
+ahr <- pull.markers(cross2,c("AHR2a_del","AIP_252","AIP_261"))
+filename <- file.path(mpath,'AHR_markers')
+write.cross(ahr,filestem=filename,format="csv")
+
+filename <- file.path(mpath,'AHR_markers.csv')
+
+cross_ahr <- read.cross(
+ file = filename ,
  format = "csv", genotypes=c("AA","AB","BB"), alleles=c("A","B"),
  estimate.map = FALSE
 )

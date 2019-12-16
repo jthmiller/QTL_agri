@@ -6,6 +6,21 @@ mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
 
 ################################################################################
 
+mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
+
+qc <- c(13, 18)
+qp <- c(0, 11.91)
+qtl <- makeqtl(cross, chr=qc, pos=qp)
+qtl <- refineqtl(cross,qtl=qtl)
+out <- addqtl(cross, qtl=qtl, formula=y ~ Q1+Q2:Q3)
+
+
+fla <-file.path(mpath, 'ER_ahr_aip_whoi_gt.csv')
+cross.df.ahr <- read.csv(fla,header=FALSE,stringsAsFactors=F)
+ahr_mark_nms <- cross.df.ahr[1,4:length(cross.df.ahr[1,])]
+
+
+
 ################################################################################
 ## SCANTWO ON SUBSET (this map made in tspmap.R
 fl <- file.path(mpath,'elr.mapped.tsp.csv')

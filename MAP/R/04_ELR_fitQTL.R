@@ -100,3 +100,19 @@ perms.bin.em <- scanone(cross, method = "em", model = "binary", maxit = 10000,
 ################################################################################
 
 save.image(file.path(mpath,'single_scans.elr.rsave'))
+
+########################
+## Add ahr loci
+filename <- file.path("~/QTL_Map_Raw/ELR_final_map",'AHR_markers.csv')
+
+cross_ahr <- read.cross(
+ file = filename ,
+ format = "csv", genotypes=c("AA","AB","BB"), alleles=c("A","B"),
+ estimate.map = FALSE
+)
+
+
+gi <- pull.geno(pull.markers(cross_ahr,"AHR2a_del"))
+
+    # add marker to cross
+fake.f2 <- addmarker(cross, gi, "AHR2a_del", "1", 0)

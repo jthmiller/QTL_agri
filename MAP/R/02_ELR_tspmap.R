@@ -33,6 +33,22 @@ dev.off()
 
 ################################################################################
 
+cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
+cross <- calc.errorlod(cross, err=0.03)
+cross <- removeDoubleXO(cross, chr=i)
+cross <- calc.errorlod(cross, err=0.03)
+cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
+cross <- calc.errorlod(cross, err=0.03)
+################################################################################
+
+################################################################################
+gt <- geno.table(cross)
+bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
+cross <- pull.markers(cross,bfixA)
+################################################################################
+
+################################################################################
+
 if (any(i %in% c(1,2))){
 
  fla <-file.path(mpath, 'ER_ahr_aip_whoi_gt.csv')
@@ -56,19 +72,6 @@ if (any(i %in% c(1,2))){
  }
 }
 
-################################################################################
-cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
-cross <- calc.errorlod(cross, err=0.03)
-cross <- removeDoubleXO(cross, chr=i)
-cross <- calc.errorlod(cross, err=0.03)
-cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
-cross <- calc.errorlod(cross, err=0.03)
-################################################################################
-
-################################################################################
-gt <- geno.table(cross)
-bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
-cross <- pull.markers(cross,bfixA)
 ################################################################################
 
 cross <-tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
