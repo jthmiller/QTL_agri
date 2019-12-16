@@ -5,4 +5,4 @@
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
 
-Rscript $script_dir/R/${1}_filter.R
+Rscript $script_dir/R/01_${1}_filter.R
