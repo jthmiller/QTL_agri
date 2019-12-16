@@ -7,12 +7,13 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 
 ################################################################################
 ## read in the QTL cross
-cross <- read.cross.jm(file = file.path(indpops, paste0(pop, ".unphased.f2.csvr")),
+cross <- read.cross.jm(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
 format = "csvr", geno = c(1:3), estimate.map = FALSE)
 ################################################################################
 
-### Pull names from plinkfile ##################################################
-path <- file.path(indpops, paste(pop, ".ped", sep = ""))
+################################################################################
+### Pull names from plinkfile
+path <- file.path(mpath, paste(pop, ".ped", sep = ""))
 popname <- system(paste("cut -f1 -d' '", path), intern = TRUE)
 indname <- system(paste("cut -f2 -d' '", path), intern = TRUE)
 cross$pheno$ID <- paste(popname, indname, sep = "_")
