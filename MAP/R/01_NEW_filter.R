@@ -2,7 +2,9 @@
 ### Map QTLs 1 of 3
 pop <- 'NEW'
 
-source("/home/jmiller1/QTL_Final/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
+
 ################################################################################
 ## read in the QTL cross
 cross <- read.cross.jm(file = file.path(indpops, paste0(pop, ".unphased.f2.csvr")),
@@ -101,6 +103,6 @@ for(Z in 3:24){
  cross <<- drop.markers(cross, drops)
 }
 
-mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
+
 fl <- file.path(mpath,'NEW_unmapped_filtered')
 write.cross(cross,filestem=fl,format="csv")
