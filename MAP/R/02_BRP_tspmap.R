@@ -3,16 +3,15 @@
 #debug.cross <- T
 #source("/home/jmiller1/QTL_Final/MAP/control_file.R")
 pop <- 'BRP'
-
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
+fl <- file.path('BRP_unmapped_filtered.csv')
 
 i <- commandArgs(TRUE)[commandArgs(TRUE) %in% c(1:24)]
 
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
-fl <- file.path('BRP_unmapped_filtered.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 cross <- subset(cross,chr=i)
 
