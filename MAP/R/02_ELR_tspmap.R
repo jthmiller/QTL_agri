@@ -1,17 +1,10 @@
 #!/bin/R
-### Map QTLs 1 of 3
-#debug.cross <- T
-#source("/home/jmiller1/QTL_Final/MAP/control_file.R")
-#Sys.setenv(TAR = "/bin/tar")
-##install_github("kbroman/ASMap")
-##install_github("jtlovell/qtlTools")
-##install_github("mckaylab/TSPmap")
 
 i <- commandArgs(TRUE)[commandArgs(TRUE) %in% c(1:24)]
-
-pop <- 'ELR'
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
 mapfile <- paste0(pop,'_all_mark_',i,'_tsp')
