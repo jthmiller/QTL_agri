@@ -5,53 +5,14 @@
 library('qtl')
 pop <- 'NBH'
 source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
-mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
-
 mpath <- '/home/jmiller1/QTL_agri/data'
 
 
 load(file.path(mpath,'single_scans.nbh.rsave'))
-load(file.path(mpath,'scantwo.scans.nbh.rsave'))
-load(file.path(mpath,'stepwise_grid_scans.nbh.rsave'))
+#load(file.path(mpath,'scantwo.scans.nbh.rsave'))
+#load(file.path(mpath,'stepwise_grid_scans.nbh.rsave'))
 
-
-fl <- file.path(mpath, paste0("outliers",pop,".txt.ncbi.lifted"))
-popgen <- read.table(fl, sep = "\t", header = T)
-
-
-ch2 <- which(popgen[,'chrom'] == 'chr2')
-
-
-
-
-fl <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
-popgen <- read.table(fl, sep = "\t", header = T)
-ch2 <- which(popgen$V1 == 'chr2')
-
-png("/home/jmiller1/public_html/ER_pi_chr2.png", width=2000)
-plot(popgen[ch2,'V2' ],popgen[ch2,'ER' ])
-dev.off()
-
-
-
-ch <- which(popgen$V1 == 'chr13')
-
-png("/home/jmiller1/public_html/ER_pi_chr13.png", width=2000)
-plot(popgen[ch,'V2' ],popgen[ch,'ER' ])
-dev.off()
-
-
-mp <- pull.map(cross)
-
-pos <- lapply(mp,function(X){ as.numeric(gsub("*.:",'',names(X))) })
-
-
-png("/home/jmiller1/public_html/nbh_map.png", width=2000)
-plot(pos[[18]],pos[[18]])
-dev.off()
-
-
-
+################################################################################
 bins <- data.frame(
  em=summary(scan.bin.em),
  imp=summary(scan.bin.imp)[,'lod'],
@@ -76,6 +37,62 @@ normpo <- data.frame(
  impo=rownames(summary(scan.norm.imp)),
  mrpo=rownames(summary(scan.norm.mr)),
  nppo=rownames(summary(scan.np.em.n)))
+
+################################################################################
+
+#fl <- file.path(mpath, paste0("outliers",pop,".txt.ncbi.lifted"))
+#popgen <- read.table(fl, sep = "\t", header = T)
+#ch2 <- which(popgen[,'chrom'] == 'chr2')
+
+
+map <- map2table(pull.map(cross))
+map$phy <- as.numeric(gsub("*.:","",rownames(map)))
+map$chr <- as.numeric(map$chr)
+
+fl <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
+popgen <- read.table(fl, sep = "\t", header = T)
+popgen$mid <- popgen$V2 + (abs(popgen$V3 - popgen$V2) * .5)
+popgen$V1 <- gsub('chr',"",popgen$V1)
+
+get_popgen <- function(X){
+ ind <- which.min(abs(popgen[which(popgen[,'V1'] == X[1] ),'mid'] - X[3]))
+ popgen[which(popgen[,'V1'] == X[1] ),][ind,]
+}
+
+closest <- apply(map,1,get_popgen)
+
+
+
+
+
+
+
+
+ch2 <- which(popgen$V1 == 'chr2')
+
+png("/home/jmiller1/public_html/ER_pi_chr2.png", width=2000)
+plot(popgen[ch2,'V2' ],popgen[ch2,'ER' ])
+dev.off()
+
+
+
+ch <- which(popgen$V1 == 'chr13')
+
+png("/home/jmiller1/public_html/ER_pi_chr13.png", width=2000)
+plot(popgen[ch,'V2' ],popgen[ch,'ER' ])
+dev.off()
+
+
+mp <- pull.map(cross)
+
+pos <- lapply(mp,function(X){ as.numeric(gsub("*.:",'',names(X))) })
+
+
+png("/home/jmiller1/public_html/nbh_map.png", width=2000)
+plot(pos[[18]],mp[[18]])
+dev.off()
+
+
 
 png(paste0('~/public_html/NBHR_rf_tsp.png'))
  plotRF(cross)

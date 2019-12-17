@@ -16,10 +16,10 @@
 ## sbatch 02_map.sh 'NEW'
 
 
-sbatch 03_fit.sh 'NBH'
-sbatch 03_fit.sh 'ELR'
+#sbatch 03_fit.sh 'NBH'
+#sbatch 03_fit.sh 'ELR'
 sbatch 03_fit.sh 'NEW'
-sbatch 03_fit.sh 'BRP'
+#sbatch 03_fit.sh 'BRP'
 
 
 sbatch fitQTL_long.sh NBH
