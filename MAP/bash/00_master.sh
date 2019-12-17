@@ -20,10 +20,10 @@
 #sbatch 03_fit.sh 'NEW'
 #sbatch 03_fit.sh 'BRP'
 
-sbatch fitQTL_short.sh 'NBH'
-sbatch fitQTL_short.sh 'BRP'
-sbatch fitQTL_short.sh 'NEW'
-sbatch fitQTL_short.sh 'ELR'
+sbatch 04_fit_short.sh 'NBH'
+sbatch 04_fit_short.sh 'BRP'
+sbatch 04_fit_short.sh 'NEW'
+sbatch 04_fit_short.sh 'ELR'
 
 sbatch fitQTL_long.sh NBH
 sbatch fitQTL_long.sh BRP

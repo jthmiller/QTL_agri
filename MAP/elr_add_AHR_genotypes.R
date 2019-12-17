@@ -1,15 +1,17 @@
 #!/bin/R
 ### Map QTLs 1 of 3
 debug.cross <- T
-source("/home/jmiller1/QTL_Map_Raw/popgen/rQTL/scripts/QTL_remap/MAP/control_file.R")
-
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library('qtl')
-
-mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
+mpath <- '/home/jmiller1/QTL_agri/data'
 
 ################################################################################
 ## ADD AHR GENOTYPES ##
 ################################################################################
+
+#fl <- paste0(pop,'.mapped.tsp.csv')
+#fl <- file.path(mpath,fl)
+
 fl <- file.path(mpath,'ELR_unmapped_filtered.csv')
 cross.df <- read.csv(fl,header=FALSE,stringsAsFactors=F)
 
@@ -87,13 +89,13 @@ names(row3) <- colnames(gts.2)
 
 final.gts <- rbind(row1,row2,row3,final.gts)
 
-fl <- file.path(mpath,'ELR_unmapped_filtered_added_markers.csv')
+fl <- file.path(mpath,'ELR_unmapped_added_markers.csv')
 write.table(final.gts, fl,col.names=F,row.names=F,quote=F,sep=',')
 
 ################################################################################
 ################################################################################
 mpath <- '~/QTL_Map_Raw/ELR_final_map'
-fl <- file.path(mpath,'ELR_unmapped_filtered_added_markers.csv')
+fl <- file.path(mpath,'ELR_mapped_added_markers.csv')
 
 cross2 <- read.cross(
  file = fl,
@@ -102,7 +104,7 @@ cross2 <- read.cross(
 )
 ########
 
-
+cross2 <- pull.markers(cross2, markernames(cross))
 
 
 
