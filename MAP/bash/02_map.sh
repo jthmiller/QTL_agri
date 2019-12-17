@@ -3,8 +3,6 @@
 #SBATCH -p high
 #SBATCH --array=1-24
 #SBATCH --mem=20G
-#SBATCH -e slurms/
-#SBATCH -o slurms/
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
 
