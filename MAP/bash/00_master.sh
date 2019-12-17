@@ -15,12 +15,15 @@
 ## sbatch 02_map.sh 'ELR'
 ## sbatch 02_map.sh 'NEW'
 
-
 #sbatch 03_fit.sh 'NBH'
 #sbatch 03_fit.sh 'ELR'
-sbatch 03_fit.sh 'NEW'
+#sbatch 03_fit.sh 'NEW'
 #sbatch 03_fit.sh 'BRP'
 
+sbatch fitQTL_short.sh 'NBH'
+sbatch fitQTL_short.sh 'BRP'
+sbatch fitQTL_short.sh 'NEW'
+sbatch fitQTL_short.sh 'ELR'
 
 sbatch fitQTL_long.sh NBH
 sbatch fitQTL_long.sh BRP
