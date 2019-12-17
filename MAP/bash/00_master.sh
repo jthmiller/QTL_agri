@@ -20,10 +20,10 @@ sbatch 02_map.sh 'ELR'
 sbatch 02_map.sh 'NEW'
 
 
-sbatch elr_fitQTL.sh
-sbatch brp_fitQTL.sh
-sbatch new_fitQTL.sh
-sbatch nbh_fitQTL.sh
+sbatch 03_fit.sh 'NBH'
+sbatch 03_fit.sh 'ELR'
+sbatch 03_fit.sh 'NEW'
+sbatch 03_fit.sh 'BRP'
 
 
 sbatch fitQTL_long.sh NBH
