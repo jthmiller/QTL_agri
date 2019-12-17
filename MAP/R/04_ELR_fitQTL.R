@@ -46,13 +46,12 @@ headers.u <- unname(data.frame(headers,row.names=NULL,stringsAsFactors=FALSE))
 gnos.u <- unname(data.frame(lapply(gnos, as.character),row.names=NULL,stringsAsFactors=FALSE))
 colnames(headers.u) <- colnames(gnos.u) <- headers.u[1,]
 to_write <- rbind(headers.u,gnos.u)
-write.table(to_write,file.path(mpath,'elr.mapped.tsp.csv'),sep=',',row.names=F,quote=F,col.names = F)
+
+write.table(to_write, fl, sep=',',row.names=F,quote=F,col.names = F)
 
 ################################################################################
 ## scan
 ################################################################################
-
-fl <- file.path(mpath,'elr.mapped.tsp.csv')
 
 cross <- read.cross(
  file = fl,

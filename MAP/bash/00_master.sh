@@ -5,14 +5,10 @@
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
-sbatch 01_filter.sh 'BRP'
-sbatch 01_filter.sh 'NBH'
-sbatch 01_filter.sh 'ELR'
-sbatch 01_filter.sh 'NEW'
-
-##install_github("kbroman/ASMap")
-##install_github("jtlovell/qtlTools")
-##install_github("mckaylab/TSPmap")
+## sbatch 01_filter.sh 'BRP'
+## sbatch 01_filter.sh 'NBH'
+## sbatch 01_filter.sh 'ELR'
+## sbatch 01_filter.sh 'NEW'
 
 sbatch 02_map.sh 'BRP'
 sbatch 02_map.sh 'NBH'
