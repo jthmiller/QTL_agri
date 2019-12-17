@@ -51,7 +51,6 @@ cross <- shiftmap(cross, offset=0)
 cross_map <-  est.map(cross, error.prob=0.04,map.function="kosambi",maxit=100000,tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 cross <- qtl:::replace.map(cross,cross_map)
 
-filename <- paste0('/home/jmiller1/QTL_Map_Raw/ELR_final_map/NEW_all_mark_',i,'_tsp')
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
 png(paste0('~/public_html/NEW_RF_concord',i,'_tsp.png'))

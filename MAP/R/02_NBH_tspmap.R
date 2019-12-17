@@ -15,6 +15,7 @@ suppressMessages(sapply(libs2load, require, character.only = TRUE))
 ################################################################################
 
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
 cross <- subset(cross,chr=i)
 sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
 rownames(sex) <- sex$ID
@@ -62,7 +63,6 @@ cross_map <-  est.map(cross, error.prob=0.04,map.function="kosambi",maxit=100000
 
 cross <- qtl:::replace.map(cross,cross_map)
 
-filename <- paste0('/home/jmiller1/QTL_Map_Raw/ELR_final_map/NBH_all_mark_',i,'_tsp')
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
 png(paste0('~/public_html/NBH_RF_concord',i,'_tsp.png'))

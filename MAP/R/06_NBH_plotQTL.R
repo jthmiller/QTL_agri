@@ -7,9 +7,50 @@ pop <- 'NBH'
 source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
 mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
 
+mpath <- '/home/jmiller1/QTL_agri/data'
+
+
 load(file.path(mpath,'single_scans.nbh.rsave'))
 load(file.path(mpath,'scantwo.scans.nbh.rsave'))
 load(file.path(mpath,'stepwise_grid_scans.nbh.rsave'))
+
+
+fl <- file.path(mpath, paste0("outliers",pop,".txt.ncbi.lifted"))
+popgen <- read.table(fl, sep = "\t", header = T)
+
+
+ch2 <- which(popgen[,'chrom'] == 'chr2')
+
+
+
+
+fl <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
+popgen <- read.table(fl, sep = "\t", header = T)
+ch2 <- which(popgen$V1 == 'chr2')
+
+png("/home/jmiller1/public_html/ER_pi_chr2.png", width=2000)
+plot(popgen[ch2,'V2' ],popgen[ch2,'ER' ])
+dev.off()
+
+
+
+ch <- which(popgen$V1 == 'chr13')
+
+png("/home/jmiller1/public_html/ER_pi_chr13.png", width=2000)
+plot(popgen[ch,'V2' ],popgen[ch,'ER' ])
+dev.off()
+
+
+mp <- pull.map(cross)
+
+pos <- lapply(mp,function(X){ as.numeric(gsub("*.:",'',names(X))) })
+
+
+png("/home/jmiller1/public_html/nbh_map.png", width=2000)
+plot(pos[[18]],pos[[18]])
+dev.off()
+
+
 
 bins <- data.frame(
  em=summary(scan.bin.em),

@@ -44,7 +44,7 @@ gnos.u <- unname(data.frame(lapply(gnos, as.character),row.names=NULL,stringsAsF
 colnames(headers.u) <- colnames(gnos.u) <- headers.u[1,]
 to_write <- rbind(headers.u,gnos.u)
 
-write.table(to_write,file.path(mpath,'nbh.mapped.tsp.csv'),sep=',',row.names=F,quote=F,col.names = F)
+write.table(to_write,file.path(mpath,'NBH.mapped.tsp.csv'),sep=',',row.names=F,quote=F,col.names = F)
 
 ################################################################################
 ################################################################################
