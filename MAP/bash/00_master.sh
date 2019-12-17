@@ -14,6 +14,7 @@
 ## sbatch 02_map.sh 'NBH'
 ## sbatch 02_map.sh 'ELR'
 ## sbatch 02_map.sh 'NEW'
+## sbatch 02_map_missing.sh 'ELR'
 
 #sbatch 03_fit.sh 'NBH'
 #sbatch 03_fit.sh 'ELR'
