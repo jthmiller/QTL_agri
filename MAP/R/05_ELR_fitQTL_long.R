@@ -27,29 +27,48 @@ gg_step2 <- reduce2grid(gg)
 
 ################################################################################
 
-sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
-             method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
+sc2_normal_imp <- scantwo(gg_step2, pheno.col=5, model="normal",
+             method="imp",
+             addcovar=NULL, intcovar=NULL, weights=NULL,
              use="complete.obs",
-             incl.markers=FALSE, clean.output=FALSE,
-             clean.nmar=1, clean.distance=0,
+             incl.markers=FALSE, clean.output=TRUE,
+             clean.nmar=20, clean.distance=20,
              maxit=1000, tol=1e-4,
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
-             assumeCondIndep=FALSE, batchsize=250, n.cluster=6)
+             assumeCondIndep=TRUE, batchsize=250, n.cluster=12)
 
-sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
-             method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
+sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
+             method="imp", addcovar=NULL, intcovar=NULL, weights=NULL,
              use="complete.obs", n.perm=1000,
-             incl.markers=FALSE, clean.output=FALSE,
-             clean.nmar=1, clean.distance=0,
+             incl.markers=FALSE, clean.output=TRUE,
+             clean.nmar=20, clean.distance=20,
              maxit=1000, tol=1e-4,
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
-             assumeCondIndep=FALSE, batchsize=250, n.cluster=4)
+             assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
 ## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),
 ##             perms=sc2_normal_imp_perms, alphas, lodcolumn=1,
 ##             pvalues=FALSE, allpairs=TRUE)
 ##
 save.image(file.path(mpath,'scantwo.scans.elr.long.rsave'))
+
+sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
+             method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
+             use="complete.obs",
+             incl.markers=FALSE, clean.output=TRUE,
+             clean.nmar=20, clean.distance=20,
+             maxit=1000, tol=1e-4,
+             verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
+             assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
+
+sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
+             method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
+             use="complete.obs", n.perm=1000,
+             incl.markers=FALSE, clean.output=TRUE,
+             clean.nmar=20, clean.distance=20,
+             maxit=1000, tol=1e-4,
+             verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
+             assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
 ################################################################################
 full.bin.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=4)
