@@ -82,7 +82,7 @@ write.table(final.gts, fl,col.names=F,row.names=F,quote=F,sep=',')
 ################################################################################
 ################################################################################
 
-fl <- file.path(mpath,'ELR_mapped_added_markers.csv')
+fl <- file.path(mpath,'ELR_unmapped_added_markers.csv')
 
 cross2 <- read.cross(
  file = fl,
