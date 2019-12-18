@@ -12,8 +12,6 @@ fl <- file.path(mpath,fl)
 ################################################################################
 ## SCANTWO ON SUBSET (this map made in tspmap.R
 
-fl <- file.path(mpath,'elr.mapped.tsp.csv')
-
 cross <- read.cross(
  file = fl,
  format = "csv", genotypes=c("1","2","3"),
