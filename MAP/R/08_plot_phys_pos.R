@@ -64,6 +64,8 @@ themelt.new$pop <- "NEW"
 themelt.elr$pop <- "ELR"
 themelt.brp$pop <- "BRP"
 
+save.image('08_phys_plots_pos.rsave')
+
 ### ggplot format AHR genes
 nbh.gens <- cnv.ahrs(cross2 = cross.nbh, AHRdf = AHR.bed, EXP = F)
 new.gens <- cnv.ahrs(cross.new, AHRdf = AHR.bed, EXP = F)
