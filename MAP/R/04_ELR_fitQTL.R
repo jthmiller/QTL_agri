@@ -87,6 +87,7 @@ scan.bin.sex <- scanone(cross, method = "em", model = "binary", pheno.col = 2)
 ################################################################################
 ## step-wise
 full.norm.add_only <- stepwiseqtl(cross, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=4)
+
 ################################################################################
 
 ################################################################################
