@@ -46,6 +46,8 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
+sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodcolumn=1)
+
 ## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),
 ##             perms=sc2_normal_imp_perms, alphas, lodcolumn=1,
 ##             pvalues=FALSE, allpairs=TRUE)
@@ -69,6 +71,10 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
              maxit=1000, tol=1e-4,
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
+
+sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
+
+save.image(file.path(mpath,'scantwo.scans.elr.long.rsave'))
 
 ################################################################################
 full.bin.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=4)

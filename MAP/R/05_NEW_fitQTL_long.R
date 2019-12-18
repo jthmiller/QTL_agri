@@ -44,6 +44,8 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
+sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodcolumn=1)
+
 save.image(file.path(mpath,'scantwo.scans.NEW.rsave'))
 
 sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
@@ -63,6 +65,8 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
              maxit=1000, tol=1e-4,
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
+
+sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
 
 save.image(file.path(mpath,'scantwo.scans.NEW.rsave'))
 ################################################################################
