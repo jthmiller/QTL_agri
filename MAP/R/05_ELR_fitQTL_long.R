@@ -10,21 +10,9 @@ fl <- file.path(mpath,fl)
 load(file.path(mpath,'single_scans.elr.rsave'))
 ################################################################################
 
-qc <- c(13, 18)
-qp <- c(0, 11.91)
-qtl <- makeqtl(cross, chr=qc, pos=qp)
-qtl <- refineqtl(cross,qtl=qtl)
-out <- addqtl(cross, qtl=qtl, formula=y ~ Q1+Q2:Q3)
-
-
-fla <-file.path(mpath, 'ER_ahr_aip_whoi_gt.csv')
-cross.df.ahr <- read.csv(fla,header=FALSE,stringsAsFactors=F)
-ahr_mark_nms <- cross.df.ahr[1,4:length(cross.df.ahr[1,])]
-
-
-
 ################################################################################
 ## SCANTWO ON SUBSET (this map made in tspmap.R
+
 fl <- file.path(mpath,'elr.mapped.tsp.csv')
 
 cross <- read.cross(
@@ -35,10 +23,20 @@ cross <- read.cross(
 cross <- sim.geno(cross)
 cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
 
-
 gg <- sim.geno(cross,step=4)
 gg_step2 <- reduce2grid(gg)
 
+## Scan with the AHR locus
+qc <- c(1, 13, 18)
+qp <- c(0.635, 58, 46)
+qtl <- makeqtl(gg_step2, chr=qc, pos=qp, what="draws")
+ahr_interaction <- addint(gg_step2, qtl=qtl, pheno.col=4, method="imp", formula=y~Q1+Q2+Q3, model='binary')
+################################################################################
+
+add_int <- refineqtl(gg_step2, qtl= full.norm.add_only, formula=y ~ Q1+Q2, method="imp", model='binary')
+qtl_interaction <- addint(gg_step2, qtl=add_int, pheno.col=4, method="imp", formula=y~Q1+Q2, model='binary')
+
+################################################################################
 
 sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
              method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
@@ -65,6 +63,7 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
 save.image(file.path(mpath,'scantwo.scans.elr.long.rsave'))
 
 ################################################################################
+full.bin.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=4)
 add.norm <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=6)
 full.norm <- stepwiseqtl(gg_step2, incl.markers=F, scan.pairs=T, keeptrace=T, additive.only = F, model='normal', method = "imp", pheno.col = 5, max.qtl=6)
 
@@ -74,49 +73,3 @@ save.image(file.path(mpath,'pairwise_scans.elr.rsave'))
 fit.full.norm <- fitqtl(gg_step2,qtl=full.norm, pheno.col=4)
 
 save.image(file.path(mpath,'pairwise_scans.elr.rsave'))
-
-##################################################################################
-### MQM
-##
-##mq <- subset(cross, ind=!cross$pheno$ID %in% 'NBH_5528')
-##gt <- geno.table(mq)
-##bfixA <- rownames(gt[which(gt$P.value > 0.001 & gt$missing < 5),])
-##mq <- pull.markers(mq,bfixA)
-##
-##marks <- sapply(1:24,function(i){
-##    n.missing <- nmissing(subset(mq, chr=i), what="mar")
-##    # weight by -log(prop'n missing), but don't let 0 missing go to +Inf
-##    wts <- -log( (n.missing+1) / (nind(mq)+1) )
-##    # subset of markers on chr 4 spaced >= 5 cM, with weights = -log(prop'n missing)
-##    pickMarkerSubset(pull.map(mq)[[i]],1, wts)
-##})
-##
-##pl <- unlist(marks)
-##mq <- pull.markers(mq,pl)
-##
-##crossaug <- mqmaugment(mq,strategy='default',verbose=T)  # Augmentation
-##
-##result <- mqmscan(crossaug)    # Scan
-##    # show LOD interval of the QTL on chr 3
-##
-##mq.add <- mqmscan(crossaug, cofactors=NULL, pheno.col = 5,
-##      model=c("additive"), forceML=FALSE,
-##      cofactor.significance=0.05, em.iter=1000,
-##      window.size=25.0, step.size=5.0,
-##      logtransform = FALSE, estimate.map = FALSE,
-##      plot=FALSE, verbose=FALSE, outputmarkers=TRUE,
-##      multicore=TRUE, batchsize=10, n.clusters=6,
-##      test.normality=FALSE,off.end=0)
-##
-##mq.dom <- mqmscan(crossaug, cofactors=NULL, pheno.col = 5,
-##      model="dominance", forceML=FALSE,
-##      cofactor.significance=0.05, em.iter=1000,
-##      window.size=25.0, step.size=5.0,
-##      logtransform = FALSE, estimate.map = FALSE,
-##      plot=FALSE, verbose=FALSE, outputmarkers=TRUE,
-##      multicore=TRUE, batchsize=10, n.clusters=6,
-##      test.normality=FALSE,off.end=0)
-##
-##save.image(file.path(mpath,'mqm.scans.elr.rsave'))
-##################################################################################
-##
