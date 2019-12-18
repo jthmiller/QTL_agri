@@ -16,17 +16,17 @@
 ## sbatch 02_map.sh 'NEW'
 ## sbatch 02_map_missing.sh 'ELR'
 
-#sbatch 03_fit.sh 'NBH'
-#sbatch 03_fit.sh 'ELR'
-#sbatch 03_fit.sh 'NEW'
-#sbatch 03_fit.sh 'BRP'
+sbatch 03_fit.sh 'NBH'
+sbatch 03_fit.sh 'ELR'
+sbatch 03_fit.sh 'NEW'
+sbatch 03_fit.sh 'BRP'
 sbatch 03_fit_missing.sh 'ELR'
-
-sbatch 04_fit_short.sh 'NBH'
-sbatch 04_fit_short.sh 'BRP'
-sbatch 04_fit_short.sh 'NEW'
-sbatch 04_fit_short.sh 'ELR'
-
+##
+##sbatch 04_fit_short.sh 'NBH'
+##sbatch 04_fit_short.sh 'BRP'
+##sbatch 04_fit_short.sh 'NEW'
+##sbatch 04_fit_short.sh 'ELR'
+##
 sbatch 04_fit_long.sh 'NBH'
 sbatch 04_fit_long.sh 'BRP'
 sbatch 04_fit_long.sh 'NEW'
