@@ -59,6 +59,10 @@ cross <- read.cross(
  estimate.map = FALSE
 )
 
+cross <- subset(cross,ind=!is.na(cross$pheno$ID))
+cross$pheno$bin <- ifelse(cross$pheno$Pheno > 2, 1 , 0)
+cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
+
 cross <- sim.geno(cross)
 cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
 
