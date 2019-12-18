@@ -23,10 +23,15 @@ cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
 gg <- sim.geno(cross,step=4)
 gg_step2 <- reduce2grid(gg)
 
+################################################################################
 
-add_int <- refineqtl(gg_step2, qtl= full.norm.add_only, formula=y ~ Q1+Q2, method="imp", model='binary')
-qtl_interaction <- addint(gg_step2, qtl=add_int, pheno.col=4, method="imp", formula=y~Q1+Q2, model='binary')
+full.norm.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5)
 
+add_int <- refineqtl(gg_step2, qtl= full.norm.add_only, formula=y ~ Q1+Q2+Q3+Q4, method="imp", model='binary')
+
+qtl_interaction <- addint(gg_step2, qtl=add_int, pheno.col=4, method="imp", formula=y~Q1+Q2+Q3+Q4, model='binary')
+
+################################################################################
 
 ## PERMS 5% LOD 4.07
 sc2_normal_imp <- scantwo(gg_step2, pheno.col=5, model="normal",

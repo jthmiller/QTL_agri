@@ -72,6 +72,8 @@ sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
 ##             pvalues=FALSE, allpairs=TRUE)
 
 save.image(file.path(mpath,'scantwo.scans.nbh.rsave'))
+
+
 ################################################################################
 
 ################################################################################

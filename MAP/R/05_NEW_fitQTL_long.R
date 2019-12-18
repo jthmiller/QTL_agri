@@ -10,16 +10,17 @@ fl <- file.path(mpath,fl)
 
 ################################################################################
 ## SCANTWO ON SUBSET
+
 fl <- file.path(mpath,'new.mapped.tsp.csv')
 
 cross <- read.cross(
  file = fl,
  format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE)
+ estimate.map = FALSE
+)
 
 cross <- sim.geno(cross)
 cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
-
 
 gg <- sim.geno(cross,step=4)
 gg_step2 <- reduce2grid(gg)
@@ -46,7 +47,7 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
 
 sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodcolumn=1)
 
-save.image(file.path(mpath,'scantwo.scans.NEW.rsave'))
+save.image(file.path(mpath,'scantwo.scans.new.rsave'))
 
 sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
              method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
@@ -68,7 +69,12 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
 
 sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
 
-save.image(file.path(mpath,'scantwo.scans.NEW.rsave'))
+## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),
+##             perms=sc2_normal_imp_perms, alphas, lodcolumn=1,
+##             pvalues=FALSE, allpairs=TRUE)
+
+save.image(file.path(mpath,'scantwo.scans.new.rsave'))
+
 ################################################################################
 
 ################################################################################
