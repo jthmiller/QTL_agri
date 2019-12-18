@@ -68,6 +68,7 @@ scan.norm.em <- scanone(cross, method = "em", model = "normal", pheno.col = 5)
 scan.norm.mr <- scanone(cross, method = "mr", model = "normal", pheno.col = 5)
 scan.norm.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
 scan.norm.ehk <- scanone(cross, method = "ehk", model = "normal", maxit = 5000, pheno.col = 5)
+full.norm.add_only <- stepwiseqtl(cross, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
 
 ## non-parametric
 scan.np.em.b <- scanone(cross, method = "em", model = "np", pheno.col = 4, maxit = 5000)
@@ -75,11 +76,6 @@ scan.np.em.n <- scanone(cross, method = "em", model = "np", pheno.col = 5, maxit
 
 ##SEX
 scan.bin.sex <- scanone(cross, method = "em", model = "binary", pheno.col = 2)
-################################################################################
-
-################################################################################
-## step-wise
-full.norm.add_only <- stepwiseqtl(cross, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
 ################################################################################
 
 ####################################################################################

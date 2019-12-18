@@ -71,6 +71,7 @@ scan.norm.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 1)
 scan.normT.em <- scanone(cross, method = "em", model = "normal", pheno.col = 5)
 scan.normT.mr <- scanone(cross, method = "mr", model = "normal", pheno.col = 5)
 scan.normT.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
+full.norm.add_only <- stepwiseqtl(cross, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=4)
 
 ## non-parametric
 scan.np.em.b <- scanone(cross, method = "em", model = "np", pheno.col = 4, maxit = 5000)
