@@ -8,10 +8,8 @@ library("scales")
 library("ggrepel")
 library('qtl')
 
-setwd('/home/jmiller1/QTL_agri/data')
-
 mpath <- '/home/jmiller1/QTL_agri/data'
-
+setwd(mpath)
 
 #### AHRs #####
 AHR.bed <- read.table("lift_AHR_genes.bed", stringsAsFactors = F, header = F)
@@ -26,58 +24,35 @@ AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 
 ## Phenotypes
 ##############
-popdir <- "/home/jmiller1/QTL_Map_Raw/popgen/rQTL/NBH/REMAPS"
-cross.NBH <- read.cross(format = "csv", dir = popdir, file = paste(outname, ".BACKUP.QTL_chr.QTLmap.csv",
-  sep = ""), geno = c("AA", "AB", "BB"), alleles = c("A", "B"))
-
 cross.BRP <- read.cross(format = "csv", dir = mpath, file = 'brp.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 cross.ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.NBH <- read.cross(format = "csv", dir = mpath, file = '.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'brp.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 
 
-#################
-mak <- markernames(cross.NEW)
-cross.NEW <- switchAlleles(cross.NEW, markers = mak)
-#################
-cross.nbh <- sim.geno(cross.NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.01,
+cross.nbh <- sim.geno(cross.NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
-cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.01,
+cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
-cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.05,
+cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
-cross.brp <- sim.geno(brp.remap, n.draws = 500, step = 5, off.end = 10, error.prob = 0.1,
+cross.brp <- sim.geno(cross.BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
-brp.remap
-#################
-sex <- read.table(file = file.path(dirso, "sex.txt"))
-rownames(sex) <- sex$ID
-cross.nbh$pheno$sex <- sex[as.character(cross.nbh$pheno$ID), 2]
-cross.nbh$pheno$binary <- as.numeric(cross.nbh$pheno$pheno >= 3)
-cross.new$pheno$sex <- sex[as.character(cross.new$pheno$ID), 2]
-cross.new$pheno$binary <- as.numeric(cross.new$pheno$pheno >= 3)
-cross.elr$pheno$sex <- sex[as.character(cross.elr$pheno$ID), 2]
-cross.elr$pheno$binary <- as.numeric(cross.elr$pheno$pheno >= 3)
-cross.brp$pheno$sex <- sex[as.character(cross.brp$pheno$ID), 2]
-cross.brp$pheno$binary <- as.numeric(cross.brp$pheno$pheno >= 3)
-
-cross.brp <- subset(cross.brp, ind = cross.brp$pheno$gt == 1)
 
 cross.nbh <- reduce2grid(cross.nbh)
 cross.new <- reduce2grid(cross.new)
 cross.elr <- reduce2grid(cross.elr)
 cross.brp <- reduce2grid(cross.brp)
 
-# scan.norm.imp.NBH <- scanone(cross.nbh, model = 'normal', pheno.col = 1, method
-# = 'imp', addcovar = cross.nbh$pheno$sex)
-scan.norm.imp.NBH <- scanone(cross.nbh, model = "normal", pheno.col = 1, method = "imp")
-# scan.norm.imp.NEW <- scanone(cross.new, model = 'normal', pheno.col = 1, method
-# = 'imp', addcovar = cross.new$pheno$sex)
-scan.norm.imp.NEW <- scanone(cross.new, model = "normal", pheno.col = 1, method = "imp")
-# scan.norm.imp.ELR <- scanone(cross.elr, model = 'normal', pheno.col = 1, method
-# = 'imp', addcovar = cross.elr$pheno$sex)
-scan.norm.imp.ELR <- scanone(cross.elr, model = "normal", pheno.col = 1, method = "imp")
-scan.norm.imp.BRP <- scanone(cross.brp, model = "normal", pheno.col = 1, method = "imp")
+scan.norm.imp.NBH <- scanone(cross.nbh, method = "imp", model = "normal", pheno.col = 5)
+scan.bin.imp.NBH <-  scanone(cross.nbh, method = "em", model = "binary", pheno.col = 4)
+scan.norm.imp.ELR <- scanone(cross.elr, method = "imp", model = "normal", pheno.col = 5)
+scan.bin.imp.ELR <-  scanone(cross.elr, method = "em", model = "binary", pheno.col = 4)
+scan.norm.imp.NEW <- scanone(cross.new, method = "imp", model = "normal", pheno.col = 5)
+scan.bin.imp.NEW <-  scanone(cross.new, method = "em", model = "binary", pheno.col = 4)
+scan.norm.imp.BRP <- scanone(cross.brp, method = "imp", model = "normal", pheno.col = 5)
+scan.bin.imp.BRP <-  scanone(cross.brp, method = "em", model = "binary", pheno.col = 4)
+
 ### use scanone for plots
 themelt.nbh <- scan.norm.imp.NBH
 themelt.new <- scan.norm.imp.NEW
@@ -100,17 +75,11 @@ incompat.gens <- nbh.gens[which(nbh.gens$chr %in% c(8, 13)), ]
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.gens <- nbh.gens[which(nbh.gens$chr %in% qtl_pg), ]
 
-
 ### ggplot popgen locations
-dir <- "/home/jmiller1/QTL_Map_Raw/popgen/tables"
-nbh.popgen <- read.table(file.path(dir, "outliersNBH.txt.ncbi.lifted"), sep = "\t",
-  header = T)
-new.popgen <- read.table(file.path(dir, "outliersNYC.txt.ncbi.lifted"), sep = "\t",
-  header = T)
-elr.popgen <- read.table(file.path(dir, "outliersER.txt.ncbi.lifted"), sep = "\t",
-  header = T)
-brp.popgen <- read.table(file.path(dir, "outliersBP.txt.ncbi.lifted"), sep = "\t",
-  header = T)
+nbh.popgen <- read.table("outliersNBH.txt.ncbi.lifted", sep = "\t", header = T)
+new.popgen <- read.table("outliersNYC.txt.ncbi.lifted", sep = "\t", header = T)
+elr.popgen <- read.table("outliersER.txt.ncbi.lifted", sep = "\t", header = T)
+brp.popgen <- read.table("outliersBP.txt.ncbi.lifted", sep = "\t", header = T)
 
 ### Use nbh coords but elr and new popgen
 new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
