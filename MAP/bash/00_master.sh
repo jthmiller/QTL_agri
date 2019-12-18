@@ -27,7 +27,7 @@ sbatch 04_fit_short.sh 'BRP'
 sbatch 04_fit_short.sh 'NEW'
 sbatch 04_fit_short.sh 'ELR'
 
-sbatch fitQTL_long.sh NBH
-sbatch fitQTL_long.sh BRP
-sbatch fitQTL_long.sh NEW
-sbatch fitQTL_long.sh ELR
+sbatch 04_fitQTL_long.sh NBH
+sbatch 04_fitQTL_long.sh BRP
+sbatch 04_fitQTL_long.sh NEW
+sbatch 04_fitQTL_long.sh ELR
