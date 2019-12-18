@@ -1,8 +1,10 @@
 #!/bin/R
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 library('qtl')
-pop <- 'NBH'
-source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
-mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
+fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
 
 ################################################################################
 ## SCANTWO ON SUBSET

@@ -40,15 +40,6 @@ png(paste0('~/public_html/ELR_np.png'), width=1000)
  plot(scan.np.em.b)
 dev.off()
 
-png(paste0('~/public_html/ELR_rf_9.png'))
- plotRF(cross,chr=9)
-dev.off()
-
 png(paste0('~/public_html/ELR_scan.norm.mr.png'))
  plot(scan.norm.mr)
 dev.off()
-
-
-cbind(summary(out.ap13),summary(out.ap23))
-
-save.image(file.path(mpath,'scans.elr.rsave'))

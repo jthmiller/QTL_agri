@@ -8,7 +8,7 @@ source("/home/jmiller1/QTL_Map_Raw/ELR_final_map/CODE/control_file.R")
 mpath <- '/home/jmiller1/QTL_Map_Raw/ELR_final_map'
 
 ##load(file.path(mpath,'scans.elr.rsave'))
-save.image(file.path(mpath,'single_scans.elr.rsave'))
+
 
 bins <- data.frame(
  em=summary(scan.bin.em),
