@@ -11,7 +11,7 @@ fl <- file.path(mpath,fl)
 ## put chromosomes together
 ###############################################################################
 
-file_list <- list.files(mpath, 'ELR_all_mark_?[0-9]?[0-9]_tsp.csv')
+file_list <- list.files(mpath, 'ELR_all_mark_?[0-9]?[0-9]_tsp_missing.csv')
 
 chr <- gsub("ELR_all_mark_",'',file_list)
 chr <- as.numeric(gsub("_tsp.csv",'',chr))
