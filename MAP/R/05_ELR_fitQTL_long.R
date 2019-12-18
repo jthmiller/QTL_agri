@@ -25,16 +25,6 @@ cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
 gg <- sim.geno(cross,step=4)
 gg_step2 <- reduce2grid(gg)
 
-## Scan with the AHR locus
-qc <- c(1, 13, 18)
-qp <- c(0.635, 58, 46)
-qtl <- makeqtl(gg_step2, chr=qc, pos=qp, what="draws")
-ahr_interaction <- addint(gg_step2, qtl=qtl, pheno.col=4, method="imp", formula=y~Q1+Q2+Q3, model='binary')
-################################################################################
-
-add_int <- refineqtl(gg_step2, qtl= full.norm.add_only, formula=y ~ Q1+Q2, method="imp", model='binary')
-qtl_interaction <- addint(gg_step2, qtl=add_int, pheno.col=4, method="imp", formula=y~Q1+Q2, model='binary')
-
 ################################################################################
 
 sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
