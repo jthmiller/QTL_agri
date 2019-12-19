@@ -20,18 +20,6 @@ mylib <- "/home/jmiller1/R/x86_64-pc-linux-gnu-library/3.5"
 mpacks <- c("qtl", "foreach", "qtl2", "qtlTools", "doParallel", "plyr")
 lapply(mpacks, require, character.only = TRUE, lib.loc = mylib)
 
-sourceDir <- function(path, trace = TRUE, ...) {
-  for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
-    if (trace)
-      cat(nm, ":")
-    source(file.path(path, nm), ...)
-    if (trace)
-      cat("\n")
-  }
-}
-
-sourceDir("doParallel/R")
-
 dropByDropone<-function(cross, droponeRes,
                         endMarkerThresh = 12, midMarkerThresh = 4,
                         which.map = NULL,
