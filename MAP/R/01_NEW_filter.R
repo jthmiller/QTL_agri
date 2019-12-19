@@ -73,7 +73,7 @@ png(paste0('~/public_html/NEW_relat.png'))
  hist(cpgt)
 dev.off()
 ################################################################################
-toss_missing <- c('NEW_11365','NEW_11398')
+toss_missing <- c('NEW_11365','NEW_11398','NEW_11403','NEW_11388','NEW_11228',' NEW_11298','NEW_11407','NEW_11370')
 ################################################################################
 
 ################################################################################
@@ -89,7 +89,7 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
-cross <- subset(cross,ind=!cross$pheno$ID %in% c("NEW_NEW911M","NEW_NEW911F"))
+cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss_missing,"NEW_NEW911M","NEW_NEW911F"))
 ################################################################################
 for(Z in 1:24){
 
