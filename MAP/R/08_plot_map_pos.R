@@ -50,7 +50,6 @@ pi <- read.table(pi, sep = "\t", header = T)
 pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
 pi$Scaffold <- gsub('chr',"",pi$Scaffold)
 
-   min(as.matrix(Z[ind,pops]),na.rm=T),
 
 plot_stat <- function(Z,ch,poplot){
 
