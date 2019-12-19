@@ -1305,9 +1305,6 @@ function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
     cross
 }
 
-
-
-cross2 <- cross.nbh
 conv_popstat <- function(cross2, popgen) {
 
   nbhmap <- convert2cross2(cross2)
