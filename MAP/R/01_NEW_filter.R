@@ -1,10 +1,8 @@
 #!/bin/R
 
 pop <- 'NEW'
-
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-
 
 ################################################################################
 ## read in the QTL cross
@@ -87,7 +85,7 @@ dev.off()
 
 bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 ################################################################################
-cros.bk <- cross
+
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c("NEW_NEW911M","NEW_NEW911F"))
