@@ -1,6 +1,7 @@
 #!/bin/R
 
 pop <- 'NEW'
+
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 

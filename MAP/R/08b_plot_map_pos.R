@@ -14,61 +14,6 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-## FUNCTIONS
-plot_stat_sep <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
-
-  X <- Z[ind,'mid_midpo']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
-
-  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
-
-  axis(side=1)
-
-}
-
-plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
- plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
- points(X, Y[[stat]], pch=20, col=poplot[stat])
-}
-
-plot_stat <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
-
-  X <- Z[ind,'mid_midpo']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  plot(x_mx_mn, ymx_mn, type="n")
-  sapply(pops,plot_pnts,X,Y,poplot)
-
-}
-
-plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
-
 load('08_phys_plots_pos.rsave')
 
 ### Get position of pop gen stats
@@ -87,7 +32,6 @@ dev.off()
 png("/home/jmiller1/public_html/taj.png", width = 3000)
 plot_stat(taj,ch=2,poplot=popout)
 dev.off()
-
 
 png("/home/jmiller1/public_html/pfst_conv.png", width = 1000)
 plot_stat_sep(pfst_conv,ch=18,poplot=statcol)
@@ -137,24 +81,49 @@ qtl_pg <- c(2,8, 13, 18, 24)
 ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
 ################################################
 
-################################################
 ### GGriges plot
-melted.nbh <- data.frame(pop = "NBH", chr = scan.norm.imp.NBH$chr, pos = scan.norm.imp.NBH$pos,
-  lod = scan.norm.imp.NBH$lod)
-melted.new <- data.frame(pop = "NEW", chr = scan.norm.imp.NEW$chr, pos = scan.norm.imp.NEW$pos,
-  lod = scan.norm.imp.NEW$lod)
-melted.elr <- data.frame(pop = "ELR", chr = scan.norm.imp.ELR$chr, pos = scan.norm.imp.ELR$pos,
-  lod = scan.norm.imp.ELR$lod)
-melted.brp <- data.frame(pop = "BRP", chr = scan.norm.imp.BRP$chr, pos = scan.norm.imp.BRP$pos,
-  lod = scan.norm.imp.BRP$lod)
+scan_NBH <- scan.norm.imp.NBH
+scan_ELR <- scan.norm.imp.ELR
+scan_NEW <- scan.norm.imp.NEW
+scan_BRP <- scan.norm.imp.BRP
+
+scan_NBH <- scan.bin.mr.NBH
+scan_ELR <- scan.bin.mr.ELR
+scan_NEW <- scan.bin.mr.NEW
+scan_BRP <- scan.bin.mr.BRP
+
+scan_NBH <- scan.bin.imp.NBH
+scan_ELR <- scan.bin.imp.ELR
+scan_NEW <- scan.bin.imp.NEW
+scan_BRP <- scan.bin.imp.BRP
+
+png("/home/jmiller1/public_html/nbh.png", width = 3000)
+plot(scan.bin.imp.NBH)
+dev.off()
+
+png("/home/jmiller1/public_html/BRP.png", width = 3000)
+plot(scan.bin.imp.BRP)
+dev.off()
+
+
+melted.nbh <- data.frame(pop = "NBH", chr = scan_NBH$chr, pos = scan_NBH$pos,
+  lod = scan_NBH$lod)
+melted.new <- data.frame(pop = "NEW", chr = scan_NEW$chr, pos = scan_NEW$pos,
+  lod = scan_NEW$lod)
+melted.elr <- data.frame(pop = "ELR", chr = scan_ELR$chr, pos = scan_ELR$pos,
+  lod = scan_ELR$lod)
+melted.brp <- data.frame(pop = "BRP", chr = scan_BRP$chr, pos = scan_BRP$pos,
+  lod = scan_BRP$lod)
 
 melted <- rbind(melted.nbh, melted.new, melted.elr, melted.brp)
 melted$pop <- factor(melted$pop, levels = rev(c("NBH", "BRP", "NEW", "ELR")))
 
 ## Total CM length of NBH. Rescale to NBH
-mxes <- sapply(1:24, function(X) {
-  max(themelt.nbh$pos[which(themelt.nbh$chr == X)])
-})
+
+
+get_mxes <- function(X,Y) {
+  max(Y$pos[which(Y$chr == X)])
+}
 
 melso <- function(tomelt){
  ts <- tomelt[which(tomelt$chr == 1), ]
@@ -168,40 +137,15 @@ melso <- function(tomelt){
  the_rescale
 }
 
+mxes <- sapply(1:24,get_mxes,Y=themelt.nbh)
+mxes <- sapply(1:24,get_mxes,Y=themelt.elr)
+
+nbh.rescale <- melso(themelt.nbh)
 new.rescale <- melso(themelt.new)
 brp.rescale <- melso(themelt.brp)
 elr.rescale <- melso(themelt.elr)
 
-
-
-##ts <- themelt.new[which(themelt.new$chr == 1), ]
-##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
-##new.rescale <- ts
-##for (i in 2:24) {
-##  ts <- themelt.new[which(themelt.new$chr == i), ]
-##  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-##  new.rescale <- rbind(new.rescale, ts)
-##}
-
-##ts <- themelt.elr[which(themelt.elr$chr == 1), ]
-##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
-##elr.rescale <- ts
-##for (i in 2:24) {
-##  ts <- themelt.elr[which(themelt.elr$chr == i), ]
-##  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-##  elr.rescale <- rbind(elr.rescale, ts)
-##}
-##
-##ts <- themelt.brp[which(themelt.brp$chr == 1), ]
-##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
-##brp.rescale <- ts
-##for (i in 2:24) {
-##  ts <- themelt.brp[which(themelt.brp$chr == i), ]
-##  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-##  brp.rescale <- rbind(brp.rescale, ts)
-##}
-
-allmelt <- rbind(themelt.nbh, new.rescale, elr.rescale, brp.rescale)
+allmelt <- rbind(themelt.elr, new.rescale, nbh.rescale, brp.rescale)
 allmelt$pop <- factor(allmelt$pop, levels = c("NBH", "BRP", "NEW", "ELR"))
 qtlmelt <- allmelt[which(allmelt$chr %in% c(1,2,5,8,10,12,13,18,19,23,24)),
   ]
@@ -212,7 +156,7 @@ qtl_pg <- c(2,8, 13, 18, 24)
 ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
 
 #### MAP BRP to NBH before simcross
-brp.remap <- cnv.premap(cross.nbh, cross.brp)
+#brp.remap <- cnv.premap(cross.nbh, cross.brp)
 ##save.image("/home/jmiller1/public_html/BRP_remap.Rsave")
 
 save.image('/home/jmiller1/public_html/QTL_plot.Rsave')

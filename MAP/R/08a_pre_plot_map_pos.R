@@ -92,6 +92,7 @@ pbs$V1 <- gsub('chr',"",pbs$V1)
 
 pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
 pfst <- read.table(pfst, sep = "\t", header = T)
+pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
 pfst$Scaffold <- gsub('chr',"",pfst$Scaffold)
 
 taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
@@ -164,8 +165,13 @@ scan.bin.imp.NEW <-  scanone(cross.new, method = "em", model = "binary", pheno.c
 scan.norm.imp.BRP <- scanone(cross.brp, method = "imp", model = "normal", pheno.col = 5)
 scan.bin.imp.BRP <-  scanone(cross.brp, method = "em", model = "binary", pheno.col = 4)
 ################################################
-
+### marker regression plots
+scan.bin.mr.NBH <-  scanone(cross.nbh, method = "mr", model = "binary", pheno.col = 4)
+scan.bin.mr.ELR <-  scanone(cross.elr, method = "mr", model = "binary", pheno.col = 4)
+scan.bin.mr.BRP <-  scanone(cross.brp, method = "mr", model = "binary", pheno.col = 4)
+scan.bin.mr.NEW <-  scanone(cross.new, method = "mr", model = "binary", pheno.col = 4)
 ################################################
+
 ### use scanone for plots
 themelt.nbh <- scan.bin.imp.NBH
 themelt.new <- scan.bin.imp.NEW
@@ -177,6 +183,120 @@ themelt.new$pop <- "NEW"
 themelt.elr$pop <- "ELR"
 themelt.brp$pop <- "BRP"
 
+themelt.brp.mr <- scan.bin.mr.BRP
+themelt.elr.mr <- scan.bin.mr.ELR
+themelt.nbh.mr <- scan.bin.mr.NBH
+themelt.new.mr <- scan.bin.mr.NEW
+
+themelt.brp.mr$pop <- 'BRP'
+themelt.elr.mr$pop <- 'ELR'
+themelt.nbh.mr$pop <- 'NBH'
+themelt.new.mr$pop <- 'NEW'
+
 save.image('08_phys_plots_pos.rsave')
 ################################################
 ################################################
+### FROM MAP MAPPING
+plot_stat <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
+
+  X <- Z[ind,'mid']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  plot(x_mx_mn, ymx_mn, type="n")
+  sapply(pops,plot_pnts,X,Y,poplot)
+
+}
+plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
+plot_stat_sep <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
+
+  X <- Z[ind,'mid']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
+
+  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
+
+  axis(side=1)
+
+}
+plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
+ plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
+ points(X, Y[[stat]], pch=20, col=poplot[stat])
+}
+
+### FROM PHYS MAPPING
+## FUNCTIONS
+plot_stat_sep <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
+
+  X <- Z[ind,'mid_midpo']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
+
+  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
+
+  axis(side=1)
+
+}
+plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
+ plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
+ points(X, Y[[stat]], pch=20, col=poplot[stat])
+}
+plot_stat <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
+
+  X <- Z[ind,'mid_midpo']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  plot(x_mx_mn, ymx_mn, type="n")
+  sapply(pops,plot_pnts,X,Y,poplot)
+
+}
+plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }

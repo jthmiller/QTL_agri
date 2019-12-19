@@ -8,7 +8,7 @@ errfile <- file.path(qtldir, "genotyping_error_rate.txt")
 dirso <- "/home/jmiller1/QTL_agri/data"
 
 ## Funtions for processing rQTL map data
-source(file.path(basedir, "rQTL/scripts/QTL_remap/MAP/source_file.R"))
+source(file.path(basedir, "source_file.R"))
 # source(file.path(basedir, 'rQTL/scripts/QTL_remap/QTL/model_source_file.R'))
 
 ## Libraries

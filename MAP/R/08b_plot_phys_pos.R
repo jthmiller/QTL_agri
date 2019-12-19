@@ -14,67 +14,6 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-##keeping colors consistent####################
-all.pops <- c("NBH", "BRP", "ELR", "NEW")
-popcol <- brewer.pal(8, "Paired")[c(2, 4, 6, 8)]
-names(popcol) <- all.pops
-
-popgen <- popcol
-names(popgen) <- c('NBH','BP','ER','NYC')
-
-popout <- c(popgen,'grey')
-names(popout) <- c('NBH','BP','ER','NYC','BI')
-
-### Color for stat comparisons
-statcol <- popcol
-names(statcol) <- c('BI.NBH','ER.KC','BP.F','NYC.SH')
-################################################
-
-pbs <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
-pbs <- read.table(pbs, sep = "\t", header = T)
-pbs$mid <- pbs$V2 + (abs(pbs$V3 - pbs$V2) * .5)
-pbs$V1 <- gsub('chr',"",pbs$V1)
-
-pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
-pfst <- read.table(pfst, sep = "\t", header = T)
-pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
-pfst$Scaffold <- gsub('chr',"",pfst$Scaffold)
-
-taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
-taj <- read.table(taj, sep = "\t", header = T)
-taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
-taj$Scaffold <- gsub('chr',"",taj$Scaffold)
-
-pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
-pi <- read.table(pi, sep = "\t", header = T)
-pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
-pi$Scaffold <- gsub('chr',"",pi$Scaffold)
-
-plot_stat <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
-
-  X <- Z[ind,'mid']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  plot(x_mx_mn, ymx_mn, type="n")
-  sapply(pops,plot_pnts,X,Y,poplot)
-
-}
-
-plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
-
-
 png("/home/jmiller1/public_html/pfst.png", width = 3000)
 plot_stat(pfst,ch=2,poplot=statcol)
 dev.off()
@@ -87,133 +26,25 @@ png("/home/jmiller1/public_html/taj.png", width = 3000)
 plot_stat(taj,ch=2,poplot=popout)
 dev.off()
 
-plot_stat_sep <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
-
-  X <- Z[ind,'mid']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
-
-  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
-
-  axis(side=1)
-
-}
-
-plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
- plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
- points(X, Y[[stat]], pch=20, col=poplot[stat])
-}
-
 png("/home/jmiller1/public_html/pfst.png", width = 1000)
 plot_stat_sep(pfst,ch=18,poplot=statcol)
 dev.off()
 
-
-
-#get_popgen <- function(X){
-# ind <- which.min(abs(popgen[which(popgen[,'V1'] == X[1] ),'mid'] - X[3]))
-# popgen[which(popgen[,'V1'] == X[1] ),][ind,]
-#}
-
-#### AHRs #####
-AHR.bed <- read.table("lift_AHR_genes.bed", stringsAsFactors = F, header = F)
-colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
-AHR.bed$chrom <- as.numeric(gsub("chr", "", AHR.bed$chrom))
-AHR.bed$str <- as.numeric(AHR.bed$str)
-AHR.bed$stp <- as.numeric(AHR.bed$stp)
-AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
-AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
-AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
-# add arnts (forgot to scan for them)
 ################################################
-
-## Phenotypes
-################################################
-cross.BRP <- read.cross(format = "csv", dir = mpath, file = 'brp.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-################################################
-
-
-
-################################################
-cor_nbh <- get_cor(cross.NBH)
-cor_elr <- get_cor(cross.ELR)
-cor_brp <- get_cor(cross.BRP)
-cor_new <- get_cor(cross.NEW)
-
-cross.BRP <- flip.order(cross.BRP, names(cor_brp)[which(cor_brp < 0)])
-cross.NBH <- flip.order(cross.NBH, names(cor_nbh)[which(cor_nbh < 0)])
-cross.NEW <- flip.order(cross.NEW, names(cor_new)[which(cor_new < 0)])
-cross.ELR <- flip.order(cross.ELR, names(cor_elr)[which(cor_elr < 0)])
-################################################
-
-################################################
-cross.nbh <- sim.geno(cross.NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-cross.brp <- sim.geno(cross.BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-################################################
-
-################################################
-cross.nbh <- reduce2grid(cross.nbh)
-cross.new <- reduce2grid(cross.new)
-cross.elr <- reduce2grid(cross.elr)
-cross.brp <- reduce2grid(cross.brp)
-################################################
-
-################################################
-scan.norm.imp.NBH <- scanone(cross.nbh, method = "imp", model = "normal", pheno.col = 5)
-scan.bin.imp.NBH <-  scanone(cross.nbh, method = "em", model = "binary", pheno.col = 4)
-scan.norm.imp.ELR <- scanone(cross.elr, method = "imp", model = "normal", pheno.col = 5)
-scan.bin.imp.ELR <-  scanone(cross.elr, method = "em", model = "binary", pheno.col = 4)
-scan.norm.imp.NEW <- scanone(cross.new, method = "imp", model = "normal", pheno.col = 5)
-scan.bin.imp.NEW <-  scanone(cross.new, method = "em", model = "binary", pheno.col = 4)
-scan.norm.imp.BRP <- scanone(cross.brp, method = "imp", model = "normal", pheno.col = 5)
-scan.bin.imp.BRP <-  scanone(cross.brp, method = "em", model = "binary", pheno.col = 4)
-################################################
-### marker regression plots
-scan.bin.mr.NBH <-  scanone(cross.nbh, method = "mr", model = "binary", pheno.col = 4)
-scan.bin.mr.ELR <-  scanone(cross.elr, method = "mr", model = "binary", pheno.col = 4)
-scan.bin.mr.BRP <-  scanone(cross.brp, method = "mr", model = "binary", pheno.col = 4)
-scan.bin.mr.NEW <-  scanone(cross.new, method = "mr", model = "binary", pheno.col = 4)
-################################################
-
-
-
-
-################################################
-### use scanone for plots
-themelt.nbh <- scan.bin.imp.NBH
-themelt.new <- scan.bin.imp.NEW
-themelt.elr <- scan.bin.imp.ELR
-themelt.brp <- scan.bin.imp.BRP
-
-themelt.nbh$pop <- "NBH"
-themelt.new$pop <- "NEW"
-themelt.elr$pop <- "ELR"
-themelt.brp$pop <- "BRP"
 
 load('08_phys_plots_pos.rsave')
 ################################################
+pfst <- pfst[which(pfst[,1] %in% c(1:24)),]
+colnames(pfst)[1] <- 'chr'
+
+pfst_conv <- conv_popstat(cross2=cross.nbh, popgen=pfst)
+pfst_conv$mid_midpo <- apply(pfst_conv[,c('pos1','pos2')],1,mean)
+
+
+
+
+
+
 
 ################################################
 ### get positions of genes
@@ -236,6 +67,8 @@ new.popgen <- read.table("outliersNYC.txt.ncbi.lifted", sep = "\t", header = T)
 elr.popgen <- read.table("outliersER.txt.ncbi.lifted", sep = "\t", header = T)
 brp.popgen <- read.table("outliersBP.txt.ncbi.lifted", sep = "\t", header = T)
 ################################################
+
+##TRY WITH ELR AND NBH COORDS
 
 ################################################
 ### Use nbh coords but elr and new popgen
@@ -261,21 +94,106 @@ ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
 
 ################################################
 ### GGriges plot
-melted.nbh <- data.frame(pop = "NBH", chr = scan.norm.imp.NBH$chr, pos = scan.norm.imp.NBH$pos,
-  lod = scan.norm.imp.NBH$lod)
-melted.new <- data.frame(pop = "NEW", chr = scan.norm.imp.NEW$chr, pos = scan.norm.imp.NEW$pos,
-  lod = scan.norm.imp.NEW$lod)
-melted.elr <- data.frame(pop = "ELR", chr = scan.norm.imp.ELR$chr, pos = scan.norm.imp.ELR$pos,
-  lod = scan.norm.imp.ELR$lod)
-melted.brp <- data.frame(pop = "BRP", chr = scan.norm.imp.BRP$chr, pos = scan.norm.imp.BRP$pos,
-  lod = scan.norm.imp.BRP$lod)
+scan_NBH <- scan.norm.imp.NBH
+scan_NBH <- scan.norm.imp.NBH
+scan_NBH <- scan.norm.imp.NBH
+scan_NBH <- scan.norm.imp.NBH
 
+scan_NBH <- scan.bin.mr.NBH
+scan_ELR <- scan.bin.mr.ELR
+scan_NEW <- scan.bin.mr.NEW
+scan_BRP <- scan.bin.mr.BRP
+
+melted.nbh <- data.frame(pop = "NBH", chr = scan_NBH$chr, pos = scan_NBH$pos,
+  lod = scan_NBH$lod)
+melted.new <- data.frame(pop = "NEW", chr = scan_NEW$chr, pos = scan_NEW$pos,
+  lod = scan_NEW$lod)
+melted.elr <- data.frame(pop = "ELR", chr = scan_ELR$chr, pos = scan_ELR$pos,
+  lod = scan_ELR$lod)
+melted.brp <- data.frame(pop = "BRP", chr = scan_BRP$chr, pos = scan_BRP$pos,
+  lod = scan_BRP$lod)
+
+
+nbh.pos <- data.frame(pop = "NBH", chr = scan_NBH$chr, pos = rownames(scan_NBH), lod = scan_NBH$lod)
+elr.pos <- data.frame(pop = "ELR", chr = scan_ELR$chr, pos = rownames(scan_ELR), lod = scan_ELR$lod)
+new.pos <- data.frame(pop = "NEW", chr = scan_NEW$chr, pos = rownames(scan_NEW), lod = scan_NEW$lod)
+brp.pos <- data.frame(pop = "BRP", chr = scan_BRP$chr, pos = rownames(scan_BRP), lod = scan_BRP$lod)
+
+nbh.pos$pos <- as.numeric(gsub("*.:","",nbh.pos$pos))
+elr.pos$pos <- as.numeric(gsub("*.:","",elr.pos$pos))
+new.pos$pos <- as.numeric(gsub("*.:","",new.pos$pos))
+brp.pos$pos <- as.numeric(gsub("*.:","",brp.pos$pos))
+
+maxmin <- function(ch){
+ a <- rbind(nbh.pos,elr.pos,new.pos,brp.pos)
+ max(a[which(a$chr == ch),'pos'],na.rm=T)
+}
+
+ydir <- function(data,chr){
+ data[which(data$chr == chr),'lod']
+}
+
+xdir <- function(data,chr){
+ data[which(data$chr == chr),'pos']
+}
+
+
+
+
+
+
+plot_R_stat <- function(ch){
+
+ X <- c(0,maxmin(ch))
+ Y <- c(0,20)
+ plot(X,Y, type="n")
+ points(xdir(nbh.pos,ch), ydir(nbh.pos,ch), pch=20, col=popcol['NBH'])
+ points(xdir(elr.pos,ch), ydir(elr.pos,ch), pch=20, col=popcol['ELR'])
+ points(xdir(new.pos,ch), ydir(new.pos,ch), pch=20, col=popcol['NEW'])
+ points(xdir(brp.pos,ch), ydir(brp.pos,ch), pch=20, col=popcol['BRP'])
+
+}
+
+png("/home/jmiller1/public_html/log_mr.png", width = 1000)
+plot_R_stat(ch=18)
+dev.off()
+
+
+#### base R ##########
+plot_R_stat <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
+
+  X <- Z[ind,'mid']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  plot(x_mx_mn, ymx_mn, type="n")
+  sapply(pops,plot_pnts,X,Y,poplot)
+
+}
+
+
+
+
+
+
+##### ggplot ########
 melted <- rbind(melted.nbh, melted.new, melted.elr, melted.brp)
 melted$pop <- factor(melted$pop, levels = rev(c("NBH", "BRP", "NEW", "ELR")))
 
 ## Total CM length of NBH. Rescale to NBH
 mxes <- sapply(1:24, function(X) {
-  max(themelt.nbh$pos[which(themelt.nbh$chr == X)])
+  max(themelt.nbh.mr$pos[which(themelt.nbh.mr$chr == X)])
 })
 
 melso <- function(tomelt){
@@ -290,23 +208,11 @@ melso <- function(tomelt){
  the_rescale
 }
 
-themelt.brp.mr <- scan.bin.mr.BRP
-themelt.brp.mr$pop <- 'BRP'
-
-themelt.elr.mr <- scan.bin.mr.ELR
-themelt.elr.mr$pop <- 'ELR'
-
-themelt.nbh.mr <- scan.bin.mr.NBH
-themelt.nbh.mr$pop <- 'NBH'
-
-themelt.new.mr <- scan.bin.mr.NEW
-themelt.new.mr$pop <- 'NEW'
-
 
 elr.rescale.mr <- melso(themelt.elr.mr)
 brp.rescale.mr <- melso(themelt.brp.mr)
-nbh.rescale.mr <- melso(themelt.nbh.mr)
 new.rescale.mr <- melso(themelt.new.mr)
+
 new.rescale <- melso(themelt.new)
 brp.rescale <- melso(themelt.brp)
 elr.rescale <- melso(themelt.elr)
@@ -338,7 +244,7 @@ elr.rescale <- melso(themelt.elr)
 ##  brp.rescale <- rbind(brp.rescale, ts)
 ##}
 
-allmelt <- rbind(themelt.nbh, new.rescale, elr.rescale, brp.rescale)
+allmelt <- rbind(themelt.nbh.mr, new.rescale.mr, elr.rescale.mr, brp.rescale.mr)
 allmelt$pop <- factor(allmelt$pop, levels = c("NBH", "BRP", "NEW", "ELR"))
 qtlmelt <- allmelt[which(allmelt$chr %in% c(1,2,5,8,10,12,13,18,19,23,24)),
   ]
@@ -348,15 +254,9 @@ incompat <- allmelt[which(allmelt$chr %in% c(8,13)), ]
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
 
-#### MAP BRP to NBH before simcross
-brp.remap <- cnv.premap(cross.nbh, cross.brp)
-##save.image("/home/jmiller1/public_html/BRP_remap.Rsave")
-
-save.image('/home/jmiller1/public_html/QTL_plot.Rsave')
-################################################
 
 ################################################
-p <- ggplot(themelt.nbh, aes(x = pos, y = lod))
+p <- ggplot(themelt.nbh.mr, aes(x = pos, y = lod))
 png("/home/jmiller1/public_html/all_popgen_rank_scaled.qtl.png", width = 3000)
 p + facet_wrap(~chr, scales = "free_x", nrow = 1, ncol = 24) + scale_y_continuous(limits = c(-12,
   23)) + geom_line(size = 2, alpha = 0.6) + theme_minimal() + theme(axis.text = element_text(size = 10)) +
