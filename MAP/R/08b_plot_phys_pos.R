@@ -212,7 +212,7 @@ themelt.new$pop <- "NEW"
 themelt.elr$pop <- "ELR"
 themelt.brp$pop <- "BRP"
 
-save.image('08_phys_plots_pos.rsave')
+load('08_phys_plots_pos.rsave')
 ################################################
 
 ################################################
@@ -290,11 +290,26 @@ melso <- function(tomelt){
  the_rescale
 }
 
+themelt.brp.mr <- scan.bin.mr.BRP
+themelt.brp.mr$pop <- 'BRP'
+
+themelt.elr.mr <- scan.bin.mr.ELR
+themelt.elr.mr$pop <- 'ELR'
+
+themelt.nbh.mr <- scan.bin.mr.NBH
+themelt.nbh.mr$pop <- 'NBH'
+
+themelt.new.mr <- scan.bin.mr.NEW
+themelt.new.mr$pop <- 'NEW'
+
+
+elr.rescale.mr <- melso(themelt.elr.mr)
+brp.rescale.mr <- melso(themelt.brp.mr)
+nbh.rescale.mr <- melso(themelt.nbh.mr)
+new.rescale.mr <- melso(themelt.new.mr)
 new.rescale <- melso(themelt.new)
 brp.rescale <- melso(themelt.brp)
 elr.rescale <- melso(themelt.elr)
-
-
 
 ##ts <- themelt.new[which(themelt.new$chr == 1), ]
 ##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
