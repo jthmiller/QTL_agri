@@ -1338,6 +1338,17 @@ conv_popstat <- function(cross2, popgen) {
   fraps <- ldply(pop.list, data.frame, .id = NULL)
   return(fraps)
 }
+################################################
+get_cor <- function(Z){
+ mp <- pull.map(Z)
+ pos <- lapply(mp,chr_names_pos)
+ mapply(cor,mp,pos)
+}
+chr_names_pos <- function(X){
+ b <- as.numeric(gsub("*.:",'',names(X)))
+ ifelse(is.na(b),0,b)
+}
+################################################
 
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')

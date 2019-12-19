@@ -50,8 +50,6 @@ pi <- read.table(pi, sep = "\t", header = T)
 pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
 pi$Scaffold <- gsub('chr',"",pi$Scaffold)
 
-   min(as.matrix(Z[ind,pops]),na.rm=T),
-
 plot_stat <- function(Z,ch,poplot){
 
   ind <- which(Z[,1] == ch)
@@ -150,17 +148,7 @@ cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv'
 cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 ################################################
 
-################################################
-get_cor <- function(Z){
- mp <- pull.map(Z)
- pos <- lapply(mp,chr_names_pos)
- mapply(cor,mp,pos)
-}
-chr_names_pos <- function(X){
- b <- as.numeric(gsub("*.:",'',names(X)))
- ifelse(is.na(b),0,b)
-}
-################################################
+
 
 ################################################
 cor_nbh <- get_cor(cross.NBH)
@@ -202,6 +190,15 @@ scan.bin.imp.NEW <-  scanone(cross.new, method = "em", model = "binary", pheno.c
 scan.norm.imp.BRP <- scanone(cross.brp, method = "imp", model = "normal", pheno.col = 5)
 scan.bin.imp.BRP <-  scanone(cross.brp, method = "em", model = "binary", pheno.col = 4)
 ################################################
+### marker regression plots
+scan.bin.mr.NBH <-  scanone(cross.nbh, method = "mr", model = "binary", pheno.col = 4)
+scan.bin.mr.ELR <-  scanone(cross.elr, method = "mr", model = "binary", pheno.col = 4)
+scan.bin.mr.BRP <-  scanone(cross.brp, method = "mr", model = "binary", pheno.col = 4)
+scan.bin.mr.NEW <-  scanone(cross.new, method = "mr", model = "binary", pheno.col = 4)
+################################################
+
+
+
 
 ################################################
 ### use scanone for plots
