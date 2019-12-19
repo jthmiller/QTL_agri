@@ -7,9 +7,41 @@ library("plyr")
 library("scales")
 library("ggrepel")
 library('qtl')
+library('RColorBrewer')
 
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
+
+##keeping colors consistent####################
+all.pops <- c("NBH", "BRP", "ELR", "NEW")
+popcol <- brewer.pal(8, "Paired")[c(2, 4, 6, 8)]
+names(popcol) <- all.pops
+################################################
+
+pbs <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
+pbs <- read.table(pbs, sep = "\t", header = T)
+pbs$mid <- pbs$V2 + (abs(pbs$V3 - pbs$V2) * .5)
+pbs$V1 <- gsub('chr',"",pbs$V1)
+
+pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
+pfst <- read.table(pfst, sep = "\t", header = T)
+pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
+pfst$Scaffold <- gsub('chr',"",pfst$Scaffold)
+
+taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
+taj <- read.table(taj, sep = "\t", header = T)
+taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
+taj$Scaffold <- gsub('chr',"",taj$Scaffold)
+
+pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
+pi <- read.table(pi, sep = "\t", header = T)
+pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
+pi$Scaffold <- gsub('chr',"",pi$Scaffold)
+
+#get_popgen <- function(X){
+# ind <- which.min(abs(popgen[which(popgen[,'V1'] == X[1] ),'mid'] - X[3]))
+# popgen[which(popgen[,'V1'] == X[1] ),][ind,]
+#}
 
 #### AHRs #####
 AHR.bed <- read.table("lift_AHR_genes.bed", stringsAsFactors = F, header = F)
@@ -21,15 +53,41 @@ AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
 AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
 AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 # add arnts (forgot to scan for them)
+################################################
 
 ## Phenotypes
-##############
+################################################
 cross.BRP <- read.cross(format = "csv", dir = mpath, file = 'brp.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 cross.ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+################################################
 
+################################################
+get_cor <- function(Z){
+ mp <- pull.map(Z)
+ pos <- lapply(mp,chr_names_pos)
+ mapply(cor,mp,pos)
+}
+chr_names_pos <- function(X){
+ b <- as.numeric(gsub("*.:",'',names(X)))
+ ifelse(is.na(b),0,b)
+}
+################################################
 
+################################################
+cor_nbh <- get_cor(cross.NBH)
+cor_elr <- get_cor(cross.ELR)
+cor_brp <- get_cor(cross.BRP)
+cor_new <- get_cor(cross.NEW)
+
+cross.BRP <- flip.order(cross.BRP, names(cor_brp)[which(cor_brp < 0)])
+cross.NBH <- flip.order(cross.NBH, names(cor_nbh)[which(cor_nbh < 0)])
+cross.NEW <- flip.order(cross.NEW, names(cor_new)[which(cor_new < 0)])
+cross.ELR <- flip.order(cross.ELR, names(cor_elr)[which(cor_elr < 0)])
+################################################
+
+################################################
 cross.nbh <- sim.geno(cross.NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
 cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
@@ -38,12 +96,16 @@ cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.pr
   map.function = "kosambi", stepwidth = "fixed")
 cross.brp <- sim.geno(cross.BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
+################################################
 
+################################################
 cross.nbh <- reduce2grid(cross.nbh)
 cross.new <- reduce2grid(cross.new)
 cross.elr <- reduce2grid(cross.elr)
 cross.brp <- reduce2grid(cross.brp)
+################################################
 
+################################################
 scan.norm.imp.NBH <- scanone(cross.nbh, method = "imp", model = "normal", pheno.col = 5)
 scan.bin.imp.NBH <-  scanone(cross.nbh, method = "em", model = "binary", pheno.col = 4)
 scan.norm.imp.ELR <- scanone(cross.elr, method = "imp", model = "normal", pheno.col = 5)
@@ -52,12 +114,14 @@ scan.norm.imp.NEW <- scanone(cross.new, method = "imp", model = "normal", pheno.
 scan.bin.imp.NEW <-  scanone(cross.new, method = "em", model = "binary", pheno.col = 4)
 scan.norm.imp.BRP <- scanone(cross.brp, method = "imp", model = "normal", pheno.col = 5)
 scan.bin.imp.BRP <-  scanone(cross.brp, method = "em", model = "binary", pheno.col = 4)
+################################################
 
+################################################
 ### use scanone for plots
-themelt.nbh <- scan.norm.imp.NBH
-themelt.new <- scan.norm.imp.NEW
-themelt.elr <- scan.norm.imp.ELR
-themelt.brp <- scan.norm.imp.BRP
+themelt.nbh <- scan.bin.imp.NBH
+themelt.new <- scan.bin.imp.NEW
+themelt.elr <- scan.bin.imp.ELR
+themelt.brp <- scan.bin.imp.BRP
 
 themelt.nbh$pop <- "NBH"
 themelt.new$pop <- "NEW"
@@ -65,29 +129,37 @@ themelt.elr$pop <- "ELR"
 themelt.brp$pop <- "BRP"
 
 save.image('08_phys_plots_pos.rsave')
+################################################
 
-### ggplot format AHR genes
-nbh.gens <- cnv.ahrs(cross2 = cross.nbh, AHRdf = AHR.bed, EXP = F)
+################################################
+### get positions of genes
+nbh.gens <- cnv.ahrs(cross.nbh, AHRdf = AHR.bed, EXP = F)
 new.gens <- cnv.ahrs(cross.new, AHRdf = AHR.bed, EXP = F)
 elr.gens <- cnv.ahrs(cross.elr, AHRdf = AHR.bed, EXP = F)
 brp.gens <- cnv.ahrs(cross.brp, AHRdf = AHR.bed, EXP = F)
+
 qtl.gens <- nbh.gens[which(nbh.gens$chr %in% c(1, 2, 5, 8, 10, 12, 13, 18, 24)),]
 minor.gens <- nbh.gens[which(nbh.gens$chr %in% c(8, 13, 23, 24)), ]
 incompat.gens <- nbh.gens[which(nbh.gens$chr %in% c(8, 13)), ]
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.gens <- nbh.gens[which(nbh.gens$chr %in% qtl_pg), ]
+################################################
 
+################################################
 ### ggplot popgen locations
 nbh.popgen <- read.table("outliersNBH.txt.ncbi.lifted", sep = "\t", header = T)
 new.popgen <- read.table("outliersNYC.txt.ncbi.lifted", sep = "\t", header = T)
 elr.popgen <- read.table("outliersER.txt.ncbi.lifted", sep = "\t", header = T)
 brp.popgen <- read.table("outliersBP.txt.ncbi.lifted", sep = "\t", header = T)
+################################################
 
+################################################
 ### Use nbh coords but elr and new popgen
 new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
 nbh.rank <- cnv.popgen(cross.nbh, nbh.popgen, top = 50)
 elr.rank <- cnv.popgen(cross.nbh, elr.popgen, top = 50)
 brp.rank <- cnv.popgen(cross.nbh, brp.popgen, top = 50)
+
 nbh.rank$pop <- "NBH"
 new.rank$pop <- "NEW"
 elr.rank$pop <- "ELR"
@@ -95,14 +167,15 @@ brp.rank$pop <- "BRP"
 
 all.rank <- rbind(new.rank, nbh.rank, elr.rank, brp.rank)
 all.rank$pop <- factor(all.rank$pop, levels = c("NBH", "BRP", "NEW", "ELR"))
-qtl.rank <- all.rank[which(all.rank$chr %in% c(1, 2, 5, 8, 10, 12, 13, 18, 23, 24)),
-  ]
+qtl.rank <- all.rank[which(all.rank$chr %in% c(1,2,5,8,10,12,13,18,23,24)),]
 minor.rank <- all.rank[which(all.rank$chr %in% c(8, 13, 23, 24)), ]
 incompat.rank <- all.rank[which(all.rank$chr %in% c(8, 13)), ]
 
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
+################################################
 
+################################################
 ### GGriges plot
 melted.nbh <- data.frame(pop = "NBH", chr = scan.norm.imp.NBH$chr, pos = scan.norm.imp.NBH$pos,
   lod = scan.norm.imp.NBH$lod)
@@ -121,55 +194,69 @@ mxes <- sapply(1:24, function(X) {
   max(themelt.nbh$pos[which(themelt.nbh$chr == X)])
 })
 
-ts <- themelt.new[which(themelt.new$chr == 1), ]
-ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
-new.rescale <- ts
-for (i in 2:24) {
-  ts <- themelt.new[which(themelt.new$chr == i), ]
-  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-  new.rescale <- rbind(new.rescale, ts)
+melso <- function(tomelt){
+ ts <- tomelt[which(tomelt$chr == 1), ]
+ ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
+ the_rescale <- ts
+ for (i in 2:24) {
+   ts <- tomelt[which(tomelt$chr == i), ]
+   ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
+   the_rescale <- rbind(the_rescale, ts)
+  }
+ the_rescale
 }
 
-ts <- themelt.elr[which(themelt.elr$chr == 1), ]
-ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
-elr.rescale <- ts
-for (i in 2:24) {
-  ts <- themelt.elr[which(themelt.elr$chr == i), ]
-  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-  elr.rescale <- rbind(elr.rescale, ts)
-}
+new.rescale <- melso(themelt.new)
+brp.rescale <- melso(themelt.brp)
+elr.rescale <- melso(themelt.elr)
 
-ts <- themelt.brp[which(themelt.brp$chr == 1), ]
-ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
-brp.rescale <- ts
-for (i in 2:24) {
-  ts <- themelt.brp[which(themelt.brp$chr == i), ]
-  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-  brp.rescale <- rbind(brp.rescale, ts)
-}
+
+
+##ts <- themelt.new[which(themelt.new$chr == 1), ]
+##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
+##new.rescale <- ts
+##for (i in 2:24) {
+##  ts <- themelt.new[which(themelt.new$chr == i), ]
+##  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
+##  new.rescale <- rbind(new.rescale, ts)
+##}
+
+##ts <- themelt.elr[which(themelt.elr$chr == 1), ]
+##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
+##elr.rescale <- ts
+##for (i in 2:24) {
+##  ts <- themelt.elr[which(themelt.elr$chr == i), ]
+##  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
+##  elr.rescale <- rbind(elr.rescale, ts)
+##}
+##
+##ts <- themelt.brp[which(themelt.brp$chr == 1), ]
+##ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
+##brp.rescale <- ts
+##for (i in 2:24) {
+##  ts <- themelt.brp[which(themelt.brp$chr == i), ]
+##  ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
+##  brp.rescale <- rbind(brp.rescale, ts)
+##}
 
 allmelt <- rbind(themelt.nbh, new.rescale, elr.rescale, brp.rescale)
 allmelt$pop <- factor(allmelt$pop, levels = c("NBH", "BRP", "NEW", "ELR"))
-qtlmelt <- allmelt[which(allmelt$chr %in% c(1, 2, 5, 8, 10, 12, 13, 18,19, 23, 24)),
+qtlmelt <- allmelt[which(allmelt$chr %in% c(1,2,5,8,10,12,13,18,19,23,24)),
   ]
-qtlminor <- allmelt[which(allmelt$chr %in% c(8, 13,19, 23, 24)), ]
-incompat <- allmelt[which(allmelt$chr %in% c(8, 13)), ]
+qtlminor <- allmelt[which(allmelt$chr %in% c(8,13,19,23,24)), ]
+incompat <- allmelt[which(allmelt$chr %in% c(8,13)), ]
 
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
 
-#### Subest for only qtl plots qtl.rank <- nbh.rank[which(nbh.rank$chr %in%
-#### c(1,2,5,8,10,12,13,18,24)),]
-
-
 #### MAP BRP to NBH before simcross
-brp.remap <- cnv.premap(cross.nbh, cross.BRP)
+brp.remap <- cnv.premap(cross.nbh, cross.brp)
 ##save.image("/home/jmiller1/public_html/BRP_remap.Rsave")
 
-
 save.image('/home/jmiller1/public_html/QTL_plot.Rsave')
+################################################
 
-
+################################################
 p <- ggplot(themelt.nbh, aes(x = pos, y = lod))
 png("/home/jmiller1/public_html/all_popgen_rank_scaled.qtl.png", width = 3000)
 p + facet_wrap(~chr, scales = "free_x", nrow = 1, ncol = 24) + scale_y_continuous(limits = c(-12,
