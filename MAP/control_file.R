@@ -1,11 +1,11 @@
 ## Directories
-basedir <- "/home/jmiller1/QTL_Map_Raw/popgen"
+basedir <- "/home/jmiller1/QTL_agri/"
 plotdir <- file.path(basedir, "rQTL/plots")
 indpops <- file.path(basedir, "plinkfiles/ind.pops")
 popdir <- file.path(basedir, "rQTL", pop, "REMAPS")
 qtldir <- file.path(basedir, "rQTL/remap_out")
 errfile <- file.path(qtldir, "genotyping_error_rate.txt")
-dirso <- "/home/jmiller1/QTL_Map_Raw/popgen/rQTL/data/"
+dirso <- "/home/jmiller1/QTL_agri/data"
 
 ## Funtions for processing rQTL map data
 source(file.path(basedir, "rQTL/scripts/QTL_remap/MAP/source_file.R"))
