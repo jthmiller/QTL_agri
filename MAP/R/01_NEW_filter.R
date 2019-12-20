@@ -37,10 +37,6 @@ DROP <- intersect(DROP1,DROP2)
 cross <- drop.markers(cross,DROP)
 ################################################################################
 
-DROP1 <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
-DROP2 <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911F",]
-
-which(
 
 ### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
 bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
