@@ -11,7 +11,6 @@ fl <- file.path(mpath,fl)
 
 ################################################################################
 ## SCANTWO ON SUBSET (this map made in tspmap.R
-
 cross <- read.cross(
  file = fl,
  format = "csv", genotypes=c("1","2","3"),
@@ -44,13 +43,13 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
-sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodcolumn=1)
 
-save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
+sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodcolumn=1)
 
 full.norm.add_only_pen <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, penalties=sc2_normal_imp_penalties)
 
-################################################################################
+
+save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
 
 sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
              method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
@@ -72,9 +71,9 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
 
 sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
 
-save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
+full.bin.add_only_pen <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, penalties=sc2_bin_em_penalties)
 
-full.bin.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=4, penalties=sc2_bin_em_penalties )
+save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
 
 ################################################################################
 ## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),

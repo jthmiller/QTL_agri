@@ -10,7 +10,6 @@ fl <- file.path(mpath,fl)
 
 ################################################################################
 ## SCANTWO ON SUBSET
-
 cross <- read.cross(
  file = fl,
  format = "csv", genotypes=c("1","2","3"),
@@ -43,7 +42,19 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
+## > summary(sc2_normal_imp_perms)
+## pheno_norm (1008 permutations)
+##     full  fv1  int  add  av1  one
+## 5%  9.86 7.72 6.78 6.98 3.49 3.97
+## 10% 9.30 7.31 6.41 6.57 3.26 3.59
+
 sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodcolumn=1)
+
+full.norm.add_only_pen <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, penalties=sc2_normal_imp_penalties)
+
+##> summary(sc2_normal_imp_penalties)
+##   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+##  3.592   3.656   3.720   4.573   5.063   6.407
 
 save.image(file.path(mpath,'scantwo.scans.new.rsave'))
 
@@ -67,9 +78,7 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
 
 sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
 
-## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),
-##             perms=sc2_normal_imp_perms, alphas, lodcolumn=1,
-##             pvalues=FALSE, allpairs=TRUE)
+full.bin.add_only_pen <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, penalties=sc2_bin_em_penalties)
 
 save.image(file.path(mpath,'scantwo.scans.new.rsave'))
 
