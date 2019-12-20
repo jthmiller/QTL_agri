@@ -48,6 +48,10 @@ sc2_normal_imp_penalties <- calc.penalties(sc2_normal_imp_perms, alpha=0.1, lodc
 
 save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
 
+full.norm.add_only_pen <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, penalties=sc2_normal_imp_penalties)
+
+################################################################################
+
 sc2_bin_em <- scantwo(gg_step2, pheno.col=4, model="binary",
              method="em",addcovar=NULL, intcovar=NULL, weights=NULL,
              use="complete.obs",
@@ -68,15 +72,15 @@ sc2_bin_em_perms <- scantwo(gg_step2, pheno.col=4, model="binary",
 
 sc2_bin_em_penalties <- calc.penalties(sc2_bin_em_perms, alpha=0.1, lodcolumn=1)
 
+save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
+
+full.bin.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=4, penalties=sc2_bin_em_penalties )
+
+################################################################################
 ## sm <- summary(object, thresholds,what=c("best", "full", "add", "int"),
 ##             perms=sc2_normal_imp_perms, alphas, lodcolumn=1,
 ##             pvalues=FALSE, allpairs=TRUE)
 
-save.image(file.path(mpath,'scantwo.scans.elr.rsave'))
-
-
-################################################################################
-full.bin.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=4)
 add.norm <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=6)
 full.norm <- stepwiseqtl(gg_step2, incl.markers=F, scan.pairs=T, keeptrace=T, additive.only = F, model='normal', method = "imp", pheno.col = 5, max.qtl=6)
 
