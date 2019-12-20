@@ -38,14 +38,22 @@ cross <- drop.markers(cross,DROP)
 ################################################################################
 
 ### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
-bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
-bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
-bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911F",]
-bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
-bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
-
-cross <- switchAlleles(cross, markers = bfix_swit12)
+#bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
+#bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
+#bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911F",]
+#bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
+#bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
+#
+#cross <- switchAlleles(cross, markers = bfix_swit12)
 ################################################################################
+
+ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
+cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
+ maxit = 1, tol = 0.1, sex.sp = F)
+
+cross <- calc.errorlod(cross, err=0.05)
+ca <- checkAlleles(cross,threshold=2)
+cross <- switchAlleles(cross,ca$marker)
 
 ################################################################################
 ### Get highly likely AB x AB markers ##########################################
@@ -100,7 +108,6 @@ for(Z in 1:24){
  subs <- markernames(reorg.2, chr=1)
  drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
  cross <<- switchAlleles(cross, swits)
- cross.par <<- switchAlleles(cross.par, swits)
  cross <<- drop.markers(cross, drops)
 }
 

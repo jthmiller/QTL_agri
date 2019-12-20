@@ -27,17 +27,21 @@ ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))
 cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
  maxit = 1, tol = 0.1, sex.sp = F)
 
+cross <- calc.errorlod(cross, err=0.05)
+ca <- checkAlleles(cross,threshold=2)
+cross <- switchAlleles(cross,ca$marker)
+
 png(paste0('~/public_html/NEW_gts_preclean',i,'.png'),height=2500,width=4500)
  plotGeno(cross, chr=i, cex=2)
 dev.off()
 
 ################################################################################
-cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
+#cross2 <- cleanGeno_jm(cross, chr=i, maxdist=5, maxmark=4, verbose=TRUE)
 cross <- calc.errorlod(cross, err=0.05)
 cross <- removeDoubleXO(cross, chr=i)
 cross <- calc.errorlod(cross, err=0.05)
-cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
-cross <- calc.errorlod(cross, err=0.05)
+#cross <- cleanGeno_jm_2(cross, chr=i, maxdist=5, maxmark=4, verbose=TRUE)
+#cross <- calc.errorlod(cross, err=0.05)
 ################################################################################
 
 ################################################################################
