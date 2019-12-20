@@ -37,14 +37,19 @@ DROP <- intersect(DROP1,DROP2)
 cross <- drop.markers(cross,DROP)
 ################################################################################
 
+DROP1 <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
+DROP2 <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911F",]
+
+which(
+
 ### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
-#bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
-#bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
-#bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911F",]
-#bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
-#bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
-#
-#cross <- switchAlleles(cross, markers = bfix_swit12)
+bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911M",]
+bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
+bfix <- pull.geno(cross)[cross$pheno$ID=="NEW_NEW911F",]
+bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
+bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
+
+cross <- switchAlleles(cross, markers = bfix_swit12)
 ################################################################################
 
 ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
@@ -92,7 +97,7 @@ png(paste0('~/public_html/NEW_pval.png'))
  hist(-log10(gt$P.value),breaks=30)
 dev.off()
 
-bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
+bfixA <- rownames(gt[which(gt$P.value > 0.001 & gt$missing < 5),])
 ################################################################################
 
 ###### FILTER #######################################################
