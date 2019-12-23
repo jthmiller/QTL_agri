@@ -1346,8 +1346,126 @@ chr_names_pos <- function(X){
  ifelse(is.na(b),0,b)
 }
 ################################################
+get_mxes <- function(X,Y) {
+  max(Y$pos[which(Y$chr == X)])
+}
 
+melso <- function(tomelt){
+ ts <- tomelt[which(tomelt$chr == 1), ]
+ ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
+ the_rescale <- ts
+ for (i in 2:24) {
+   ts <- tomelt[which(tomelt$chr == i), ]
+   ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
+   the_rescale <- rbind(the_rescale, ts)
+  }
+ the_rescale
+}
+################################################
+plot_stat <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
+
+  X <- Z[ind,'mid']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  plot(x_mx_mn, ymx_mn, type="n")
+  sapply(pops,plot_pnts,X,Y,poplot)
+
+}
+plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
+plot_stat_sep <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
+
+  X <- Z[ind,'mid']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
+
+  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
+
+  axis(side=1)
+
+}
+plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
+ plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
+ points(X, Y[[stat]], pch=20, col=poplot[stat])
+}
+
+### FROM PHYS MAPPING
+plot_stat_sep <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
+
+  X <- Z[ind,'mid_midpo']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
+
+  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
+
+  axis(side=1)
+
+}
+plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
+ plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
+ points(X, Y[[stat]], pch=20, col=poplot[stat])
+}
+plot_stat <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
+
+  X <- Z[ind,'mid_midpo']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  plot(x_mx_mn, ymx_mn, type="n")
+  sapply(pops,plot_pnts,X,Y,poplot)
+
+}
+plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
+################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
-environment(parallel.droponemarker) <- asNamespace('qtl')
+##environment(parallel.droponemarker) <- asNamespace('qtl')
 assignInNamespace

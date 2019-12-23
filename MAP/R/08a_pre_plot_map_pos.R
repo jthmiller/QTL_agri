@@ -89,21 +89,34 @@ pbs <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
 pbs <- read.table(pbs, sep = "\t", header = T)
 pbs$mid <- pbs$V2 + (abs(pbs$V3 - pbs$V2) * .5)
 pbs$V1 <- gsub('chr',"",pbs$V1)
+colnames(pbs)[1:3] <- c('chr','start','end')
+pbs_conv <- conv_popstat(cross.nbh,popgen=pbs)
+pbs_conv$mid_midpo <- apply(pbs_conv[,c('pos1','pos2')],1,mean)
 
 pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
 pfst <- read.table(pfst, sep = "\t", header = T)
 pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
 pfst$Scaffold <- gsub('chr',"",pfst$Scaffold)
+colnames(pfst)[1] <- 'chr'
+pfst_conv <- conv_popstat(cross.nbh,popgen=pfst)
+pfst_conv$mid_midpo <- apply(pfst_conv[,c('pos1','pos2')],1,mean)
 
 taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
 taj <- read.table(taj, sep = "\t", header = T)
 taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
 taj$Scaffold <- gsub('chr',"",taj$Scaffold)
+colnames(taj)[1] <- 'chr'
+taj_conv <- conv_popstat(cross.nbh,popgen=taj)
+taj_conv$mid_midpo <- apply(taj_conv[,c('pos1','pos2')],1,mean)
 
 pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
 pi <- read.table(pi, sep = "\t", header = T)
 pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
 pi$Scaffold <- gsub('chr',"",pi$Scaffold)
+colnames(taj)[1] <- 'chr'
+taj_conv <- conv_popstat(cross.nbh,popgen=taj)
+taj_conv$mid_midpo <- apply(taj_conv[,c('pos1','pos2')],1,mean)
+
 
 #### AHRs #####
 AHR.bed <- read.table("lift_AHR_genes.bed", stringsAsFactors = F, header = F)
@@ -197,106 +210,3 @@ save.image('08_phys_plots_pos.rsave')
 ################################################
 ################################################
 ### FROM MAP MAPPING
-plot_stat <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
-
-  X <- Z[ind,'mid']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  plot(x_mx_mn, ymx_mn, type="n")
-  sapply(pops,plot_pnts,X,Y,poplot)
-
-}
-plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
-plot_stat_sep <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid'],na.rm=T),max(Z[ind,'mid'],na.rm=T))
-
-  X <- Z[ind,'mid']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
-
-  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
-
-  axis(side=1)
-
-}
-plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
- plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
- points(X, Y[[stat]], pch=20, col=poplot[stat])
-}
-
-### FROM PHYS MAPPING
-## FUNCTIONS
-plot_stat_sep <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
-
-  X <- Z[ind,'mid_midpo']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
-
-  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
-
-  axis(side=1)
-
-}
-plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
- plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
- points(X, Y[[stat]], pch=20, col=poplot[stat])
-}
-plot_stat <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
-
-  X <- Z[ind,'mid_midpo']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  plot(x_mx_mn, ymx_mn, type="n")
-  sapply(pops,plot_pnts,X,Y,poplot)
-
-}
-plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }

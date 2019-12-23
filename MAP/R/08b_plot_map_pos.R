@@ -1,5 +1,6 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
+### plot with ER and NBH only
 
 pop <- 'ELR'
 
@@ -16,13 +17,16 @@ setwd(mpath)
 
 load('08_phys_plots_pos.rsave')
 
-### Get position of pop gen stats
-pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
-pfst_conv <- conv_popstat(cross.nbh,popgen=pfst)
-pfst_conv$mid_midpo <- apply(pfst_conv[,c('pos1','pos2')],1,mean)
+png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
+plot_stat_sep(pfst,ch=18,poplot=statcol)
+dev.off()
 
-png("/home/jmiller1/public_html/pfst.png", width = 3000)
-plot_stat(pfst,ch=2,poplot=statcol)
+png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
+plot_stat_sep(pfst,ch=18,poplot=statcol)
+dev.off()
+
+png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
+plot_stat_sep(pfst,ch=18,poplot=statcol)
 dev.off()
 
 png("/home/jmiller1/public_html/pbs.png", width = 3000)
@@ -120,23 +124,6 @@ melted$pop <- factor(melted$pop, levels = rev(c("NBH", "BRP", "NEW", "ELR")))
 
 ## Total CM length of NBH. Rescale to NBH
 
-
-get_mxes <- function(X,Y) {
-  max(Y$pos[which(Y$chr == X)])
-}
-
-melso <- function(tomelt){
- ts <- tomelt[which(tomelt$chr == 1), ]
- ts$pos <- rescale(ts$pos, to = c(-10, mxes[1]))
- the_rescale <- ts
- for (i in 2:24) {
-   ts <- tomelt[which(tomelt$chr == i), ]
-   ts$pos <- rescale(ts$pos, to = c(-10, mxes[i]))
-   the_rescale <- rbind(the_rescale, ts)
-  }
- the_rescale
-}
-
 mxes <- sapply(1:24,get_mxes,Y=themelt.nbh)
 mxes <- sapply(1:24,get_mxes,Y=themelt.elr)
 
@@ -154,10 +141,6 @@ incompat <- allmelt[which(allmelt$chr %in% c(8,13)), ]
 
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
-
-#### MAP BRP to NBH before simcross
-#brp.remap <- cnv.premap(cross.nbh, cross.brp)
-##save.image("/home/jmiller1/public_html/BRP_remap.Rsave")
 
 save.image('/home/jmiller1/public_html/QTL_plot.Rsave')
 ################################################
@@ -374,7 +357,6 @@ scale_color_manual(values = popcol) +
   axis.text.x = element_blank(), axis.ticks.x = element_blank(), legend.position = "none") +
   labs(x = "Chromosome", y = "LOD", linetype = "")
 dev.off()
-
 
 names(popcol)[2] <- 'BRP'
 

@@ -66,7 +66,7 @@ parABxAB <- intersect(bfix1,bfix2)
 
 gt_nopar <- geno.table(subset(cross,ind=!cross$pheno$ID %in% c("NEW_NEW911M","NEW_NEW911F")))
 parABxAB <- intersect(rownames(gt_nopar[which(gt_nopar$P.value > 0.01),]) ,parABxAB)
-cross.1 <- pull.markers(cross,parABxAB) ## 6826 markers
+cross.1 <- pull.markers(cross,parABxAB)
 ################################################################################
 
 ### TEST SAMPLE GT SIMILARITY ##################################################
@@ -78,7 +78,7 @@ cpgt[cpgt==NaN] <- NA
 diag(cpgt) <- NA
 cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
 ################################################################################
-png(paste0('~/public_html/NEW_relat.png'))
+png(paste0('~/public_html/NBH_relat.png'))
  hist(cpgt)
 dev.off()
 ################################################################################
@@ -111,6 +111,7 @@ for(Z in 1:24){
  cross <<- switchAlleles(cross, swits)
  cross <<- drop.markers(cross, drops)
 }
+Z <- 1
 
 
 fl <- file.path(mpath,'NEW_unmapped_filtered')
