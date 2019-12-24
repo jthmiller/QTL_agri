@@ -17,30 +17,6 @@ setwd(mpath)
 
 load('08_phys_plots_pos.rsave')
 
-png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
-plot_stat_sep(pfst,ch=18,poplot=statcol)
-dev.off()
-
-png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
-plot_stat_sep(pfst,ch=18,poplot=statcol)
-dev.off()
-
-png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
-plot_stat_sep(pfst,ch=18,poplot=statcol)
-dev.off()
-
-png("/home/jmiller1/public_html/pbs.png", width = 3000)
-plot_stat(pbs,ch=2,poplot=popgen)
-dev.off()
-
-png("/home/jmiller1/public_html/taj.png", width = 3000)
-plot_stat(taj,ch=2,poplot=popout)
-dev.off()
-
-png("/home/jmiller1/public_html/pfst_conv.png", width = 1000)
-plot_stat_sep(pfst_conv,ch=18,poplot=statcol)
-dev.off()
-
 ################################################
 ### get positions of genes
 nbh.gens <- cnv.ahrs(cross.nbh, AHRdf = AHR.bed, EXP = F)
