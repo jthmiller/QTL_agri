@@ -1412,7 +1412,7 @@ plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
  plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
  points(X, Y[[stat]], pch=20, col=poplot[stat])
 }
-
+################################################
 ### FROM PHYS MAPPING
 plot_stat_sep <- function(Z,ch,poplot){
 

@@ -142,9 +142,27 @@ incompat <- allmelt[which(allmelt$chr %in% c(8,13)), ]
 qtl_pg <- c(2,8, 13, 18, 24)
 ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
 
-save.image('/home/jmiller1/public_html/QTL_plot.Rsave')
+##save.image('/home/jmiller1/public_html/QTL_plot.Rsave')
+################################################
+qtlmelt <- allmelt[which(allmelt$chr %in% c( 2, 13, 18)),]
+qtl.rank <- qtl.rank[which(qtl.rank$rank <21),]
+
+qtl.rank <- all.rank[which(all.rank$chr %in% c(2, 13, 18)),]
+qtl.gens <- nbh.gens[which(nbh.gens$chr %in% c( 2, 13, 18)),]
+qtl.gens <- qtl.gens[as.character(c(1,3,4,5,6,7,8,24,26,45,46,56,70,96,94,57)),]
+qtl.gens <- qtl.gens[c(1,3,4,5,6,7),]
+qtl.gens <- qtl.gens[-5,]
 ################################################
 
+qtl_pg <- c(1,5, 10, 12, 23)
+ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
+ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
+ol.gens <- nbh.gens[which(nbh.gens$chr %in% qtl_pg), ]
+
+names(popcol)[2] <- 'BRP'
+
+################################################
+################################################
 ################################################
 p <- ggplot(themelt.nbh, aes(x = pos, y = lod))
 png("/home/jmiller1/public_html/all_popgen_rank_scaled.qtl.png", width = 3000)
@@ -237,16 +255,6 @@ p + facet_wrap(~chr, nrow = 1, scales = "free_x", ncol = 24) + scale_color_manua
   theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(),
     legend.position = "none") + labs(x = "Chromosome", y = "LOD", linetype = "")
 dev.off()
-
-
-qtlmelt <- allmelt[which(allmelt$chr %in% c( 2, 13, 18)),]
-qtl.rank <- qtl.rank[which(qtl.rank$rank <21),]
-
-qtl.rank <- all.rank[which(all.rank$chr %in% c(2, 13, 18)),]
-qtl.gens <- nbh.gens[which(nbh.gens$chr %in% c( 2, 13, 18)),]
-qtl.gens <- qtl.gens[as.character(c(1,3,4,5,6,7,8,24,26,45,46,56,70,96,94,57)),]
-qtl.gens <- qtl.gens[c(1,3,4,5,6,7),]
-qtl.gens <- qtl.gens[-5,]
 
 p <- ggplot(qtlmelt, aes(x = pos, y = lod, colour = pop))
 pdf("/home/jmiller1/public_html/all_pop_qtl_only.pdf",width=15,height=11)
@@ -358,7 +366,6 @@ scale_color_manual(values = popcol) +
   labs(x = "Chromosome", y = "LOD", linetype = "")
 dev.off()
 
-names(popcol)[2] <- 'BRP'
 
 p <- ggplot(ol.melt, aes(x = pos, y = lod, colour = pop))
 pdf("/home/jmiller1/public_html/OL_chr.qtl.pdf")
@@ -385,13 +392,6 @@ p + facet_wrap(~chr, nrow = 1, scales = "free_x", ncol = 24) +
     legend.position = "none") +
   labs(x = "Chromosome", y = "LOD", linetype = "")
 dev.off()
-
-
-qtl_pg <- c(1,5, 10, 12, 23)
-ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
-ol.melt <- allmelt[which(allmelt$chr %in% qtl_pg), ]
-ol.gens <- nbh.gens[which(nbh.gens$chr %in% qtl_pg), ]
-
 
 p <- ggplot(ol.melt, aes(x = pos, y = lod, colour = pop))
 pdf("/home/jmiller1/public_html/OL_noQTL_chr.qtl.pdf")
