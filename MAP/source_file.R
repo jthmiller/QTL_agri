@@ -1435,7 +1435,7 @@ plot_stat_sep <- function(Z,ch,poplot){
 
   sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
 
-  axis(side=1)
+  axis(side=1,cex=2)
 
 }
 plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
