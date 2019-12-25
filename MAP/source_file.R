@@ -1363,7 +1363,7 @@ melso <- function(tomelt){
 }
 ################################################
 ### Compressed genetic distance
-##plot_stat <- function(Z,ch,poplot){
+plot_stat <- function(Z,ch,poplot){
 
   ind <- which(Z[,1] == ch)
 

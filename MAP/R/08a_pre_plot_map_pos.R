@@ -14,7 +14,6 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-
 ##keeping colors consistent####################
 all.pops <- c("NBH", "BRP", "ELR", "NEW")
 popcol <- brewer.pal(8, "Paired")[c(2, 4, 6, 8)]
