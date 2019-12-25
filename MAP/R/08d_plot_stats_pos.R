@@ -17,9 +17,36 @@ setwd(mpath)
 
 load('08_phys_plots_pos.rsave')
 
-png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
-plot_stat_sep(pfst,ch=18,poplot=statcol)
+png("/home/jmiller1/public_html/pfst_nbh_18.png", width = 1000)
+plot_stat_midpo(pfst,ch=18,poplot=statcol)
 dev.off()
+
+png("/home/jmiller1/public_html/pfst_elr_18.png", width = 1000)
+plot_stat_midpo(pfst,ch=18,poplot=statcol)
+dev.off()
+
+png("/home/jmiller1/public_html/pfst_18.png", width = 1000)
+plot_stat_mid(pfst,ch=18,poplot=statcol)
+dev.off()
+
+png("/home/jmiller1/public_html/pfst_18.png", width = 1000)
+plot_stat_mid(pfst,ch=18,poplot=statcol)
+dev.off()
+
+plot_stat_midpo(pfst_conv,ch=8,poplot=statcol)
+dev.off()
+
+png("/home/jmiller1/public_html/pfst_8.png", width = 1000)
+plot_stat_mid(pfst_conv,ch=8,poplot=statcol)
+dev.off()
+
+
+
+
+png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
+plot_stat_midpo(pfst_conv,ch=18,poplot=statcol)
+dev.off()
+
 
 png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
 plot_stat_sep(pfst,ch=18,poplot=statcol)

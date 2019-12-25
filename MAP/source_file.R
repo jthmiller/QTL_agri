@@ -1362,7 +1362,8 @@ melso <- function(tomelt){
  the_rescale
 }
 ################################################
-plot_stat <- function(Z,ch,poplot){
+### Compressed genetic distance
+##plot_stat <- function(Z,ch,poplot){
 
   ind <- which(Z[,1] == ch)
 
@@ -1384,7 +1385,34 @@ plot_stat <- function(Z,ch,poplot){
 
 }
 plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
-plot_stat_sep <- function(Z,ch,poplot){
+
+plot_stat_midpo <- function(Z,ch,poplot){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  ##x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
+  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),length(Z[ind,'mid_midpo']))
+
+
+  X <- Z[ind,'mid_midpo']
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
+
+  sapply(pops,plot_pop_sep,order(as.numeric(X)),Y,poplot,x_mx_mn,ymx_mn)
+
+  axis(side=1,cex=2)
+
+}
+plot_stat_mid <- function(Z,ch,poplot){
 
   ind <- which(Z[,1] == ch)
 
@@ -1412,58 +1440,9 @@ plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
  plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
  points(X, Y[[stat]], pch=20, col=poplot[stat])
 }
-################################################
-### FROM PHYS MAPPING
-plot_stat_sep <- function(Z,ch,poplot){
 
-  ind <- which(Z[,1] == ch)
 
-  pops <- names(poplot)
 
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
-
-  X <- Z[ind,'mid_midpo']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
-
-  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
-
-  axis(side=1,cex=2)
-
-}
-plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
- plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
- points(X, Y[[stat]], pch=20, col=poplot[stat])
-}
-plot_stat <- function(Z,ch,poplot){
-
-  ind <- which(Z[,1] == ch)
-
-  pops <- names(poplot)
-
-  ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
-
-  x_mx_mn <- c(min(Z[ind,'mid_midpo'],na.rm=T),max(Z[ind,'mid_midpo'],na.rm=T))
-
-  X <- Z[ind,'mid_midpo']
-
-  Y <- as.list(Z[ind,pops])
-  names(Y) <- pops
-
-  plot(x_mx_mn, ymx_mn, type="n")
-  sapply(pops,plot_pnts,X,Y,poplot)
-
-}
-plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
 ################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
