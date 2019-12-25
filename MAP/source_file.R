@@ -1385,7 +1385,6 @@ melso <- function(tomelt){
 
 }
 plot_pnts <- function(stat,X,Y,poplot){ points(X, Y[[stat]], pch=20, col=poplot[stat]) }
-
 plot_stat_midpo <- function(Z,ch,poplot){
 
   ind <- which(Z[,1] == ch)
@@ -1440,8 +1439,6 @@ plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
  plot(x_mx_mn, ymx_mn, type="n",xaxs="i", yaxs="i",main=NULL,xaxt="n",bty='n')
  points(X, Y[[stat]], pch=20, col=poplot[stat])
 }
-
-
 
 ################################################
 environment(plot.draws) <- asNamespace('qtl')
