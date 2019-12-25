@@ -35,7 +35,11 @@ pbs <- read.table(pbs, sep = "\t", header = T)
 pbs$mid <- pbs$V2 + (abs(pbs$V3 - pbs$V2) * .5)
 pbs$V1 <- gsub('chr',"",pbs$V1)
 colnames(pbs)[1:3] <- c('chr','start','end')
-pbs_conv <- conv_popstat(cross.nbh,popgen=pbs)
+pbs$nbh <- conv_popstat(cross.nbh, popgen=pbs, whichcol='mid')
+
+try <- conv_popstat(cross.nbh, popgen=pbs, whichcol='mid')
+
+
 pbs_conv$mid_midpo <- apply(pbs_conv[,c('pos1','pos2')],1,mean)
 
 pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
@@ -58,9 +62,9 @@ pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
 pi <- read.table(pi, sep = "\t", header = T)
 pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
 pi$Scaffold <- gsub('chr',"",pi$Scaffold)
-colnames(taj)[1] <- 'chr'
-taj_conv <- conv_popstat(cross.nbh,popgen=taj)
-taj_conv$mid_midpo <- apply(taj_conv[,c('pos1','pos2')],1,mean)
+colnames(pi)[1] <- 'chr'
+pi_conv <- conv_popstat(cross.nbh,popgen=pi)
+pi_conv$mid_midpo <- apply(pi_conv[,c('pos1','pos2')],1,mean)
 
 
 #### AHRs #####

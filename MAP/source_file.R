@@ -1305,35 +1305,41 @@ function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
     cross
 }
 
-conv_popstat <- function(cross2, popgen) {
+conv_popstat <- function(cross2, popgen, whichcol) {
 
   nbhmap <- convert2cross2(cross2)
   nbhmap$pmap <- nbhmap$gmap
+
   nbhmap$pmap <- lapply(nbhmap$pmap, function(X) {
     return(as.numeric(gsub("[0-9]+:", "", names(X))))
   })
+
   for (i in 1:24) {
     names(nbhmap$pmap[[i]]) <- names(nbhmap$gmap[[i]])
   }
-
 
   #popgen$chrom <- gsub("chr", "", popgen$chrom)
   #colnames(popgen)[1] <- "chr"
 
   pop.list <- split(popgen, popgen$chr)
   pop.list <- pop.list[as.character(c(1:24))]
-  popgen.pos1 <- lapply(pop.list, "[[", 2)
-  popgen.pos2 <- lapply(pop.list, "[[", 3)
-  popgen.pos1 <- lapply(popgen.pos1, as.numeric)
-  popgen.pos2 <- lapply(popgen.pos2, as.numeric)
 
-  pos1 <- interp_map(popgen.pos1, nbhmap$pmap, nbhmap$gmap)
-  pos2 <- interp_map(popgen.pos2, nbhmap$pmap, nbhmap$gmap)
+  popgen.pos <- lapply(pop.list, "[[", whichcol)
 
-  pop.list <- mapply(cbind, pop.list, pos1 = pos1, SIMPLIFY = FALSE)
-  pop.list <- mapply(cbind, pop.list, pos2 = pos2, SIMPLIFY = FALSE)
-  fraps <- ldply(pop.list, data.frame, .id = NULL)
-  return(fraps)
+  ## popgen.pos2 <- lapply(pop.list, "[[", 3)
+  popgen.pos <- lapply(popgen.pos, as.numeric)
+  ## popgen.pos2 <- lapply(popgen.pos2, as.numeric)
+
+  pos <- interp_map(popgen.pos, nbhmap$pmap, nbhmap$gmap)
+  ## pos2 <- interp_map(popgen.pos2, nbhmap$pmap, nbhmap$gmap)
+
+  pop.list <- mapply(cbind, pop.list, pos = pos, SIMPLIFY = FALSE)
+  ##pop.list <- mapply(cbind, pop.list, pos2 = pos2, SIMPLIFY = FALSE)
+  ##fraps <- ldply(pop.list, data.frame, .id = NULL)
+
+  ldply(pop.list, data.frame, .id = NULL)
+
+  #return(fraps$pos)
 }
 ################################################
 get_cor <- function(Z){
@@ -1440,6 +1446,30 @@ plot_pop_sep <- function(stat,X,Y,poplot,x_mx_mn,ymx_mn){
  points(X, Y[[stat]], pch=20, col=poplot[stat])
 }
 
+plot_stat <- function(Z,ch,poplot,colnm){
+
+  ind <- which(Z[,1] == ch)
+
+  pops <- names(poplot)
+
+  ymx_mn <- c(
+    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+
+  x_mx_mn <- c(min(Z[ind,colnm],na.rm=T),max(Z[ind,colnm],na.rm=T))
+
+  X <- Z[ind,colnm]
+
+  Y <- as.list(Z[ind,pops])
+  names(Y) <- pops
+
+  par(mfrow=c(length(pops),1),mar = c(1, 1, 1, 1),oma = c(1.5, 1.5, 1.5, 1.5))
+
+  sapply(pops,plot_pop_sep,X,Y,poplot,x_mx_mn,ymx_mn)
+
+  axis(side=1,cex=2)
+
+}
 ################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')

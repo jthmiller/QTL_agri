@@ -17,8 +17,10 @@ setwd(mpath)
 
 load('08_phys_plots_pos.rsave')
 
+
+## PLOT BY MAP POSITION
 png("/home/jmiller1/public_html/pfst_nbh_18.png", width = 1000)
-plot_stat_midpo(pfst,ch=18,poplot=statcol)
+plot_stat(pfst,ch=18,poplot=statcol,colnm='mid')
 dev.off()
 
 png("/home/jmiller1/public_html/pfst_elr_18.png", width = 1000)
