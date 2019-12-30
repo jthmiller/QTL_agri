@@ -35,36 +35,32 @@ pbs <- read.table(pbs, sep = "\t", header = T)
 pbs$mid <- pbs$V2 + (abs(pbs$V3 - pbs$V2) * .5)
 pbs$V1 <- gsub('chr',"",pbs$V1)
 colnames(pbs)[1:3] <- c('chr','start','end')
-pbs$nbh <- conv_popstat(cross.nbh, popgen=pbs, whichcol='mid')
-
-try <- conv_popstat(cross.nbh, popgen=pbs, whichcol='mid')
-
-
-pbs_conv$mid_midpo <- apply(pbs_conv[,c('pos1','pos2')],1,mean)
+pbs <- conv_popstat(cross.nbh, popgen=pbs, whichcol='mid',newname='nbh_mp')
+pbs <- conv_popstat(cross.elr, popgen=pbs, whichcol='mid',newname='elr_mp')
 
 pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
 pfst <- read.table(pfst, sep = "\t", header = T)
 pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
 pfst$Scaffold <- gsub('chr',"",pfst$Scaffold)
 colnames(pfst)[1] <- 'chr'
-pfst_conv <- conv_popstat(cross.nbh,popgen=pfst)
-pfst_conv$mid_midpo <- apply(pfst_conv[,c('pos1','pos2')],1,mean)
+pfst <- conv_popstat(cross.nbh, popgen=pfst, whichcol='mid',newname='nbh_mp')
+pfst <- conv_popstat(cross.elr, popgen=pfst, whichcol='mid',newname='elr_mp')
 
 taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
 taj <- read.table(taj, sep = "\t", header = T)
 taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
 taj$Scaffold <- gsub('chr',"",taj$Scaffold)
 colnames(taj)[1] <- 'chr'
-taj_conv <- conv_popstat(cross.nbh,popgen=taj)
-taj_conv$mid_midpo <- apply(taj_conv[,c('pos1','pos2')],1,mean)
+taj <- conv_popstat(cross.nbh, popgen=taj, whichcol='mid',newname='nbh_mp')
+taj <- conv_popstat(cross.elr, popgen=taj, whichcol='mid',newname='elr_mp')
 
 pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
 pi <- read.table(pi, sep = "\t", header = T)
 pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
 pi$Scaffold <- gsub('chr',"",pi$Scaffold)
 colnames(pi)[1] <- 'chr'
-pi_conv <- conv_popstat(cross.nbh,popgen=pi)
-pi_conv$mid_midpo <- apply(pi_conv[,c('pos1','pos2')],1,mean)
+pi <- conv_popstat(cross.nbh, popgen=pi, whichcol='mid',newname='nbh_mp')
+pi <- conv_popstat(cross.elr, popgen=pi, whichcol='mid',newname='elr_mp')
 
 
 #### AHRs #####

@@ -1325,11 +1325,11 @@ conv_popstat <- function(cross2, popgen, whichcol) {
   pop.list <- pop.list[as.character(c(1:24))]
 
   popgen.pos <- lapply(pop.list, "[[", whichcol)
-
   ## popgen.pos2 <- lapply(pop.list, "[[", 3)
   popgen.pos <- lapply(popgen.pos, as.numeric)
   ## popgen.pos2 <- lapply(popgen.pos2, as.numeric)
 
+  ## Takes in position, physical map, genetic map
   pos <- interp_map(popgen.pos, nbhmap$pmap, nbhmap$gmap)
   ## pos2 <- interp_map(popgen.pos2, nbhmap$pmap, nbhmap$gmap)
 
