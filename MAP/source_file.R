@@ -1305,7 +1305,7 @@ function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
     cross
 }
 
-conv_popstat <- function(cross2, popgen, whichcol) {
+conv_popstat <- function(cross2, popgen, whichcol, newname) {
 
   nbhmap <- convert2cross2(cross2)
   nbhmap$pmap <- nbhmap$gmap
@@ -1333,13 +1333,11 @@ conv_popstat <- function(cross2, popgen, whichcol) {
   pos <- interp_map(popgen.pos, nbhmap$pmap, nbhmap$gmap)
   ## pos2 <- interp_map(popgen.pos2, nbhmap$pmap, nbhmap$gmap)
 
-  pop.list <- mapply(cbind, pop.list, pos = pos, SIMPLIFY = FALSE)
+  pop.list <- mapply(cbind, pop.list, newnm = pos, SIMPLIFY = FALSE)
   ##pop.list <- mapply(cbind, pop.list, pos2 = pos2, SIMPLIFY = FALSE)
-  ##fraps <- ldply(pop.list, data.frame, .id = NULL)
-
-  ldply(pop.list, data.frame, .id = NULL)
-
-  #return(fraps$pos)
+  fraps <- ldply(pop.list, data.frame, .id = NULL)
+  colnames(fraps)[which(colnames(fraps)=='newnm')] <- newname
+  return(fraps)
 }
 ################################################
 get_cor <- function(Z){

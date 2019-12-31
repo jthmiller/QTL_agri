@@ -17,11 +17,26 @@ setwd(mpath)
 
 load('08_phys_plots_pos.rsave')
 
+png("/home/jmiller1/public_html/pfst_elr_18.png", width = 1000)
+plot_stat(pfst,ch=18,poplot=statcol,colnm='nbh_mp')
+dev.off()
+
+png("/home/jmiller1/public_html/pfst_nbh_18.png", width = 1000)
+plot_stat_mid(pfst,ch=18,poplot=statcol)
+dev.off()
+
+
 
 ## PLOT BY MAP POSITION
 png("/home/jmiller1/public_html/pfst_nbh_18.png", width = 1000)
-plot_stat(pfst,ch=18,poplot=statcol,colnm='mid')
+plot_stat(pfst, ch=18, poplot=statcol, colnm='mid')
 dev.off()
+
+png("/home/jmiller1/public_html/pfst_elr_18.png", width = 1000)
+plot_stat(pfst, ch=18, poplot=statcol, colnm='mid')
+dev.off()
+
+
 
 png("/home/jmiller1/public_html/pfst_elr_18.png", width = 1000)
 plot_stat_midpo(pfst,ch=18,poplot=statcol)
