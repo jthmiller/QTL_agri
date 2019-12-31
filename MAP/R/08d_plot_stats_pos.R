@@ -28,8 +28,8 @@ dev.off()
 
 
 ## PLOT BY MAP POSITION
-png("/home/jmiller1/public_html/pfst_nbh_18.png", width = 1000)
-plot_stat(pfst, ch=18, poplot=statcol, colnm='mid')
+png("/home/jmiller1/public_html/pfst_nbh_13.png", width = 1000)
+plot_stat(pfst, ch=13, poplot=statcol, colnm='mid')
 dev.off()
 
 png("/home/jmiller1/public_html/pfst_elr_18.png", width = 1000)
@@ -69,8 +69,8 @@ png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
 plot_stat_sep(pfst,ch=18,poplot=statcol)
 dev.off()
 
-png("/home/jmiller1/public_html/pfst_18.png", width = 3000)
-plot_stat_sep(pfst,ch=18,poplot=statcol)
+png("/home/jmiller1/public_html/pfst_13.png", width = 3000)
+plot_stat_sep(pfst,ch=13,poplot=statcol)
 dev.off()
 
 png("/home/jmiller1/public_html/pbs.png", width = 3000)
@@ -82,7 +82,7 @@ plot_stat(taj,ch=2,poplot=popout)
 dev.off()
 
 png("/home/jmiller1/public_html/pfst_conv.png", width = 1000)
-plot_stat_sep(pfst_conv,ch=18,poplot=statcol)
+plot_stat_sep(pfst_conv,ch=13,poplot=statcol)
 dev.off()
 
 ################################################

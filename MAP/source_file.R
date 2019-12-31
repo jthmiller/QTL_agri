@@ -1451,8 +1451,8 @@ plot_stat <- function(Z,ch,poplot,colnm){
   pops <- names(poplot)
 
   ymx_mn <- c(
-    quantile(as.matrix(Z[ind,pops]), probs = 0.00001, na.rm = T),
-    quantile(as.matrix(Z[ind,pops]), probs = 0.99999, na.rm = T))
+    quantile(as.matrix(Z[ind,pops]), probs = 0.0001, na.rm = T),
+    quantile(as.matrix(Z[ind,pops]), probs = 0.9999, na.rm = T))
 
   x_mx_mn <- c(min(Z[ind,colnm],na.rm=T),max(Z[ind,colnm],na.rm=T))
 

@@ -14,37 +14,73 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-png("/home/jmiller1/public_html/pfst.png", width = 3000)
-plot_stat(pfst,ch=2,poplot=statcol)
-dev.off()
+#############################################
+### pfst
+statcol_mod <- popcol
+names(statcol_mod) <- c('BI.NBH','F.NBH','ER.KC','ER.SH')
+statcol_mod[c(2,3)] <- c('darkblue','red4')
+ab1 <- which.min(abs(pfst[which(pfst$chr==13),'mid'] - 1009168))
+ab2 <- which.min(abs(pfst[which(pfst$chr==13),'mid'] - 3595485))
+ab1 <- pfst[which(pfst$chr==13),][ab1,'mid']
+ab2 <- pfst[which(pfst$chr==13),][ab2,'mid']
 
-png("/home/jmiller1/public_html/pbs.png", width = 3000)
-plot_stat(pbs,ch=2,poplot=popgen)
-dev.off()
+for (ch in c(1,2,8,13,9,1,18,24)){
+ png(paste0("/home/jmiller1/public_html/pfst",ch,".png"), width = 500)
+ plot_stat(pfst,ch=ch,poplot=statcol_mod,colnm='mid')
 
-png("/home/jmiller1/public_html/taj.png", width = 3000)
-plot_stat(taj,ch=2,poplot=popout)
-dev.off()
+if (ch==13){
+ abline(v=ab1)
+ abline(v=ab2)
+}
 
-png("/home/jmiller1/public_html/pfst.png", width = 1000)
-plot_stat_sep(pfst,ch=18,poplot=statcol)
 dev.off()
+}
+###################################################
+#############################################
+## pbs
 
+for (ch in c(1,2,8,13,9,1,18,24)){
+ png(paste0("/home/jmiller1/public_html/pbs",ch,".png"), width = 500)
+ plot_stat(pbs,ch=ch,poplot=popgen,colnm='mid')
+
+ if (ch==13){
+  abline(v=ab1)
+  abline(v=ab2)
+ }
+
+ dev.off()
+}
+
+################################################]
+## tajimas d
+for (ch in c(1,2,8,13,9,1,18,24)){
+ png(paste0("/home/jmiller1/public_html/taj",ch,".png"), width = 500)
+ plot_stat(taj,ch=ch,poplot=popgen,colnm='mid')
+
+ if (ch==13){
+  abline(v=ab1)
+  abline(v=ab2)
+ }
+
+ dev.off()
+}
 ################################################
+## pi
+for (ch in c(1,2,8,13,9,1,18,24)){
+ png(paste0("/home/jmiller1/public_html/pi",ch,".png"), width = 500)
+ plot_stat(pi,ch=ch,poplot=popgen,colnm='mid')
+
+ if (ch==13){
+  abline(v=ab1)
+  abline(v=ab2)
+ }
+
+ dev.off()
+}
+
 
 load('08_phys_plots_pos.rsave')
 ################################################
-pfst <- pfst[which(pfst[,1] %in% c(1:24)),]
-colnames(pfst)[1] <- 'chr'
-
-pfst_conv <- conv_popstat(cross2=cross.nbh, popgen=pfst)
-pfst_conv$mid_midpo <- apply(pfst_conv[,c('pos1','pos2')],1,mean)
-
-
-
-
-
-
 
 ################################################
 ### get positions of genes

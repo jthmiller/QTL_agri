@@ -18,16 +18,17 @@ setwd(mpath)
 all.pops <- c("NBH", "BRP", "ELR", "NEW")
 popcol <- brewer.pal(8, "Paired")[c(2, 4, 6, 8)]
 names(popcol) <- all.pops
+popcol <- popcol[c('NBH','BRP','NEW','ELR')]
 
 popgen <- popcol
-names(popgen) <- c('NBH','BP','ER','NYC')
+names(popgen) <- c('NBH','BP','NYC','ER')
 
 popout <- c(popgen,'grey')
-names(popout) <- c('NBH','BP','ER','NYC','BI')
+names(popout) <- c('NBH','BP','NYC','ER','BI')
 
 ### Color for stat comparisons
 statcol <- popcol
-names(statcol) <- c('BI.NBH','ER.KC','BP.F','NYC.SH')
+names(statcol) <- c('BI.NBH','BP.F','NYC.SH','ER.KC')
 ################################################
 
 pbs <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
