@@ -1,6 +1,6 @@
 #!/bin/R
 
-pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
+## pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 pop <- 'ELR'
 
@@ -18,31 +18,6 @@ pbe_elr <- perms.bin.em
 sbe_elr <- scan.bin.em
 sbm_elr <- scan.bin.mr
 elr_cross <- cross
-
-load(file.path(mpath,'single_scans.nbh.rsave'))
-sw_nbh <- full.norm.add_only
-pni_nbh <- perms.norm.imp
-pbe_nbh <- perms.bin.em
-sbe_nbh <- scan.bin.em
-sbm_nbh <- scan.bin.mr
-nbh_cross <- cross
-
-load(file.path(mpath,'single_scans.new.rsave'))
-sw_new <- full.norm.add_only
-pni_new <- perms.norm.imp
-pbe_new <- perms.bin.em
-sbe_new <- scan.bin.em
-sbm_new <- scan.bin.mr
-new_cross <- cross
-
-
-load(file.path(mpath,'single_scans.brp.rsave'))
-sw_brp <- full.norm.add_only
-pni_brp <- perms.norm.imp
-pbe_brp <- perms.bin.em
-sbe_brp <- scan.bin.em
-sbm_brp <- scan.bin.mr
-brp_cross <- cross
 
 get_phenos <- function(crs,pheno){
  index <- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
@@ -68,19 +43,19 @@ mr <- rownames(summary(sbm_elr)[c(13,18),])
 ## what is the parent genotypes at 13?
 ## "13:1009168" to check nearby locus
 
-prefilt_par_gts <- pull.markers(cross,unique(c(em,mr,"13:1009168")))
-postfilt_off_gt <- pull.markers(elr_cross,unique(c(em,mr,"13:1009168")))
-
-prefilt_par_gts <- cbind(as.character(prefilt_par_gts$pheno$ID), prefilt_par_gts$geno$'13'$data)
-rownames(prefilt_par_gts) <- prefilt_par_gts[,1]
-prefilt_par_gts[c('ELR_ER1124F','BLI_BI1124M'),]
-
-postfilt_off_gt <- cbind(as.character(postfilt_off_gt$pheno$ID), postfilt_off_gt$geno$'13'$data)
-rownames(postfilt_off_gt) <- postfilt_off_gt[,1]
-
-is_phase_same <- prefilt_par_gts[rownames(postfilt_off_gt),2] == postfilt_off_gt[rownames(postfilt_off_gt),2]
-
-### Sensitive is BB, indicating that a fixed resistant allele are all deformed
+##prefilt_par_gts <- pull.markers(cross,unique(c(em,mr,"13:1009168")))
+##postfilt_off_gt <- pull.markers(elr_cross,unique(c(em,mr,"13:1009168")))
+##
+##prefilt_par_gts <- cbind(as.character(prefilt_par_gts$pheno$ID), prefilt_par_gts$geno$'13'$data)
+##rownames(prefilt_par_gts) <- prefilt_par_gts[,1]
+##prefilt_par_gts[c('ELR_ER1124F','BLI_BI1124M'),]
+##
+##postfilt_off_gt <- cbind(as.character(postfilt_off_gt$pheno$ID), postfilt_off_gt$geno$'13'$data)
+##rownames(postfilt_off_gt) <- postfilt_off_gt[,1]
+##
+##is_phase_same <- prefilt_par_gts[rownames(postfilt_off_gt),2] == postfilt_off_gt[rownames(postfilt_off_gt),2]
+##
+##### Sensitive is BB, indicating that a fixed resistant allele are all deformed
 
 
 ## From MR
@@ -112,7 +87,7 @@ elr_tol_18 <- table(elr_sens_18) / elr_18_total
 ################################################################################
 ## single plot 13
 
-cex_single <- c(.25,.5,.25) * 94
+cex_single <- c(.25,.5,.25) * 79
 xdir <- c(1,2,3)
 ydir <- elr_tol_13
 
@@ -140,7 +115,7 @@ dev.off()
 ################################################################################
 ## single plot AHR
 
-cex_single <- c(.25,.5,.25) * 94
+cex_single <- c(.25,.5,.25) * 79
 xdir <- c(1,2,3)
 ydir <- elr_tol_18
 

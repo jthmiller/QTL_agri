@@ -14,6 +14,8 @@ load(file.path(mpath,'single_scans.new.rsave'))
 
 new_cross <- cross
 new_cross <- switchAlleles(new_cross, markers = markernames(new_cross,chr=2))
+new_cross <- switchAlleles(new_cross, markers = markernames(new_cross,chr=18))
+
 
 new_cross  <- sim.geno(new_cross)
 new_cross  <- calc.genoprob(new_cross ,step=1,error.prob=0.01,off.end=5)
@@ -23,14 +25,11 @@ scan.bin.imp <- scanone(new_cross, method = "imp", model = "binary", pheno.col =
 scan.bin.mr <- scanone(new_cross, method = "mr", model = "binary", pheno.col = 4)
 full.norm.add_only <- stepwiseqtl(new_cross, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
 
-
 sw_new <- full.norm.add_only
 pni_new <- perms.norm.imp
 pbe_new <- perms.bin.em
 sbe_new <- scan.bin.em
 sbm_new <- scan.bin.mr
-
-
 
 get_phenos <- function(crs,pheno){
  index <- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
@@ -108,7 +107,7 @@ dev.off()
 ################################################################################
 ## single plot AIP
 
-cex_single <- c(.25,.5,.25) * 94
+cex_single <- c(.25,.5,.25) * 96
 xdir <- c(1,2,3)
 ydir <- new_tol_18
 
@@ -163,9 +162,9 @@ ydir <- new_sensit/new_total
 #rownames(new_total) <- c('AA','AB','BB')
 
 cexs_hom <- c(0.25^2,0.5^2,0.25^2)
-cexs_hom <- cexs_hom * 94
+cexs_hom <- cexs_hom * 96
 cexs_het <- c(0.25*0.5,0.5^2,0.25*0.5)
-cexs_het <- cexs_het * 94
+cexs_het <- cexs_het * 96
 
 pdf("/home/jmiller1/public_html/new_2_18.pdf", width=10)
  plot(c(0.65,3.35), c(-0.1,1.1),
