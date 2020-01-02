@@ -170,7 +170,7 @@ pdf("/home/jmiller1/public_html/new_2_18.pdf", width=10)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
-  type="n", main='AIP x AHR (new)',
+  type="n", main='AIP x AHR',
   cex.lab=1.5, cex.main=2)
 
   rect(1.5, -0.1, 2.5, 1.1,col='lightgrey',border = 'transparent')
