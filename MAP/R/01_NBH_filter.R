@@ -47,7 +47,6 @@ bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
 cross <- switchAlleles(cross, markers = bfix_swit12)
 ################################################################################
 
-
 ################################################################################
 ### Get highly likely AB x AB markers ##########################################
 bfix1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
@@ -103,6 +102,7 @@ for(Z in 1:24){
  cross <<- drop.markers(cross, drops)
 }
 
+reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
 write.cross(reorg,filestem=fl,format="csv")
 

@@ -25,7 +25,7 @@ ab1 <- pfst[which(pfst$chr==13),][ab1,'mid']
 ab2 <- pfst[which(pfst$chr==13),][ab2,'mid']
 
 for (ch in c(1,2,8,13,9,1,18,24)){
- png(paste0("/home/jmiller1/public_html/pfst",ch,".png"), width = 500)
+ pdf(paste0("/home/jmiller1/public_html/pfst",ch,".pdf"), width = 14)
  plot_stat(pfst,ch=ch,poplot=statcol_mod,colnm='mid')
 
 if (ch==13){
@@ -40,7 +40,7 @@ dev.off()
 ## pbs
 
 for (ch in c(1,2,8,13,9,1,18,24)){
- png(paste0("/home/jmiller1/public_html/pbs",ch,".png"), width = 500)
+ pdf(paste0("/home/jmiller1/public_html/pbs",ch,".pdf"), width = 14)
  plot_stat(pbs,ch=ch,poplot=popgen,colnm='mid')
 
  if (ch==13){
@@ -54,7 +54,7 @@ for (ch in c(1,2,8,13,9,1,18,24)){
 ################################################]
 ## tajimas d
 for (ch in c(1,2,8,13,9,1,18,24)){
- png(paste0("/home/jmiller1/public_html/taj",ch,".png"), width = 500)
+ pdf(paste0("/home/jmiller1/public_html/taj",ch,".pdf"), width = 14)
  plot_stat(taj,ch=ch,poplot=popgen,colnm='mid')
 
  if (ch==13){
@@ -67,7 +67,7 @@ for (ch in c(1,2,8,13,9,1,18,24)){
 ################################################
 ## pi
 for (ch in c(1,2,8,13,9,1,18,24)){
- png(paste0("/home/jmiller1/public_html/pi",ch,".png"), width = 500)
+ pdf(paste0("/home/jmiller1/public_html/pi",ch,".pdf"), width = 14)
  plot_stat(pi,ch=ch,poplot=popgen,colnm='mid')
 
  if (ch==13){

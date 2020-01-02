@@ -54,6 +54,7 @@ pheno_ind <- function(crs,pheno){
 }
 
 ################################################################################
+### NBH ####
 nbh_sens <- as.character(nbh_cross$pheno$ID[which(nbh_cross$pheno$ID %in% pheno_ind(nbh_cross,1))])
 nbh_tol <- as.character(nbh_cross$pheno$ID[which(nbh_cross$pheno$ID %in% pheno_ind(nbh_cross,0))])
 
@@ -90,7 +91,7 @@ cex_single <- c(.25,.5,.25) * 94
 xdir <- c(1,2,3)
 ydir <- nbh_tol_2
 
-png("/home/jmiller1/public_html/nbh_2.png", width=250)
+pdf("/home/jmiller1/public_html/nbh_2.pdf", width=3.5)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -118,7 +119,7 @@ cex_single <- c(.25,.5,.25) * 94
 xdir <- c(1,2,3)
 ydir <- nbh_tol_18
 
-png("/home/jmiller1/public_html/nbh_18.png", width=250)
+pdf("/home/jmiller1/public_html/nbh_18.pdf", width=3.5)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -128,9 +129,9 @@ png("/home/jmiller1/public_html/nbh_18.png", width=250)
   lines(xdir, ydir[as.character(c(1,2,3))],col='black',lwd=5)
 
   points(xdir, ydir[as.character(c(1,2,3))],col=c('black','darkblue','cornflowerblue'), pch=21,bg=c('black','darkblue','cornflowerblue'),
-   cex= (12 * (nbh_aip[as.character(c(1,2,3))] / cex_single)))
+   cex= (12 * (nbh_ahr[as.character(c(1,2,3))] / cex_single)))
 
-  text(xdir, ydir[as.character(c(1,2,3))], labels=nbh_aip[as.character(c(1,2,3))],col='white',font=2, cex=2)
+  text(xdir, ydir[as.character(c(1,2,3))], labels=nbh_ahr[as.character(c(1,2,3))],col='white',font=2, cex=2)
 
   mtext(side=1, line=3, 'AHR', col="black", font=2,cex=1.5)
   mtext(side=2, line=3, "Proportion Deformed", col="black", font=2, cex=1.5)
@@ -139,7 +140,6 @@ png("/home/jmiller1/public_html/nbh_18.png", width=250)
   axis(side=2, at=c(0,0.5,1.0), labels=c('0','0.5','1.0'),font=2, cex.lab=2, cex.axis=2)
 dev.off()
 ################################################################################
-
 
 ## interactions
 nbh_2_AA <- table(factor(nbh_gts[names(which(nbh_gts[nbh_sens ,loc_a] == 1)),loc_b],levels=c(NA,1,2,3),exclude = NULL))
@@ -174,7 +174,7 @@ cexs_hom <- cexs_hom * 94
 cexs_het <- c(0.25*0.5,0.5^2,0.25*0.5)
 cexs_het <- cexs_het * 94
 
-png("/home/jmiller1/public_html/nbh_2_18.png", width=750)
+pdf("/home/jmiller1/public_html/nbh_2_18.pdf", width=10)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -205,6 +205,11 @@ png("/home/jmiller1/public_html/nbh_2_18.png", width=750)
   axis(side=1, at=c(1,2,3), labels=c('AA','AB','BB'),font=2, cex.axis=2)
   axis(side=2, at=c(0,0.5,1.0), labels=c('0','0.5','1.0'),font=2, cex.lab=2, cex.axis=2)
 dev.off()
+################################################################################
+
+
+
+
 
 ################################################################################
 ### ELR ####
