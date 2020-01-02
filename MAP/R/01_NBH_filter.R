@@ -85,7 +85,6 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 
 cross.par <- subset(cross, ind=cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
 
-
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
@@ -104,7 +103,6 @@ for(Z in 1:24){
  cross <<- drop.markers(cross, drops)
 }
 
-reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
 write.cross(reorg,filestem=fl,format="csv")
 
