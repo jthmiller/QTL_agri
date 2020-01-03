@@ -1,16 +1,12 @@
 #!/bin/R
 
 i <- 18
-pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
-
+pop <- 'NBH'
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
-
 mpath <- '/home/jmiller1/QTL_agri/data'
-
-##fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
-fl <- file.path(paste0(pop,'_unmapped_reassigned_markers')
-
-mapfile <- paste0(pop,'_all_mark_',i,'_tsp')
+fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
+##fl <- file.path(paste0(pop,'_unmapped_reassigned_markers')
+##mapfile <- paste0(pop,'_all_mark_',i,'_tsp')
 
 filename <- file.path(mpath,mapfile)
 
@@ -18,12 +14,28 @@ libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 ################################################################################
+cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
+rownames(sex) <- sex$ID
+sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
+cross$pheno$sex <- sex.vec
+################################################################################
+toss.missing <- c("NBH_5525","NBH_6177")
+gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
+bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 1),])
+################################################################################
+## 30k markers before hand.
+###### FILTER #######################################################
+cross <- pull.markers(cross,bfixA)
+cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+################################################################################
 
-cross2 <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
 
 reorg <- formLinkageGroups(cross2, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 
 fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
+
 write.cross(reorg,filestem=fl,format="csv")
 
 

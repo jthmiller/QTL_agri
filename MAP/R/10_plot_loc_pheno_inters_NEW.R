@@ -175,23 +175,23 @@ pdf("/home/jmiller1/public_html/new_2_18.pdf", width=10)
 
   rect(1.5, -0.1, 2.5, 1.1,col='lightgrey',border = 'transparent')
 
-  lines(xdir-0.28, ydir[rownames(new_total),'BB'],col='cornflowerblue',lwd=5)
+  lines(xdir+0.28, ydir[rownames(new_total),'BB'],col='cornflowerblue',lwd=5)
   lines(xdir, ydir[rownames(new_total),'AB'],col='darkblue',lwd=5)
-  lines(xdir+0.28, ydir[rownames(new_total),'AA'],col='black',lwd=5)
+  lines(xdir-0.28, ydir[rownames(new_total),'AA'],col='black',lwd=5)
 
   points(xdir, ydir[rownames(new_total),'AB'],col='darkblue', pch=21, bg='darkblue',
    cex= (12 * (new_total[rownames(new_total),'AB'] / cexs_het))+2)
-  points(xdir-0.28, ydir[rownames(new_total),'BB'], col='cornflowerblue', pch=21, bg='cornflowerblue',
+  points(xdir+0.28, ydir[rownames(new_total),'BB'], col='cornflowerblue', pch=21, bg='cornflowerblue',
    cex= (12 * (new_total[rownames(new_total),'BB'] / cexs_hom))+2)
-  points(xdir+0.28, ydir[rownames(new_total),'AA'],col='black', pch=21,bg='black',
+  points(xdir-0.28, ydir[rownames(new_total),'AA'],col='black', pch=21,bg='black',
    cex= (12 * (new_total[rownames(new_total),'AA'] / cexs_hom))+2)
 
 
-  text(xdir-0.28, ydir[rownames(new_total),'BB'], labels=new_total[rownames(new_total),'BB'],col='white',font=2, cex=2)
+  text(xdir+0.28, ydir[rownames(new_total),'BB'], labels=new_total[rownames(new_total),'BB'],col='white',font=2, cex=2)
   text(xdir, ydir[rownames(new_total),'AB'], labels=new_total[rownames(new_total),'AB'],col='white',font=2, cex=2)
-  text(xdir+0.28, ydir[rownames(new_total),'AA'], labels=new_total[rownames(new_total),'AA'],col='white',font=2, cex=2)
+  text(xdir-0.28, ydir[rownames(new_total),'AA'], labels=new_total[rownames(new_total),'AA'],col='white',font=2, cex=2)
 
-  mtext(side=1, line=3, 'AHR Genotype', col="black", font=2,cex=1.5)
+  mtext(side=1, line=3, 'AIP Genotype', col="black", font=2,cex=1.5)
   mtext(side=2, line=3, "Proportion Deformed", col="black", font=2, cex=1.5)
 
   axis(side=1, at=c(1,2,3), labels=c('AA','AB','BB'),font=2, cex.axis=2)
