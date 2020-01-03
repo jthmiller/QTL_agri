@@ -91,7 +91,7 @@ cex_single <- c(.25,.5,.25) * 79
 xdir <- c(1,2,3)
 ydir <- elr_tol_13
 
-png("/home/jmiller1/public_html/elr_13.png", width=250)
+pdf("/home/jmiller1/public_html/elr_13.pdf", width=3.5)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -119,7 +119,7 @@ cex_single <- c(.25,.5,.25) * 79
 xdir <- c(1,2,3)
 ydir <- elr_tol_18
 
-png("/home/jmiller1/public_html/elr_18.png", width=250)
+pdf("/home/jmiller1/public_html/elr_18.pdf", width=3.5)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -175,7 +175,7 @@ cexs_hom <- cexs_hom * sum(elr_total)
 cexs_het <- c(0.25*0.5,0.5^2,0.25*0.5)
 cexs_het <- cexs_het * sum(elr_total)
 
-png("/home/jmiller1/public_html/elr_13_18.png", width=750)
+pdf("/home/jmiller1/public_html/elr_13_18.pdf", width=10)
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -184,23 +184,23 @@ png("/home/jmiller1/public_html/elr_13_18.png", width=750)
 
   rect(1.5, -0.1, 2.5, 1.1,col='lightgrey',border = 'transparent')
 
-  lines(xdir-0.28, ydir[rownames(elr_total),'BB'],col='cornflowerblue',lwd=5)
+  lines(xdir+0.28, ydir[rownames(elr_total),'BB'],col='cornflowerblue',lwd=5)
   lines(xdir, ydir[rownames(elr_total),'AB'],col='darkblue',lwd=5)
-  lines(xdir+0.28, ydir[rownames(elr_total),'AA'],col='black',lwd=5)
+  lines(xdir-0.28, ydir[rownames(elr_total),'AA'],col='black',lwd=5)
 
   points(xdir, ydir[rownames(elr_total),'AB'],col='darkblue', pch=21, bg='darkblue',
    cex= (12 * (elr_total[rownames(elr_total),'AB'] / cexs_het))+1)
 
-  points(xdir-0.28, ydir[rownames(elr_total),'BB'], col='cornflowerblue', pch=21, bg='cornflowerblue',
+  points(xdir+0.28, ydir[rownames(elr_total),'BB'], col='cornflowerblue', pch=21, bg='cornflowerblue',
    cex= (12 * (elr_total[rownames(elr_total),'BB'] / cexs_hom))+1)
 
-  points(xdir+0.28, ydir[rownames(elr_total),'AA'],col='black', pch=21,bg='black',
+  points(xdir-0.28, ydir[rownames(elr_total),'AA'],col='black', pch=21,bg='black',
    cex= (12 * (elr_total[rownames(elr_total),'AA'] / cexs_hom))+1)
 
 
-  text(xdir-0.28, ydir[rownames(elr_total),'BB'], labels=elr_total[rownames(elr_total),'BB'],col='white',font=2, cex=2)
+  text(xdir+0.28, ydir[rownames(elr_total),'BB'], labels=elr_total[rownames(elr_total),'BB'],col='white',font=2, cex=2)
   text(xdir, ydir[rownames(elr_total),'AB'], labels=elr_total[rownames(elr_total),'AB'],col='white',font=2, cex=2)
-  text(xdir+0.28, ydir[rownames(elr_total),'AA'], labels=elr_total[rownames(elr_total),'AA'],col='white',font=2, cex=2)
+  text(xdir-0.28, ydir[rownames(elr_total),'AA'], labels=elr_total[rownames(elr_total),'AA'],col='white',font=2, cex=2)
 
   mtext(side=1, line=3, 'QTL13 Genotype', col="black", font=2,cex=1.5)
   mtext(side=2, line=3, "Proportion Deformed", col="black", font=2, cex=1.5)

@@ -21,6 +21,18 @@ suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 cross2 <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
+reorg <- formLinkageGroups(cross2, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+
+fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
+write.cross(reorg,filestem=fl,format="csv")
+
+
+
+
+
+
+
+
 
 pull.map(cross2,
 
