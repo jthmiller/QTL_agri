@@ -30,14 +30,13 @@ cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 ################################################################################
 
+fl <- file.path(mpath,'NBH_pre_reform_markers')
+write.cross(cross,filestem=fl,format="csv")
 
-
-reorg <- formLinkageGroups(cross2, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
-
+reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
-
 write.cross(reorg,filestem=fl,format="csv")
-
+################################################################################
 
 
 
