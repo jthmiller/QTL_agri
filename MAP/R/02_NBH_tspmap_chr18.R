@@ -20,7 +20,7 @@ rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
 ################################################################################
-toss.missing <- c("NBH_5525","NBH_6177")
+toss.missing <- c("NBH_5525","NBH_6177","NBH_5528")
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
 bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 1),])
 ################################################################################
