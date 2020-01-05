@@ -4,20 +4,18 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- paste0(pop,'.missing_mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 load(file.path(mpath,'single_scans.elr_missing.rsave'))
 
 bins <- data.frame(
  em=summary(scan.bin.em),
- imp=summary(scan.bin.imp)[,'lod'],
  mr=summary(scan.bin.mr)[,'lod'],
  np=summary(scan.np.em.b)[,'lod'])
 
 binpo <- data.frame(
  empo=rownames(summary(scan.bin.em)),
- impo=rownames(summary(scan.bin.imp)),
  mrpo=rownames(summary(scan.bin.mr)),
  nppo=rownames(summary(scan.np.em.b)))
 

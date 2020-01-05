@@ -1,6 +1,6 @@
 #!/bin/R
 
-pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
+#pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 pop <- 'ELR'
 

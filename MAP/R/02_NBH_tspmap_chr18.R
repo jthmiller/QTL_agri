@@ -32,7 +32,18 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_N
 
 fl <- file.path(mpath,'NBH_pre_reform_markers')
 write.cross(cross,filestem=fl,format="csv")
+################################################################################
+fl <- file.path(paste0(pop,'_pre_reform_markers.csv'))
+cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
+
+
+reorg <- subset(cross2,chr=c(18,i))
+reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+
+
+
+################################################################################
 reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
 write.cross(reorg,filestem=fl,format="csv")

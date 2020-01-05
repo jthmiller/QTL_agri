@@ -102,12 +102,12 @@ for(Z in 1:24){
  cross <<- drop.markers(cross, drops)
 }
 
-reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
-fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
-write.cross(reorg,filestem=fl,format="csv")
-
 fl <- file.path(mpath,'NBH_unmapped_filtered')
 write.cross(cross,filestem=fl,format="csv")
 
 fl.par <- file.path(mpath,'NBH_parents_filtered')
 write.cross(cross.par,filestem=fl.par,format="csv")
+
+reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
+write.cross(reorg,filestem=fl,format="csv")
