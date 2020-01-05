@@ -17,9 +17,13 @@ cross <- read.cross(
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE)
 
+#### PHENO #####################################################################
+cross$pheno$bin <- ifelse(cross$pheno$Pheno > 2, 1 , 0)
+cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
+################################################################################
+
 cross <- sim.geno(cross)
 cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
-
 
 gg <- sim.geno(cross,step=4)
 gg_step2 <- reduce2grid(gg)
