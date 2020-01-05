@@ -39,3 +39,7 @@ dev.off()
 png(paste0('~/public_html/ELR_scan.norm.mr.png'))
  plot(scan.norm.mr)
 dev.off()
+
+png(paste0('~/public_html/ELR_full.norm.add_only.png'))
+ plot(full.norm.add_only)
+dev.off()
