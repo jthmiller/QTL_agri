@@ -36,10 +36,13 @@ write.cross(cross,filestem=fl,format="csv")
 fl <- file.path(paste0(pop,'_pre_reform_markers.csv'))
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
+cross18 <- subset(cross,chr=18)
+cross1 <- subset(cross,chr=1)
 
+i <- 2
 
-reorg <- subset(cross2,chr=c(18,i))
-reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+reorg <- subset(cross,chr=c(18,i))
+reorg <- formLinkageGroups(reorg, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 
 
 
