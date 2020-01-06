@@ -41,10 +41,13 @@ cross1 <- subset(cross,chr=1)
 
 i <- 2
 
-reorg <- subset(cross,chr=c(18,i))
-reorg <- formLinkageGroups(reorg, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+check_crosslinks <- function(X,Y){
+ reorg <- subset(cross,chr=c(Y,X))
+ formLinkageGroups(reorg, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+}
 
 
+check_18 <- lapply(c(1:17,19:24),check_crosslinks,Y=18)
 
 ################################################################################
 reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
@@ -52,16 +55,6 @@ fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
 write.cross(reorg,filestem=fl,format="csv")
 ################################################################################
 
-
-
-
-
-
-
-
-pull.map(cross2,
-
-#cross <- subset(cross2,chr=i)
 
 sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
 rownames(sex) <- sex$ID
