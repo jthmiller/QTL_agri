@@ -35,6 +35,8 @@ DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
 DROP2 <- names(DROP2)[which(as.numeric(DROP2)==2)]
 DROP <- intersect(DROP1,DROP2)
 cross <- drop.markers(cross,DROP)
+### WHAT PERCENT? ####
+## table(gsub(":.*","",DROP))/table(gsub(":.*","",markernames(cross2)))
 ################################################################################
 
 ### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
@@ -81,17 +83,26 @@ toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137")
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
 bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 ################################################################################
+## Determine what percent of markers are kept after filter
+table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
 
+################################################################################
+## Get a cross object of parent genotypes
 cross.par <- subset(cross, ind=cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
 DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
 DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
 DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
+
+## table(gsub(":.*","",DROP))/table(gsub(":.*","",markernames(cross2)))
+################################################################################
+
 
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 ################################################################################
 
+###### Retain markers that are linked ########
 for(Z in 1:24){
  reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
  swits <- markernames(reorg.1, chr=2)
@@ -106,7 +117,6 @@ for(Z in 1:24){
    swits <<- c(swits,swits2[swits2 %in% markernames(reorg.3, chr=1)])
   }
 
-
  subs <- markernames(reorg.2, chr=1)
  drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
  cross <<- switchAlleles(cross, swits)
@@ -114,12 +124,15 @@ for(Z in 1:24){
  cross <<- drop.markers(cross, drops)
 }
 
-fl <- file.path(mpath,'NBH_unmapped_filtered')
+
+fl <- file.path(paste0(pop,'_unmapped_filtered'))
+fl <- file.path(mpath,fl)
 write.cross(cross,filestem=fl,format="csv")
 
-fl.par <- file.path(mpath,'NBH_parents_filtered')
+fl.par <- file.path(paste0(pop,'_parents_filtered')
+fl.par <- file.path(mpath,fl.par)
 write.cross(cross.par,filestem=fl.par,format="csv")
 
-reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
-fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
-write.cross(reorg,filestem=fl,format="csv")
+#reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+#fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
+#write.cross(reorg,filestem=fl,format="csv")

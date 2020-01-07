@@ -76,6 +76,10 @@ if (any(i %in% c(1,2))){
 
 cross <-tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
+if(cor(pos,map) < 0){
+ cross <<- flip.order(cross, i)
+}
+
 cross <- shiftmap(cross, offset=0)
 
 cross_map <-  est.map(cross, error.prob=0.03,map.function="kosambi",maxit=100000,tol=1e-7, sex.sp=FALSE, verbose=FALSE)

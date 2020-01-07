@@ -1,0 +1,78 @@
+
+
+
+~/QTL_agri/data/chr18_nbh.positions.txt
+
+
+
+png("/home/jmiller1/public_html/NBH_18_physpo_unfilt.png")
+plot(1:length(nb18$V4),nb18$V4)
+dev.off()
+
+###############################################
+
+zgrep '^chr18' /home/jmiller1/QTL_Map_Raw/popgen/vcf/NBH.vcf.gz | cut -f 1,2 > ~/QTL_agri/data/chr18_nbh.positions.vcf.txt
+wc -l ~/QTL_agri/data/chr18_nbh.positions.vcf.txt
+
+nb18 <- read.table('~/QTL_agri/data/chr18_nbh.positions.vcf.txt', sep="\t")
+png("/home/jmiller1/public_html/NBH_18_physpo_unfilt.png")
+plot(1:length(nb18$V2),nb18$V2)
+dev.off()
+
+###############################################
+## plink file
+
+grep '^18' ~/QTL_Map_Raw/popgen/plinkfiles/ind.pops/NBH.map | cut -f 1,4 > ~/QTL_agri/data/chr18_nbh.positions.plink.txt
+wc -l ~/QTL_agri/data/chr18_nbh.positions.plink.txt
+
+nb18p <- read.table('~/QTL_agri/data/chr18_nbh.positions.plink.txt', sep="\t", stringsAsFactors=F)
+png("/home/jmiller1/public_html/NBH_18_physpo_unfilt_plink.png")
+plot(1:length(nb18p$V2),nb18p$V2)
+dev.off()
+
+###############################################
+nb18pc <- read.table(file.path(mpath, paste0(pop, ".unphased.f2.csvr")), sep=",", stringsAsFactors=F)
+nb18pc <- nb18pc[grep('^18:',nb18pc[,'V1']),]
+nb18pc[,'V1'] <- as.numeric(gsub(".*:","",nb18pc[,'V1']))
+
+png("/home/jmiller1/public_html/NBH_18_physpo_unfilt_plink_rqtl_converted.png")
+plot(1:length(nb18pc[,'V1']),nb18pc[,'V1'])
+dev.off()
+
+###############################################
+gt <- geno.table(cross,chr=18)
+Y1 <- as.numeric(gsub(".*:","",rownames(gt)))
+X1 <- 1:length(Y1)
+names(X1) <-  as.numeric(gsub(".*:","",rownames(gt)))
+
+Y2 <- sort(as.numeric(gsub(".*:","",DROP)))
+X2 <- X1[as.character(Y2)]
+
+
+
+png("/home/jmiller1/public_html/NBH_18_physpo_unfilt.png")
+plot(X1,Y1)
+points(X2,Y2,col='red', pch=18)
+dev.off()
+
+
+###############################################
+NBH.mapped.tsp.csv
+
+> c2 <- read.cross(
++  file = fl,
+
++  format = "csv", genotypes=c("1","2","3"),
++  estimate.map = FALSE
++ )
+
+gt <- geno.table(c2,chr=18)
+
+Y1 <- as.numeric(gsub(".*:","",rownames(gt)))
+X1 <- 1:length(Y1)
+names(X1) <-  as.numeric(gsub(".*:","",rownames(gt)))
+
+png("/home/jmiller1/public_html/NBH_18_physpo_postfilt.png")
+plot(X1,Y1)
+###points(X2,Y2,col='red', pch=18)
+dev.off()
