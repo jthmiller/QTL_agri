@@ -25,9 +25,9 @@ gg_step2 <- reduce2grid(gg)
 
 full.norm.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5)
 
-add_int <- refineqtl(gg_step2, qtl= full.norm.add_only, formula=y ~ Q1+Q2+Q3+Q4, method="imp", model='binary')
+#add_int <- refineqtl(gg_step2, qtl= full.norm.add_only, formula=y ~ Q1+Q2+Q3+Q4, method="imp", model='binary')
 
-qtl_interaction <- addint(gg_step2, qtl=add_int, pheno.col=4, method="imp", formula=y~Q1+Q2+Q3+Q4, model='binary')
+#qtl_interaction <- addint(gg_step2, qtl=add_int, pheno.col=4, method="imp", formula=y~Q1+Q2+Q3+Q4, model='binary')
 
 ################################################################################
 
