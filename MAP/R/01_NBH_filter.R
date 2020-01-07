@@ -104,7 +104,7 @@ for(Z in 1:24){
    reorg.2 <- switchAlleles(reorg.2, markers = markernames(reorg.2,chr=2))
    reorg.2 <- formLinkageGroups(reorg.2, max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
    swits <<- c(swits,swits2[swits2 %in% markernames(reorg.3, chr=1)])
- }io09ix
+  }
 
 
  subs <- markernames(reorg.2, chr=1)
