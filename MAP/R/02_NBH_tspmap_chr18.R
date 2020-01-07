@@ -20,7 +20,7 @@ rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
 ################################################################################
-toss.missing <- c("NBH_5525","NBH_6177","NBH_5528")
+toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137")
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
 bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 1),])
 ################################################################################
@@ -37,6 +37,13 @@ fl <- file.path(paste0(pop,'_pre_reform_markers.csv'))
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 cross18 <- subset(cross,chr=18)
+reorg18_10 <- formLinkageGroups(cross18, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
+390 175 39 10 4 3 3 3 2 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+
+reorg18_20 <- formLinkageGroups(reorg18_20, max.rf = 0.1, min.lod = 20, reorgMarkers = TRUE)
+390 128 46 39 9 4 3 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 11 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+
+
 cross1 <- subset(cross,chr=1)
 
 i <- 2

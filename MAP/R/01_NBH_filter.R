@@ -83,6 +83,9 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 ################################################################################
 
 cross.par <- subset(cross, ind=cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
+DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
+DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
+DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
 
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
@@ -90,11 +93,20 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_N
 ################################################################################
 
 for(Z in 1:24){
-
  reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
  swits <- markernames(reorg.1, chr=2)
  reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
  reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
+ r2gt <- geno.table(reorg.2,chr=2)
+
+ if(mean(r2gt$P.value) > 0.0001 & length(r2gt$P.value) > 10 ){
+   swits2 <- markernames(reorg.2, chr=2)
+   reorg.2 <- switchAlleles(reorg.2, markers = markernames(reorg.2,chr=2))
+   reorg.2 <- formLinkageGroups(reorg.2, max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
+   swits <<- c(swits,swits2[swits2 %in% markernames(reorg.3, chr=1)])
+ }io09ix
+
+
  subs <- markernames(reorg.2, chr=1)
  drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
  cross <<- switchAlleles(cross, swits)
