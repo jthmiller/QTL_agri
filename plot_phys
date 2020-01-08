@@ -76,3 +76,28 @@ png("/home/jmiller1/public_html/NBH_18_physpo_postfilt.png")
 plot(X1,Y1)
 ###points(X2,Y2,col='red', pch=18)
 dev.off()
+
+#########
+pop <- 'NBH'
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
+fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
+##########
+
+cross <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
+
+
+
+png("/home/jmiller1/public_html/NBH_physpo_filt.png", width=1500, height=1500)
+par(mfrow=c(4,6))
+for (i in 1:24){
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+ X <- 1:length(Y)
+ plot(X,Y)
+ }
+dev.off()

@@ -2,7 +2,7 @@
 ### first run combine pops for multi-pop cross objects
 ### plot with ER and NBH only
 
-pop <- 'ELR'
+pop <- 'NBH'
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library("ggridges")
@@ -15,8 +15,7 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-load('08_phys_plots_pos.rsave')
-
+load(file.path(mpath,'08_phys_plots_pos.rsave'))
 ################################################
 ### get positions of genes
 nbh.gens <- cnv.ahrs(cross.nbh, AHRdf = AHR.bed, EXP = F)
@@ -57,7 +56,7 @@ qtl.rank <- all.rank[which(all.rank$chr %in% c(1,2,5,8,10,12,13,18,23,24)),]
 minor.rank <- all.rank[which(all.rank$chr %in% c(8, 13, 23, 24)), ]
 incompat.rank <- all.rank[which(all.rank$chr %in% c(8, 13)), ]
 
-qtl_pg <- c(2,8, 13, 18, 24)
+qtl_pg <- c(2,8,9,13,18,24)
 ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
 ################################################
 
@@ -77,7 +76,7 @@ scan_ELR <- scan.bin.imp.ELR
 scan_NEW <- scan.bin.imp.NEW
 scan_BRP <- scan.bin.imp.BRP
 
-png("/home/jmiller1/public_html/nbh.png", width = 3000)
+png("/home/jmiller1/public_html/NBH.png", width = 3000)
 plot(scan.bin.imp.NBH)
 dev.off()
 
@@ -99,9 +98,8 @@ melted <- rbind(melted.nbh, melted.new, melted.elr, melted.brp)
 melted$pop <- factor(melted$pop, levels = rev(c("NBH", "BRP", "NEW", "ELR")))
 
 ## Total CM length of NBH. Rescale to NBH
-
 mxes <- sapply(1:24,get_mxes,Y=themelt.nbh)
-mxes <- sapply(1:24,get_mxes,Y=themelt.elr)
+#mxes <- sapply(1:24,get_mxes,Y=themelt.elr)
 
 nbh.rescale <- melso(themelt.nbh)
 new.rescale <- melso(themelt.new)

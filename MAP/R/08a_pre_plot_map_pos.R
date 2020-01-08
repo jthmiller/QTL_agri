@@ -1,7 +1,7 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
 
-pop <- 'ELR'
+pop <- 'NBH'
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library("ggridges")
@@ -89,6 +89,7 @@ cor_nbh <- get_cor(cross.NBH)
 cor_elr <- get_cor(cross.ELR)
 cor_brp <- get_cor(cross.BRP)
 cor_new <- get_cor(cross.NEW)
+################################################
 
 cross.BRP <- flip.order(cross.BRP, names(cor_brp)[which(cor_brp < 0)])
 cross.NBH <- flip.order(cross.NBH, names(cor_nbh)[which(cor_nbh < 0)])
@@ -152,7 +153,5 @@ themelt.elr.mr$pop <- 'ELR'
 themelt.nbh.mr$pop <- 'NBH'
 themelt.new.mr$pop <- 'NEW'
 
-save.image('08_phys_plots_pos.rsave')
+save.image(file.path(mpath,'08_phys_plots_pos.rsave'))
 ################################################
-################################################
-### FROM MAP MAPPING

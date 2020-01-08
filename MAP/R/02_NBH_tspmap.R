@@ -36,6 +36,8 @@ png(paste0('~/public_html/NBH_gts_preclean',i,'.png'),height=2500,width=4500)
  plotGeno(cross, chr=i, cex=2)
 dev.off()
 
+##cross <- calc.errorlod(cross, err=0.05)
+
 ################################################################################
 cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
 cross <- calc.errorlod(cross, err=0.05)
