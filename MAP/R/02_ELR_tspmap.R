@@ -24,6 +24,7 @@ cross$pheno$sex <- sex.vec
 ################################################################################
 
 ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
+
 cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
  maxit = 1, tol = 0.1, sex.sp = F)
 
