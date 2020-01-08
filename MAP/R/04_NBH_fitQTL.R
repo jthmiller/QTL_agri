@@ -48,7 +48,7 @@ write.table(to_write, fl, sep=',',row.names=F,quote=F,col.names = F)
 
 ################################################################################
 ################################################################################
-
+## Read cross
 cross <- read.cross(
  file = fl,
  format = "csv", genotypes=c("1","2","3"),
@@ -57,6 +57,15 @@ cross <- read.cross(
 
 cross <- sim.geno(cross)
 cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
+
+################################################################################
+################################################################################
+
+mfl <- paste0(pop,'_markernames.tsv')
+mfl <- file.path(mpath,mfl)
+
+write.table(markernames(cross), mfl)
+################################################################################
 
 ## binary
 scan.bin.em <- scanone(cross, method = "em", model = "binary", pheno.col = 4)

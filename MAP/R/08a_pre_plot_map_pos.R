@@ -100,10 +100,13 @@ cross.ELR <- flip.order(cross.ELR, names(cor_elr)[which(cor_elr < 0)])
 ################################################
 cross.nbh <- sim.geno(cross.NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
-cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
 cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
+
+
+cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
+  map.function = "kosambi", stepwidth = "fixed")
+
 cross.brp <- sim.geno(cross.BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
 ################################################

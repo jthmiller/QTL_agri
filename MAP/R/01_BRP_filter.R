@@ -27,20 +27,27 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
 pars <- c('BRP_BRP1M','BRP_BRP8F','BRP_BRP1F','BRP_BRP8M')
 
 ##################################################################################
+
+mfl <- file.path(mpath,'NBH_markernames.tsv')
+nbh_marks <- read.table(mfl)
+
+cross <- pull.markers(cross,nbh_marks$x)
+
+##################################################################################
 ##### Switch phase and keep only parent conf markers #############################
 ##### ENRICH FOR AAxBB ##########################################################
-##
+
 #### DROP DANGEROUS ABxAB in grandparents ##################################################
-DROP1M <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP1M',]
-DROP1F <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP1F',]
-DROP8M <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP8M',]
-DROP8F <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP8F',]
-
-m <- markernames(cross)[which(DROP1M == 2 | DROP8M == 2)]
-f <- markernames(cross)[which(DROP1F == 2 | DROP8F == 2)]
-mf <- intersect(m,f)
-
-cross <- drop.markers(cross, mf)
+## DROP1M <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP1M',]
+## DROP1F <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP1F',]
+## DROP8M <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP8M',]
+## DROP8F <- pull.geno(cross)[cross$pheno$ID=='BRP_BRP8F',]
+##
+## m <- markernames(cross)[which(DROP1M == 2 | DROP8M == 2)]
+## f <- markernames(cross)[which(DROP1F == 2 | DROP8F == 2)]
+## mf <- intersect(m,f)
+##
+## cross <- drop.markers(cross, mf)
 
 ##m <- names(DROP1M)[which(DROP1M == DROP8M)]
 ##f <- names(DROP1F)[which(DROP1F == DROP8F)]
@@ -94,7 +101,6 @@ bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 5),])
 #bfixA <- rownames(gt[which(gt$P.value > 0.000001 & gt$missing < 5),])
 ################################################################################
 
-#cros.bk <- cross
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,pars))
@@ -103,15 +109,25 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,pars))
 png(paste0('~/public_html/BRP_pvals.png'))
  hist(log10(gt$missing))
 dev.off()
-
+reorg.3
 for(Z in 1:24){
- reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.125, min.lod = 14, reorgMarkers = TRUE)
+ reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.15, min.lod = 10, reorgMarkers = TRUE)
  swits <- markernames(reorg.1, chr=2)
  reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
- reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.125, min.lod = 14, reorgMarkers = TRUE)
+ reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.15, min.lod = 10, reorgMarkers = TRUE)
+ r2gt <- geno.table(reorg.2,chr=2)
+
+ if(mean(r2gt$P.value) > 0.0001 & length(r2gt$P.value) > 10 ){
+   swits2 <- markernames(reorg.2, chr=2)
+   reorg.2 <- switchAlleles(reorg.2, markers = markernames(reorg.2,chr=2))
+   reorg.2 <- formLinkageGroups(reorg.2, max.rf = 0.15, min.lod = 10, reorgMarkers = TRUE)
+   swits <<- c(swits,swits2[swits2 %in% markernames(reorg.2, chr=1)])
+  }
+
  subs <- markernames(reorg.2, chr=1)
  drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
  cross <<- switchAlleles(cross, swits)
+ cross.par <<- switchAlleles(cross.par, swits)
  cross <<- drop.markers(cross, drops)
 }
 

@@ -99,14 +99,25 @@ bfixA <- rownames(gt[which(gt$P.value > 0.001 & gt$missing < 5),])
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss_missing,"NEW_NEW911M","NEW_NEW911F"))
 ################################################################################
+
 for(Z in 1:24){
- reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.15, min.lod = 15, reorgMarkers = TRUE)
+ reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
  swits <- markernames(reorg.1, chr=2)
  reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
- reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.15, min.lod = 15, reorgMarkers = TRUE)
+ reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
+ r2gt <- geno.table(reorg.2,chr=2)
+
+ if(mean(r2gt$P.value) > 0.0001 & length(r2gt$P.value) > 10 ){
+   swits2 <- markernames(reorg.2, chr=2)
+   reorg.2 <- switchAlleles(reorg.2, markers = markernames(reorg.2,chr=2))
+   reorg.2 <- formLinkageGroups(reorg.2, max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
+   swits <<- c(swits,swits2[swits2 %in% markernames(reorg.2, chr=1)])
+  }
+
  subs <- markernames(reorg.2, chr=1)
  drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
  cross <<- switchAlleles(cross, swits)
+ cross.par <<- switchAlleles(cross.par, swits)
  cross <<- drop.markers(cross, drops)
 }
 
