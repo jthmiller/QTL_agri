@@ -158,3 +158,18 @@ themelt.new.mr$pop <- 'NEW'
 
 save.image(file.path(mpath,'08_phys_plots_pos.rsave'))
 ################################################
+
+## cross.BRP <- read.cross(format = "csv", dir = mpath, file = 'BRP.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross.ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+##cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+
+fl <- file.path('BRP_unmapped_filtered.csv')
+cross.BRP <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
+fl <- file.path('NEW_unmapped_filtered.csv')
+cross.NEW <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+################################################
+
+new_map <- conv_maps(cross.base=cross.NBH, cross.interp=cross.NEW)
+brp_map <- conv_maps(cross.base=cross.NBH, cross.interp=cross.BRP)

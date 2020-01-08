@@ -1469,6 +1469,37 @@ plot_stat <- function(Z,ch,poplot,colnm){
 
 }
 ################################################
+
+conv_maps <- function(cross.base, cross.interp){
+
+ base_map <- convert2cross2(cross.base)
+ base_map$pmap <- base_map$gmap
+ base_map$pmap <- lapply(base_map$pmap, function(X) {
+   return(as.numeric(gsub("[0-9]+:", "", names(X))))
+ })
+
+ for (i in 1:24) {
+   names(base_map$pmap[[i]]) <- names(base_map$gmap[[i]])
+ }
+ ################################################
+
+
+ interp_this <- convert2cross2(cross.interp)
+ interp_this$pmap <- interp_this$gmap
+ interp_this$pmap <- lapply(interp_this$pmap, function(X) {
+   return(as.numeric(gsub("[0-9]+:", "", names(X))))
+ })
+
+ for (i in 1:24) {
+   names(interp_this$pmap[[i]]) <- names(interp_this$gmap[[i]])
+ }
+
+ return(interp_map(interp_this$pmap, base_map$pmap, base_map$gmap))
+}
+################################################
+
+
+################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
 ##environment(parallel.droponemarker) <- asNamespace('qtl')
