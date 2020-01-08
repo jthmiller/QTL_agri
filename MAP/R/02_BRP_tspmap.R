@@ -51,7 +51,7 @@ cross <-tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_pa
 pos <- as.numeric(gsub(".*:","",markernames(cross)))
 map <- as.numeric(pull.map(cross)[[1]])
 
-if(cor(pos,map) < 0){
+if(cor(pos,map, use="complete.obs") < 0){
  cross <<- flip.order(cross, i)
 }
 
