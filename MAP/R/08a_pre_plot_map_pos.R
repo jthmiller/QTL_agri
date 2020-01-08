@@ -78,45 +78,174 @@ AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 
 ## Phenotypes
 ################################################
-cross.BRP <- read.cross(format = "csv", dir = mpath, file = 'BRP.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross_BRP <- read.cross(format = "csv", dir = mpath, file = 'BRP.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross_ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross_NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
+cross_NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 ################################################
 
 ################################################
-cor_nbh <- get_cor(cross.NBH)
-cor_elr <- get_cor(cross.ELR)
-cor_brp <- get_cor(cross.BRP)
-cor_new <- get_cor(cross.NEW)
+cor_nbh <- get_cor(cross_NBH)
+cor_elr <- get_cor(cross_ELR)
+cor_brp <- get_cor(cross_BRP)
+cor_new <- get_cor(cross_NEW)
 ################################################
 
-cross.BRP <- flip.order(cross.BRP, names(cor_brp)[which(cor_brp < 0)])
-cross.NBH <- flip.order(cross.NBH, names(cor_nbh)[which(cor_nbh < 0)])
-cross.NEW <- flip.order(cross.NEW, names(cor_new)[which(cor_new < 0)])
-cross.ELR <- flip.order(cross.ELR, names(cor_elr)[which(cor_elr < 0)])
+cross_BRP <- flip.order(cross_BRP, names(cor_brp)[which(cor_brp < 0)])
+cross_NBH <- flip.order(cross_NBH, names(cor_nbh)[which(cor_nbh < 0)])
+cross_NEW <- flip.order(cross_NEW, names(cor_new)[which(cor_new < 0)])
+cross_ELR <- flip.order(cross_ELR, names(cor_elr)[which(cor_elr < 0)])
+
+################################################
+nbh_gmap <- pull.map(cross_NBH)
+nbh_pmap <- pull.map(cross_NBH)
+
+nbh_names <- lapply(nbh_pmap, function(X) {
+   names(X)
+ })
+
+nbh_pmap <- lapply(nbh_pmap, function(X) {
+   return(as.numeric(gsub("[0-9]+:", "", names(X))))
+ })
+
+ for (i in 1:24) {
+   names(nbh_pmap[[i]]) <- names(nbh_gmap[[i]])
+ }
+
+
+
+
+map_names <- mapply(function(X,Y){ X[X %in% Y] },X=nbh_names,Y=pmap_names)
+
+
+mapply(match,pmap_names,map_names)
+
+
+gmap <- pull.map(cross_NEW)
+pmap <- pull.map(cross_NEW)
+
+pmap_names <- lapply(pmap, function(X) {
+   names(X)
+ })
+
+
+
+pmap <- lapply(pmap, function(X) {
+   return(as.numeric(gsub("[0-9]+:", "", names(X))))
+ })
+
+chr <- lapply(pmap, function(X) {
+   return(as.numeric(gsub(":[0-9]+", "", names(X))))
+ })
+
+ for (i in 1:24) {
+   names(pmap[[i]]) <- names(gmap[[i]])
+ }
+
+pos <- unlist(pmap,use.names = F)
+chr <- unlist(chr,use.names = F)
+
+old <- data.frame(chr=chr, pos=pos)
+
+newmap <- interpPositions(old, nbh_pmap, nbh_gmap)
+
+
+ interp_this <- cross.interp
+ interp_this$pmap <- interp_this$gmap
+
+
+ for (i in 1:24) {
+   names(interp_this$pmap[[i]]) <- names(interp_this$gmap[[i]])
+ }
+
+ return(interp_map(interp_this$pmap, base_map$pmap, base_map$gmap))
+}
+
+interpPositions(oldpositions, oldmap, newmap)
+
+
+
+
+
+
+################################################
+cross.ELR <- convert2cross2(cross_ELR)
+cross.NBH <- convert2cross2(cross_NBH)
+
+fl <- file.path('BRP_unmapped_filtered.csv')
+cross.BRP <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross.BRP <- convert2cross2(cross_BRP)
+
+fl <- file.path('NEW_unmapped_filtered.csv')
+cross.NEW <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross.NEW <- convert2cross2(cross_NEW)
 ################################################
 
 ################################################
-cross.nbh <- sim.geno(cross.NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-
-
-cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
-
-cross.brp <- sim.geno(cross.BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
-  map.function = "kosambi", stepwidth = "fixed")
+new_map <- conv_maps(cross.base=cross.NBH, cross.interp=cross.NEW)
+brp_map <- conv_maps(cross.base=cross.NBH, cross.interp=cross.BRP)
+cross.BRP$gmap <- brp_map
+cross.NEW$gmap <- new_map
 ################################################
 
+## Reduced marker set to cm dist
+nbh_sub_map <- reduce_markers(cross.NBH$gmap, min_distance = 0.5)
+elr_sub_map <- reduce_markers(cross.ELR$gmap, min_distance = 0.5)
+new_sub_map <- reduce_markers(cross.NEW$gmap, min_distance = 0.05)
+brp_sub_map <- reduce_markers(cross.BRP$gmap, min_distance = 0.5)
 ################################################
-cross.nbh <- reduce2grid(cross.nbh)
-cross.new <- reduce2grid(cross.new)
-cross.elr <- reduce2grid(cross.elr)
-cross.brp <- reduce2grid(cross.brp)
+
+nbh_sub <- pull_markers(cross.NBH,unlist(lapply(nbh_sub_map,names)))
+elr_sub <- pull_markers(cross.ELR,unlist(lapply(elr_sub_map,names)))
+new_sub <- pull_markers(cross.NEW,unlist(lapply(new_sub_map,names)))
+brp_sub <- pull_markers(cross.BRP,unlist(lapply(brp_sub_map,names)))
+
+
+try <- calc_genoprob(cross.NBH,)
+scan1 <-
+
+
+
+
+
+cross.nbh <- sim_geno(cross.NBH, map=cross.NBH$gmap, n_draws = 500, error_prob = 0.025,
+  map_function = "kosambi", cores = 4)
+
+cross.elr <- sim_geno(cross.ELR, map=cross.ELR$gmap, n_draws = 500, error_prob = 0.025,
+  map_function = "kosambi", cores = 4)
+
+cross.new <- sim_geno(cross.NEW, map=cross.NEW$gmap, n_draws = 500, error_prob = 0.05,
+  map_function = "kosambi", cores = 4)
+
+cross.brp <- sim_geno(cross.BRP, map=cross.BRP$gmap, n_draws = 500, error_prob = 0.05,
+  map_function = "kosambi", cores = 4)
+
+##interp_genoprob??
 ################################################
+## qtl 1
+#cross.elr <- sim.geno(cross.ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
+#  map.function = "kosambi", stepwidth = "fixed")
+#cross.new <- sim.geno(cross.NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
+#  map.function = "kosambi", stepwidth = "fixed")
+#
+#cross.brp <- sim.geno(cross.BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
+#  map.function = "kosambi", stepwidth = "fixed")
+################################################
+
+
+## Psuedo marker set
+nbh_pmar <- insert_pseudomarkers(cross.nbh$gmap, step=1)
+elr_pmar <- insert_pseudomarkers(cross.elr$gmap, step=1)
+new_pmar <- insert_pseudomarkers(cross.new$gmap, step=1)
+brp_pmar <- insert_pseudomarkers(cross.brp$gmap, step=1)
+################################################
+
+##################################################
+##cross.nbh <- reduce2grid(cross.nbh)
+##cross.new <- reduce2grid(cross.new)
+##cross.elr <- reduce2grid(cross.elr)
+##cross.brp <- reduce2grid(cross.brp)
+##################################################
 
 ################################################
 scan.norm.imp.NBH <- scanone(cross.nbh, method = "imp", model = "normal", pheno.col = 5)
@@ -133,6 +262,9 @@ scan.bin.mr.NBH <-  scanone(cross.nbh, method = "mr", model = "binary", pheno.co
 scan.bin.mr.ELR <-  scanone(cross.elr, method = "mr", model = "binary", pheno.col = 4)
 scan.bin.mr.BRP <-  scanone(cross.brp, method = "mr", model = "binary", pheno.col = 4)
 scan.bin.mr.NEW <-  scanone(cross.new, method = "mr", model = "binary", pheno.col = 4)
+
+
+out <- scan1snps(probs, DOex$pmap, DOex$pheno, model='binary')
 ################################################
 
 ### use scanone for plots
@@ -163,13 +295,3 @@ save.image(file.path(mpath,'08_phys_plots_pos.rsave'))
 cross.ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 cross.NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
 ##cross.NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-
-fl <- file.path('BRP_unmapped_filtered.csv')
-cross.BRP <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
-fl <- file.path('NEW_unmapped_filtered.csv')
-cross.NEW <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-################################################
-
-new_map <- conv_maps(cross.base=cross.NBH, cross.interp=cross.NEW)
-brp_map <- conv_maps(cross.base=cross.NBH, cross.interp=cross.BRP)

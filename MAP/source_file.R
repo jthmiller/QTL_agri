@@ -1472,7 +1472,7 @@ plot_stat <- function(Z,ch,poplot,colnm){
 
 conv_maps <- function(cross.base, cross.interp){
 
- base_map <- convert2cross2(cross.base)
+ base_map <- cross.base
  base_map$pmap <- base_map$gmap
  base_map$pmap <- lapply(base_map$pmap, function(X) {
    return(as.numeric(gsub("[0-9]+:", "", names(X))))
@@ -1483,7 +1483,7 @@ conv_maps <- function(cross.base, cross.interp){
  }
  ################################################
 
- interp_this <- convert2cross2(cross.interp)
+ interp_this <- cross.interp
  interp_this$pmap <- interp_this$gmap
  interp_this$pmap <- lapply(interp_this$pmap, function(X) {
    return(as.numeric(gsub("[0-9]+:", "", names(X))))
