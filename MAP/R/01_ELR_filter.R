@@ -105,17 +105,6 @@ for(Z in 1:24){
  cross <<- drop.markers(cross, drops)
 }
 
-for(Z in 1:24){
- reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
- swits <- markernames(reorg.1, chr=2)
- reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
- reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.1, min.lod = 20, reorgMarkers = TRUE)
- subs <- markernames(reorg.2, chr=1)
- drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
- cross <<- switchAlleles(cross, swits)
- cross <<- drop.markers(cross, drops)
-}
-
 
 fl <- file.path(mpath,'ELR_unmapped_filtered')
 write.cross(cross,filestem=fl,format="csv")

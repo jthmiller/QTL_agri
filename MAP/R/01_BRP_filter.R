@@ -30,7 +30,6 @@ pars <- c('BRP_BRP1M','BRP_BRP8F','BRP_BRP1F','BRP_BRP8M')
 
 mfl <- file.path(mpath,'NBH_markernames.tsv')
 nbh_marks <- read.table(mfl)
-
 cross <- pull.markers(cross,nbh_marks$x)
 
 ##################################################################################
@@ -97,8 +96,9 @@ toss.missing <- c("BRP_2535","BRP_2410","BRP_2687","BRP_2710")
 ################################################################################
 #### Pvalue and Missing ##############################################
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,pars)))
-bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 5),])
-#bfixA <- rownames(gt[which(gt$P.value > 0.000001 & gt$missing < 5),])
+bfixA <- rownames(gt[which(gt$P.value > 0.00001),])
+##bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 5),])
+##bfixA <- rownames(gt[which(gt$P.value > 0.000001 & gt$missing < 5),])
 ################################################################################
 
 ###### FILTER #######################################################
@@ -109,28 +109,6 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,pars))
 png(paste0('~/public_html/BRP_pvals.png'))
  hist(log10(gt$missing))
 dev.off()
-reorg.3
-for(Z in 1:24){
- reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.15, min.lod = 10, reorgMarkers = TRUE)
- swits <- markernames(reorg.1, chr=2)
- reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
- reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.15, min.lod = 10, reorgMarkers = TRUE)
- r2gt <- geno.table(reorg.2,chr=2)
-
- if(mean(r2gt$P.value) > 0.0001 & length(r2gt$P.value) > 10 ){
-   swits2 <- markernames(reorg.2, chr=2)
-   reorg.2 <- switchAlleles(reorg.2, markers = markernames(reorg.2,chr=2))
-   reorg.2 <- formLinkageGroups(reorg.2, max.rf = 0.15, min.lod = 10, reorgMarkers = TRUE)
-   swits <<- c(swits,swits2[swits2 %in% markernames(reorg.2, chr=1)])
-  }
-
- subs <- markernames(reorg.2, chr=1)
- drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
- cross <<- switchAlleles(cross, swits)
- cross.par <<- switchAlleles(cross.par, swits)
- cross <<- drop.markers(cross, drops)
-}
-
 
 fl <- file.path(mpath,'BRP_unmapped_filtered')
 write.cross(cross,filestem=fl,format="csv")
