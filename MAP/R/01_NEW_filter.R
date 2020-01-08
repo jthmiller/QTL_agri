@@ -100,7 +100,6 @@ cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss_missing,"NEW_NEW911M","NEW_NEW911F"))
 ################################################################################
 for(Z in 1:24){
-
  reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.15, min.lod = 15, reorgMarkers = TRUE)
  swits <- markernames(reorg.1, chr=2)
  reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
