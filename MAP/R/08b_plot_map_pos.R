@@ -23,7 +23,7 @@ new.gens <- cnv.ahrs(cross.new, AHRdf = AHR.bed, EXP = F)
 elr.gens <- cnv.ahrs(cross.elr, AHRdf = AHR.bed, EXP = F)
 brp.gens <- cnv.ahrs(cross.brp, AHRdf = AHR.bed, EXP = F)
 
-qtl.gens <- nbh.gens[which(nbh.gens$chr %in% c(1, 2, 5, 8, 10, 12, 13, 18, 24)),]
+qtl.gens <- nbh.gens[which(nbh.gens$chr %in% c(1, 2, 5, 8, 9, 10, 12, 13, 18, 24)),]
 minor.gens <- nbh.gens[which(nbh.gens$chr %in% c(8, 13, 23, 24)), ]
 incompat.gens <- nbh.gens[which(nbh.gens$chr %in% c(8, 13)), ]
 qtl_pg <- c(2,8, 13, 18, 24)
@@ -32,10 +32,10 @@ ol.gens <- nbh.gens[which(nbh.gens$chr %in% qtl_pg), ]
 
 ################################################
 ### ggplot popgen locations
-nbh.popgen <- read.table("outliersNBH.txt.ncbi.lifted", sep = "\t", header = T)
-new.popgen <- read.table("outliersNYC.txt.ncbi.lifted", sep = "\t", header = T)
-elr.popgen <- read.table("outliersER.txt.ncbi.lifted", sep = "\t", header = T)
-brp.popgen <- read.table("outliersBP.txt.ncbi.lifted", sep = "\t", header = T)
+nbh.popgen <- read.table(file.path(mpath,"outliersNBH.txt.ncbi.lifted"), sep = "\t", header = T)
+new.popgen <- read.table(file.path(mpath,"outliersNYC.txt.ncbi.lifted"), sep = "\t", header = T)
+elr.popgen <- read.table(file.path(mpath,"outliersER.txt.ncbi.lifted"), sep = "\t", header = T)
+brp.popgen <- read.table(file.path(mpath,"outliersBP.txt.ncbi.lifted"), sep = "\t", header = T)
 ################################################
 
 ################################################
@@ -44,11 +44,14 @@ new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
 nbh.rank <- cnv.popgen(cross.nbh, nbh.popgen, top = 50)
 elr.rank <- cnv.popgen(cross.nbh, elr.popgen, top = 50)
 brp.rank <- cnv.popgen(cross.nbh, brp.popgen, top = 50)
+################################################
 
+################################################
 nbh.rank$pop <- "NBH"
 new.rank$pop <- "NEW"
 elr.rank$pop <- "ELR"
 brp.rank$pop <- "BRP"
+################################################
 
 all.rank <- rbind(new.rank, nbh.rank, elr.rank, brp.rank)
 all.rank$pop <- factor(all.rank$pop, levels = c("NBH", "BRP", "NEW", "ELR"))
@@ -80,8 +83,16 @@ png("/home/jmiller1/public_html/NBH.png", width = 3000)
 plot(scan.bin.imp.NBH)
 dev.off()
 
+png("/home/jmiller1/public_html/ELR.png", width = 3000)
+plot(scan.bin.imp.ELR)
+dev.off()
+
 png("/home/jmiller1/public_html/BRP.png", width = 3000)
 plot(scan.bin.imp.BRP)
+dev.off()
+
+png("/home/jmiller1/public_html/NEW.png", width = 3000)
+plot(scan.bin.imp.NEW)
 dev.off()
 
 
@@ -137,7 +148,17 @@ names(popcol)[2] <- 'BRP'
 
 ################################################
 ################################################
+## use 	no_annot_.qtl.png
+
+
+
+
+
+
+
 ################################################
+################################################
+##no
 p <- ggplot(themelt.nbh, aes(x = pos, y = lod))
 png("/home/jmiller1/public_html/all_popgen_rank_scaled.qtl.png", width = 3000)
 p + facet_wrap(~chr, scales = "free_x", nrow = 1, ncol = 24) + scale_y_continuous(limits = c(-12,

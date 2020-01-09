@@ -1,0 +1,58 @@
+
+newmap <- interpPositions(NEW_info,nbh_pmap, pull.map(NBH_NEW))
+oldpositions <- NEW_info
+oldmap <- nbh_pmap
+newmap <- pull.map(NBH_NEW)
+
+function (oldpositions, oldmap, newmap)
+{
+    orig.rownames <- rownames(oldpositions)
+
+    if (is.null(rownames(oldpositions))){
+        rownames(oldpositions) <- paste("temprn", 1:nrow(oldpositions),sep = "")
+    } else {
+        rownames(oldpositions) <- paste("temprn", rownames(oldpositions),sep = "")
+    }
+
+    oldchrnum <- match(oldpositions$chr, names(oldmap))
+    newchrnum <- match(oldpositions$chr, names(newmap))
+    missingchr <- is.na(oldchrnum) | is.na(newchrnum)
+
+    if (any(missingchr))
+        warning("Chromosomes ", paste(sort(unique(oldpositions$chr[missingchr])),
+            collapse = ", "), " not found")
+
+    newpositions <- cbind(oldpositions, newpos = rep(NA, nrow(oldpositions)))
+
+    u <- unique(oldchrnum)
+
+    for (i in seq(along = u)) {
+        chrnam <- names(oldmap)[u[i]]
+
+        wholdpositions <- !missingchr & oldchrnum == u[i]
+        theposnames <- rownames(oldpositions)[wholdpositions]
+        if (!any(wholdpositions)) next
+
+        tempoldmap <- oldmap[[u[i]]]
+
+        tempoldmap.df <- data.frame(chr = rep(chrnam, length(tempoldmap)),pos = as.numeric(tempoldmap))
+
+        rownames(tempoldmap.df) <- names(tempoldmap)
+
+### two of that row name leads to issue
+
+        z <- rbind(tempoldmap.df, oldpositions[wholdpositions,])
+
+        tempoldmap.df <- rbind(tempoldmap.df, oldpositions[wholdpositions,, drop = FALSE])
+
+        tempoldmap.df <- tempoldmap.df[order(tempoldmap.df$pos),, drop = FALSE]
+
+        tempoldmap.df$chr <- as.character(tempoldmap.df$chr)
+
+        result <- interpmap(tempoldmap.df, newmap[chrnam])
+
+        newpositions[theposnames, "newpos"] <- result[theposnames,"pos"]
+    }
+    rownames(newpositions) <- orig.rownames
+    newpositions
+}

@@ -29,9 +29,9 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
 ### ENRICH FOR AAxBB
 ##cross.bk <- cross
 ## DROP DANGEROUS ABxAB cross
-DROP <- pull.geno(cross)[cross$pheno$ID=='BLI_BI1124M',]
-DROP <- names(DROP)[which(as.numeric(DROP)==2)]
-cross <- drop.markers(cross,DROP)
+#DROP <- pull.geno(cross)[cross$pheno$ID=='BLI_BI1124M',]
+#DROP <- names(DROP)[which(as.numeric(DROP)==2)]
+#cross <- drop.markers(cross,DROP)
 ################################################################################
 
 ### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
@@ -101,7 +101,6 @@ for(Z in 1:24){
  subs <- markernames(reorg.2, chr=1)
  drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
  cross <<- switchAlleles(cross, swits)
- cross.par <<- switchAlleles(cross.par, swits)
  cross <<- drop.markers(cross, drops)
 }
 
