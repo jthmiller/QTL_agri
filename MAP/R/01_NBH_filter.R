@@ -103,30 +103,37 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_N
 ################################################################################
 
 ###### Retain markers that are linked ########
-for(Z in 1:24){
- reorg.1 <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
- swits <- markernames(reorg.1, chr=2)
- reorg.1 <- switchAlleles(reorg.1, markers = markernames(reorg.1,chr=2))
- reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
- r2gt <- geno.table(reorg.2,chr=2)
+LOD <- 20
+RF <- 0.18
 
- if(mean(r2gt$P.value) > 0.0001 & length(r2gt$P.value) > 10 ){
-   swits2 <- markernames(reorg.2, chr=2)
-   reorg.2 <- switchAlleles(reorg.2, markers = markernames(reorg.2,chr=2))
-   reorg.2 <- formLinkageGroups(reorg.2, max.rf = 0.2, min.lod = 20, reorgMarkers = TRUE)
-   swits <<- c(swits,swits2[swits2 %in% markernames(reorg.2, chr=1)])
+for(Z in 1:24){
+ reorg.1 <- subset(cross,chr=Z)
+ reorg.2 <- formLinkageGroups(reorg.1, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ reorg.2a <- reorg.2
+
+ for (i in 1:4){
+  swits <- markernames(reorg.2a, chr=1)
+  reorg.2a <<- switchAlleles(reorg.2a, markers = swits)
+  reorg.2a <<- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
   }
 
- subs <- markernames(reorg.2, chr=1)
- drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
+ ## added to chr 1 by switches
+ orig <- markernames(reorg.2, chr=1)
+ final <- markernames(reorg.2a, chr=1)
+ added <- final[!final %in% orig]
+
+ new_gts <- reorg.2a$geno[['1']]$data[1,added]
+ orig_gts <- reorg.1$geno[[Z]]$data[1,added]
+
+ same <- names(ind_gts[which(ind_gts == orig_gts)])
+ diff <- names(ind_gts)[!names(ind_gts) %in% same]
+ drops <- final[!final %in% markernames(reorg.1)]
+
  cross <<- switchAlleles(cross, swits)
- cross.par <<- switchAlleles(cross.par, swits)
  cross <<- drop.markers(cross, drops)
 }
 
-
-fl <- file.path(paste0(pop,'_unmapped_filtered'))
-fl <- file.path(mpath,fl)
+fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
 
 fl.par <- file.path(paste0(pop,'_parents_filtered')
