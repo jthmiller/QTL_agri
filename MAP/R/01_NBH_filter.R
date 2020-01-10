@@ -106,8 +106,6 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_N
 LOD <- 20
 RF <- 0.18
 
-for(Z in 1:24){
-
  for(Z in 1:24){
 
   all <- subset(cross,chr=Z)
