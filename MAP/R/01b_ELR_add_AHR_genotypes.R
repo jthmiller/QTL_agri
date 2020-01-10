@@ -1,5 +1,6 @@
 #!/bin/R
 ### Map QTLs 1 of 3
+pop <- 'ELR'
 debug.cross <- T
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library('qtl')

@@ -50,33 +50,6 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
 cross <- pull.markers(cross,bfixA)
 ################################################################################
 
-################################################################################
-
-if (any(i %in% c(1,2))){
-
- fla <-file.path(mpath, 'ER_ahr_aip_whoi_gt.csv')
- cross.ahr <- read.cross(file = fla,format = "csv", genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
- cross.ahr$pheno$bin <- ifelse(cross.ahr$pheno$Pheno > 2, 1 , 0)
- cross.ahr$pheno$pheno_norm <- round(nqrank(cross.ahr$pheno$Pheno))
-
- ahr2 <- pull.geno(cross.ahr)[,"AHR2a_del"]
- aip252 <- pull.geno(cross.ahr)[,"AIP_252"]
- aip261 <- pull.geno(cross.ahr)[,"AIP_261"]
-
- add_gts <- data.frame(ahr2,aip252,aip261,stringsAsFactors=F)
- rownames(add_gts) <- cross.ahr$pheno$ID
- add_gts <- add_gts[as.character(cross$pheno$ID),]
-
- if (i==1){ cross <- addmarker(cross,add_gts[,'ahr2'],'ahr2a',chr=1,pos=1) }
- if (i==2){
-  cross <- addmarker(cross,add_gts[,'aip261'],'aip261',chr=2,pos=1)
-  cross <- addmarker(cross,add_gts[,'aip252'],'aip252',chr=2,pos=1.5)
- }
-}
-
-################################################################################
-
 cross <-tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
 pos <- as.numeric(gsub(".*:","",markernames(cross)))

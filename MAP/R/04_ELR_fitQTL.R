@@ -60,7 +60,7 @@ cross <- read.cross(
 )
 
 cross <- sim.geno(cross)
-cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
+cross <- calc.genoprob(cross,step=1,error.prob=0.05,off.end=5)
 
 ## binary
 scan.bin.em <- scanone(cross, method = "em", model = "binary", pheno.col = 4)

@@ -93,11 +93,11 @@ cross <- read.cross(
 
 
 
-png("/home/jmiller1/public_html/NBH_physpo_filt.png", width=1500, height=1500)
+png("/home/jmiller1/public_html/ELR_physpo_filt.png", width=1500, height=1500)
 par(mfrow=c(4,6))
 for (i in 1:24){
  Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
  X <- 1:length(Y)
- plot(X,Y)
+ plot(X,Y, xlab=paste('chr',i), ylab='physical position')
  }
 dev.off()
