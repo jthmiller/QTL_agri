@@ -90,26 +90,3 @@ cross <- read.cross(
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE
 )
-
-######## Plot phys pos x marker order
-
-type="n"
-
-png("/home/jmiller1/public_html/ELR_NBH_physpo_filt.png", width=1500, height=1500)
-par(mfrow=c(4,6))
-for (i in 1:24){
- Y <- c(0, as.numeric(gsub(".*:","",markernames(cross_NBH,i))))
- X <- 1:length(Y)
-
- A <- c(0, as.numeric(gsub(".*:","",markernames(cross_ELR,i))))
- B <- 1:length(A)
-
-
- plot(X,Y, type="n", xlab=paste('chr',i), ylab='physical position')
-
- points(X,Y, col='blue')
- points(A,B, col='yellow')
-
-
- }
-dev.off()
