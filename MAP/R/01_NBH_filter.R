@@ -108,39 +108,41 @@ RF <- 0.18
 
 for(Z in 1:24){
 
- all <- subset(cross,chr=Z)
- reorg.2 <- formLinkageGroups(all, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- reorg.2a <- reorg.2
+ for(Z in 1:24){
 
-  ## switch it
- swits <- markernames(reorg.2a, chr=1)
- reorg.2a <- switchAlleles(reorg.2a, markers = swits)
- reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+  all <- subset(cross,chr=Z)
+  reorg.2 <- formLinkageGroups(all, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+  reorg.2a <- reorg.2
 
-  # switch it back
- swits <- markernames(reorg.2a, chr=1)
- reorg.2a <- switchAlleles(reorg.2a, markers = swits)
- reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+   ## switch it
+  swits <- markernames(reorg.2a, chr=1)
+  reorg.2a <- switchAlleles(reorg.2a, markers = swits)
+  reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
- ## added to chr 1 by switches
- orig1 <- markernames(reorg.2, chr=1)
- final <- markernames(reorg.2a, chr=1)
- added <- final[!final %in% orig1]
+   # switch it back
+  swits <- markernames(reorg.2a, chr=1)
+  reorg.2a <- switchAlleles(reorg.2a, markers = swits)
+  reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
- new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
- orig_gts <- as.matrix(all$geno[[Z]]$data[,added])
+  ## added to chr 1 by switches
+  orig1 <- markernames(reorg.2, chr=1)
+  final <- markernames(reorg.2a, chr=1)
+  added <- final[!final %in% orig1]
 
- new_gts[new_gts == 2] <- NA
- orig_gts[orig_gts == 2] <- NA
+  new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
+  orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
 
- switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]
+  new_gts[new_gts == 2] <- NA
+  orig_gts[orig_gts == 2] <- NA
 
- drops <- markernames(all)[!markernames(all) %in% final]
+  switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]
 
- cross <<- drop.markers(cross, drops)
- cross <<- switchAlleles(cross, switched)
+  drops <- markernames(all)[!markernames(all) %in% final]
 
-}
+  cross <<- drop.markers(cross, drops)
+  cross <<- switchAlleles(cross, switched)
+
+ }
 
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")

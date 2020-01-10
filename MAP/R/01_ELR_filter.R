@@ -83,7 +83,7 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'BLI_BI1124M','ELR_ER1124F'))
 ################################################################################
-LOD <- 12
+LOD <- 14
 RF <- 0.15
 
 for(Z in 1:24){
@@ -108,7 +108,7 @@ for(Z in 1:24){
  added <- final[!final %in% orig1]
 
  new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
- orig_gts <- as.matrix(all$geno[[Z]]$data[,added])
+ orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
 
  new_gts[new_gts == 2] <- NA
  orig_gts[orig_gts == 2] <- NA
