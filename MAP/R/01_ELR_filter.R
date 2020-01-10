@@ -86,7 +86,6 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'BLI_BI1124M','ELR
 LOD <- 12
 RF <- 0.15
 
-
 for(Z in 1:24){
 
  all <- subset(cross,chr=Z)
