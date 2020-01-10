@@ -60,7 +60,7 @@ cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
 
 ################################################################################
 ################################################################################
-
+## Write the markers to pull out in NEW and NBH
 mfl <- paste0(pop,'_markernames.tsv')
 mfl <- file.path(mpath,mfl)
 

@@ -11,7 +11,6 @@ load(file.path(mpath,'single_scans.elr.rsave'))
 
 bins <- data.frame(
  em=summary(scan.bin.em),
- imp=summary(scan.bin.imp)[,'lod'],
  mr=summary(scan.bin.mr)[,'lod'],
  np=summary(scan.np.em.b)[,'lod'])
 
