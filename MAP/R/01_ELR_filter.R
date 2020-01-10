@@ -86,31 +86,41 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'BLI_BI1124M','ELR
 LOD <- 12
 RF <- 0.15
 
+
 for(Z in 1:24){
- reorg.1 <- subset(cross,chr=Z)
- reorg.2 <- formLinkageGroups(reorg.1, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+ all <- subset(cross,chr=Z)
+ reorg.2 <- formLinkageGroups(all, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
  reorg.2a <- reorg.2
 
- for (i in 1:4){
-  swits <- markernames(reorg.2a, chr=1)
-  reorg.2a <<- switchAlleles(reorg.2a, markers = swits)
-  reorg.2a <<- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
-  }
+  ## switch it
+ swits <- markernames(reorg.2a, chr=1)
+ reorg.2a <- switchAlleles(reorg.2a, markers = swits)
+ reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+  # switch it back
+ swits <- markernames(reorg.2a, chr=1)
+ reorg.2a <- switchAlleles(reorg.2a, markers = swits)
+ reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
  ## added to chr 1 by switches
- orig <- markernames(reorg.2, chr=1)
+ orig1 <- markernames(reorg.2, chr=1)
  final <- markernames(reorg.2a, chr=1)
- added <- final[!final %in% orig]
+ added <- final[!final %in% orig1]
 
- new_gts <- reorg.2a$geno[['1']]$data[1,added]
- orig_gts <- reorg.1$geno[[Z]]$data[1,added]
+ new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
+ orig_gts <- as.matrix(all$geno[[Z]]$data[,added])
 
- same <- names(ind_gts[which(ind_gts == orig_gts)])
- diff <- names(ind_gts)[!names(ind_gts) %in% same]
- drops <- final[!final %in% markernames(reorg.1)]
+ new_gts[new_gts == 2] <- NA
+ orig_gts[orig_gts == 2] <- NA
 
- cross <<- switchAlleles(cross, swits)
+ switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]
+
+ drops <- markernames(all)[!markernames(all) %in% final]
+
  cross <<- drop.markers(cross, drops)
+ cross <<- switchAlleles(cross, switched)
+
 }
 
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
