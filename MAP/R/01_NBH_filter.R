@@ -103,8 +103,8 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_N
 ################################################################################
 
 ###### Retain markers that are linked ########
-LOD <- 20
-RF <- 0.18
+LOD <- 17
+RF <- 0.15
 
  for(Z in 1:24){
 
@@ -148,6 +148,7 @@ write.cross(cross,filestem=fl,format="csv")
 fl.par <- file.path(paste0(pop,'_parents_filtered')
 fl.par <- file.path(mpath,fl.par)
 write.cross(cross.par,filestem=fl.par,format="csv")
+
 
 #reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
 #fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')

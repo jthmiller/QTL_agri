@@ -31,10 +31,26 @@ for (i in 1:24){
  ymax <- max(c(max(Y),max(A))
  xmax <- max(c(length(Y),length(A))
 
- plot(X,Y, type="n", xlab=paste('chr',i), ylab='physical position')
-
+ plot(c(0,xmax),c(0,ymax), type="n", xlab=paste('chr',i), ylab='physical position')
  points(X,Y, col='blue')
  points(A,B, col='yellow')
+
+ }
+dev.off()
+################################################################################
+
+######## Plot phys pos x marker order ##########################################
+
+png("/home/jmiller1/public_html/NBH_physpo_filt.png", width=1500, height=1500)
+par(mfrow=c(4,6))
+
+for (i in 1:24){
+
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+ X <- 1:length(Y)
+
+ plot(X,Y, xlab=paste('chr',i), ylab='physical position')
+
 
  }
 dev.off()
