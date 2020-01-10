@@ -49,3 +49,15 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
 ##             pvalues=FALSE, allpairs=TRUE)
 
 save.image(file.path(mpath,'scantwo.scans.elr.short.rsave'))
+
+'lod.full' or Full = two QTL plus interaction
+   (Q1 + Q2 + Q1*Q2)
+'lod.add' or Additive = two qtl additive model
+   (Q1 + Q2)
+'lod.int' is the difference between these is an interaction test
+   (Q1 + Q2 + Q1*Q2) - (Q1 + Q2)
+'lod.fv1' is the difference between the full and single, making it a test for the second QTL and interaction
+   (Q1 + Q2 + Q1*Q2) - (Q1)
+
+
+summary(sc2_normal_imp, thresholds=c(0, Inf, 4, Inf, Inf), what="int")

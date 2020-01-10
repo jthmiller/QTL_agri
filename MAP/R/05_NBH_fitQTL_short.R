@@ -51,4 +51,4 @@ sc2_normal_imp_perms <- scantwo(gg_step2, pheno.col=5, model="normal",
              verbose=TRUE, perm.Xsp=FALSE, perm.strata=NULL,
              assumeCondIndep=FALSE, batchsize=250, n.cluster=12)
 
-save.image(file.path(mpath,'scantwo.scans.new.short.rsave'))
+save.image(file.path(mpath,'scantwo.scans.nbh.short.rsave'))
