@@ -83,7 +83,7 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'BLI_BI1124M','ELR_ER1124F'))
 ################################################################################
-LOD <- 14
+LOD <- 17
 RF <- 0.15
 
 for(Z in 1:24){
@@ -124,73 +124,3 @@ for(Z in 1:24){
 
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
-
-######################################################
-### OLD ###
-##for(Z in 1:24){
-## reorg.1 <- subset(cross,chr=Z)
-##
-## #r2gt <- unlist(lapply(2:nchr(reorg.1),function(X){ mean(geno.table(reorg.1,chr=X)$P.value) }))
-## #poss <- names(which( nmar(reorg.1)[-1] > 10 & r2gt > 0.0001))
-##
-## reorg.2 <- formLinkageGroups(reorg.1, max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
-## ##gt <- geno.table(reorg.2,chr=2)
-##
-## for (i in 1:4){
-##  swits <- markernames(reorg.2, chr=1)
-##  reorg.2 <<- switchAlleles(reorg.2, markers = swits)
-##  reorg.2 <<- formLinkageGroups(reorg.2, max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
-##  }
-## #######
-##
-## orig <- markernames(reorg.1, chr=1)
-## added <- markernames(reorg.2, chr=1)[!markernames(reorg.2, chr=1) %in% orig]
-##
-## ind_gts <- reorg.2$geno[['1']]$data[1,added]
-## orig_gts <- reorg.1$geno[['1']]$data[1,added]
-##
-## swits <- colnames(ind_gts[,!which(ind_gts == orig_gts)])
-##
-##
-##
-## if(mean(r2gt$P.value) > 0.0001 & length(r2gt$P.value) > 5 ){
-##
-##
-##
-##
-##reorg.a <- formLinkageGroups(subset(cross,chr=Z), max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
-##swits.a <- flips(reorg.1)
-##
-##flips <- function(crs){
-##   swits.a <- markernames(crs, chr=2)
-##   reorg.a <<- switchAlleles(crs, markers = swits.a)
-##   reorg.a <<- formLinkageGroups(reorg.a, max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
-##   swits.a[which(swits.a %in% markernames(reorg.a,chr=1))]
-##  }
-##
-##
-##
-##
-##
-##   swits2 <- markernames(reorg.2, chr=2)
-##   reorg.2 <<- switchAlleles(reorg.2, markers = swits2)
-##   reorg.2 <<- formLinkageGroups(reorg.2, max.rf = 0.15, min.lod = 12, reorgMarkers = TRUE)
-##   swits2 <- swits2[which(swits2 %in% markernames(reorg.2,chr=1))]
-##   swits <<- c(swits,swits2)
-##  }
-##
-##
-##
-##
-## ######
-##
-## subs <- markernames(reorg.2, chr=1)
-## drops <- markernames(reorg.1)[!markernames(reorg.1) %in% subs]
-## cross <<- switchAlleles(cross, swits)
-## cross <<- drop.markers(cross, drops)
-##}
-##
-##
-##
-##
-##

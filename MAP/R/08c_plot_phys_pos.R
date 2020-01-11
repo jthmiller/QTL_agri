@@ -174,10 +174,6 @@ xdir <- function(data,chr){
 }
 
 
-
-
-
-
 plot_R_stat <- function(ch){
 
  X <- c(0,maxmin(ch))

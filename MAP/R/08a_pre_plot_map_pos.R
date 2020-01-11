@@ -307,7 +307,6 @@ AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 ##cross.brp <- reduce2grid(cross.brp)
 ##################################################
 
-
 ################################################
 scan.norm.imp.NBH <- scanone(cross.nbh, method = "imp", model = "normal", pheno.col = 5)
 scan.bin.imp.NBH <-  scanone(cross.nbh, method = "em", model = "binary", pheno.col = 4)
