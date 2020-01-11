@@ -96,7 +96,7 @@ toss.missing <- c("BRP_2535","BRP_2410","BRP_2687","BRP_2710")
 ################################################################################
 #### Pvalue and Missing ##############################################
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,pars)))
-bfixA <- rownames(gt[which(gt$P.value > 0.00001),])
+bfixA <- rownames(gt[which(gt$P.value > 0.0001),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 5),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.000001 & gt$missing < 5),])
 ################################################################################

@@ -23,7 +23,7 @@ gg_step2 <- reduce2grid(gg)
 
 ################################################################################
 
-full.norm.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5)
+##full.norm.add_only <- stepwiseqtl(gg_step2, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5)
 
 full.norm.add_only <- stepwiseqtl(gg_step2, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=3)
 

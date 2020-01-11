@@ -43,7 +43,7 @@ cross <- calc.errorlod(cross, err=0.03)
 
 ################################################################################
 gt <- geno.table(cross)
-bfixA <- rownames(gt[which(gt$P.value > 0.0001),])
+bfixA <- rownames(gt[which(gt$P.value > 0.001 & gt$missing < 10),])
 cross <- pull.markers(cross,bfixA)
 ################################################################################
 

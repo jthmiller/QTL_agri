@@ -23,6 +23,10 @@ cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
 gg <- sim.geno(cross,step=4)
 gg_step2 <- reduce2grid(gg)
 
+
+full.norm.add_only <- stepwiseqtl(gg_step2, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=4)
+
+
 ## Done
 sc2_normal_imp <- scantwo(gg_step2, pheno.col=5, model="normal",
              method="imp",
