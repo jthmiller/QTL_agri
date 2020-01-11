@@ -27,6 +27,12 @@ sbe_nbh <- scan.bin.em
 sbm_nbh <- scan.bin.mr
 nbh_cross <- cross
 
+
+load(file.path(mpath,'scantwo.scans.nbh.short.rsave'))
+full.norm.add_only
+sc2_normal_imp
+sc2_normal_imp_perms
+
 load(file.path(mpath,'single_scans.new.rsave'))
 sw_new <- full.norm.add_only
 pni_new <- perms.norm.imp
@@ -52,3 +58,13 @@ get_phenos <- function(crs,pheno){
 pheno_ind <- function(crs,pheno){
  as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
 }
+
+
+
+pdf("/home/jmiller1/public_html/nbh_18.pdf", width=20)
+plot(sbe_nbh)
+dev.off()
+
+pdf("/home/jmiller1/public_html/elr_bin.pdf", width=20)
+plot(sbe_elr)
+dev.off()
