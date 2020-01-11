@@ -58,3 +58,5 @@ save.image(file.path(mpath,'scantwo.scans.elr.short.rsave'))
 ##   (Q1 + Q2 + Q1*Q2) - (Q1 + Q2)
 ##'lod.fv1' is the difference between the full and single, making it a test for the second QTL and interaction
 ##   (Q1 + Q2 + Q1*Q2) - (Q1)
+##'lod.av1' or Additive v single
+##   (Q1 + Q2) - Q1
