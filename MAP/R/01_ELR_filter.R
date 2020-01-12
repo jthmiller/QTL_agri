@@ -62,53 +62,63 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
 
 ##################################################################################
 ##### Get highly likely AB x AB markers ##########################################
-##bfix <- pull.geno(cross)[cross$pheno$ID=='BLI_BI1124M',]
-##bfix <- names(bfix)[which(as.numeric(bfix)==3)]
-##parABxAB <- intersect(rownames(gt[which(gt$P.value > 0.05),]) ,bfix)
-##cross.1 <- pull.markers(cross,parABxAB)
+gt <- geno.table(cross)
+bfix <- pull.geno(cross)[cross$pheno$ID=='BLI_BI1124M',]
+bfix <- names(bfix)[which(as.numeric(bfix)==3)]
+parABxAB <- intersect(rownames(gt[which(gt$P.value > 0.05),]) ,bfix)
+cross.1 <- pull.markers(cross,parABxAB)
 ##################################################################################
 ##
 ##### TEST SAMPLE GT SIMILARITY ##################################################
-##cross.1 <- subset(cross.1,ind=!cross$pheno$ID%in%c('BLI_BI1124M'))
-##cpgt <- comparegeno(cross.1)
-##colnames(cpgt) <- cross.1$pheno$ID
-##rownames(cpgt) <- cross.1$pheno$ID
-##cpgt[cpgt==NaN] <- NA
-##diag(cpgt) <- NA
-##cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
+cross.1 <- subset(cross.1,ind=!cross$pheno$ID%in%c('BLI_BI1124M'))
+cpgt <- comparegeno(cross.1)
+colnames(cpgt) <- cross.1$pheno$ID
+rownames(cpgt) <- cross.1$pheno$ID
+cpgt[cpgt==NaN] <- NA
+diag(cpgt) <- NA
+cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
 ##################################################################################
 ##
 ##################################################################################
 ######## Remove the samples related by more than 80% of genotypes #####
-##wh <- which(cpgt > 0.7, arr=TRUE)
-##wh <- wh[wh[,1] < wh[,2],]
-##mats <- cbind(rownames(wh),colnames(cpgt)[as.numeric(wh[,2])])
-##toss.relat <- unique(apply(mats,1,function(X){
-## X[which.max(c(nmissing(cross.1)[X[1]],nmissing(cross.1)[X[2]]))]
-##}))
-##
+wh <- which(cpgt > 0.7, arr=TRUE)
+wh <- wh[wh[,1] < wh[,2],]
+mats <- cbind(rownames(wh),colnames(cpgt)[as.numeric(wh[,2])])
+toss.relat <- unique(apply(mats,1,function(X){
+ X[which.max(c(nmissing(cross.1)[X[1]],nmissing(cross.1)[X[2]]))]
+}))
+
 ##USE MIS_IDd samples for map, but not QTL
 
-##############################################################################
+####### toss related and then #################################################
 ##### FILTER BY Pvalue and Missing ##############################################
-## toss.related <- c(toss.relat,"ELR_10987")
-## cross.1 <- subset(cross, ind=!cross$pheno$ID %in% c(toss.related,'BLI_BI1124M','ELR_ER1124F'))
-## gt.pmiss <- geno.table(cross.1)
-##
-## gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
-## write.table(gt.pmiss, gtpm)
-## gt.pmiss <- read.table(gtpm)
-##
+ toss.related <- c(toss.relat,"ELR_10987")
+ cross.1 <- subset(cross, ind=!cross$pheno$ID %in% c(toss.related,'BLI_BI1124M','ELR_ER1124F'))
+
+ gt.pmiss <- geno.table(cross.1)
+ gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
+ write.table(gt.pmiss, gtpm)
+ gt.pmiss <- read.table(gtpm)
 ## bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.001 & gt.pmiss$missing < 5),])
+
 ## ind <- which(gt.pmiss$missing < 10)
 ## png('~/public_html/elr_mis.png')
 ## hist(gt.pmiss$missing[ind], pch=21,breaks=50)
 ## dev.off()
 ################################################################################
+pop <- 'ELR'
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
+cross <- read.cross.jm(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
+format = "csvr", geno = c(1:3), estimate.map = FALSE)
+path <- file.path(mpath, paste(pop, ".ped", sep = ""))
+popname <- system(paste("cut -f1 -d' '", path), intern = TRUE)
+indname <- system(paste("cut -f2 -d' '", path), intern = TRUE)
+cross$pheno$ID <- paste(popname, indname, sep = "_")
+cross$pheno$bin <- ifelse(cross$pheno$Pheno > 2, 1 , 0)
+cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
+################################################################################
 
-#################################################################################
-
-## Drop ABxAB
 flt <- file.path(mpath,paste0(pop,'_ABxAB_markernames.tsv'))
 DROP <- read.table(flt)$x
 
@@ -119,7 +129,7 @@ bfix_swit <- read.table(swt)$x
 ## Pval and missing
 gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
 gt.pmiss <- read.table(gtpm)
-bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.00001 & gt.pmiss$missing < 4),])
+bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.0001 & gt.pmiss$missing < 4),])
 
 ## Bad data individuals
 toss.related <- c("ELR_10978","ELR_10977","ELR_10982","ELR_10974","ELR_10980","ELR_10973","ELR_10971","ELR_10979","ELR_10987")
@@ -132,7 +142,7 @@ cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.related,toss.badata,'BLI_B
 ################################################################################
 
 
-LOD <- 16
+LOD <- 15
 RF <- 0.15
 
 for(Z in 1:24){
@@ -173,3 +183,5 @@ for(Z in 1:24){
 
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
+
+system('sbatch 02_map.sh 'ELR')

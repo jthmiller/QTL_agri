@@ -45,6 +45,10 @@ cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
 cross <- calc.errorlod(cross, err=0.03)
 ################################################################################
 
+png(paste0('~/public_html/ELR_gts_postclean',i,'.png'),height=2500,width=4500)
+ plotGeno(cross, chr=i, cex=2)
+dev.off()
+
 ################################################################################
 gt <- geno.table(cross)
 bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
@@ -68,6 +72,19 @@ cross <- qtl:::replace.map(cross,cross_map)
 
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
-png(paste0('~/public_html/ELR_RF_concord',i,'_tsp.png'))
-  plotRF(cross)
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+X <- 1:length(Y)
+
+png(paste0('~/public_html/',pop,'_RF_physpo_concord',Z,'_tsp.png'))
+par(mfrow=c(4,6))
+ plotRF(cross)
+ plot(X,Y, xlab=paste('chr',i), ylab='physical position')
 dev.off()
+
+for(Z in 1:24){
+ png(paste0('~/public_html/',pop,'_RF_physpo_concord',Z,'_tsp.png'))
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,Z))))
+ X <- 1:length(Y)
+  plot(c(0,X),c(0,Y), xlab=paste('chr',Z), ylab='physical position')
+ dev.off()
+ }

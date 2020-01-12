@@ -52,6 +52,10 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
 cross <- pull.markers(cross,bfixA)
 ################################################################################
 
+png(paste0('~/public_html/NBH_gts_postclean',i,'.png'),height=2500,width=4500)
+ plotGeno(cross, chr=i, cex=2)
+dev.off()
+
 ################################################################################
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
@@ -70,6 +74,12 @@ cross <- qtl:::replace.map(cross,cross_map)
 
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
-png(paste0('~/public_html/NBH_RF_concord',i,'_tsp.png'))
-  plotRF(cross)
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+X <- 1:length(Y)
+
+png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'))
+par(mfrow=c(4,6))
+ plotRF(cross)
+ plot(c(1,length(X)),c(0,max(Y),type="n", xlab=paste('chr',i), ylab='physical position')
+ points(X,Y)
 dev.off()
