@@ -50,7 +50,13 @@ gnos.u <- unname(data.frame(lapply(gnos, as.character),row.names=NULL,stringsAsF
 colnames(headers.u) <- colnames(gnos.u) <- headers.u[1,]
 to_write <- rbind(headers.u,gnos.u)
 
+
+pop <- 'ELR.missing'
+fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
+
 write.table(to_write, fl, sep=',',row.names=F,quote=F,col.names = F)
+
 
 ################################################################################
 ## scan
