@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH -t 48:00:00
-#SBATCH -p high
+#SBATCH -p med
 #SBATCH --mem=60G
 
 script_dir='/home/jmiller1/QTL_agri/MAP'

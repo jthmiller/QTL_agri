@@ -9,7 +9,7 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 
 ## sbatch 01_filter.sh 'BRP'
 ## sbatch 01_filter.sh 'NBH'
- sbatch 01_filter.sh 'ELR'
+## sbatch 01_filter.sh 'ELR'
 ## sbatch 01_filter.sh 'NEW'
 ## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R
 
