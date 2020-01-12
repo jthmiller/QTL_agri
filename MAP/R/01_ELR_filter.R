@@ -126,12 +126,14 @@ bfix_swit <- read.table(swt)$x
 ## Pval and missing
 gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
 gt.pmiss <- read.table(gtpm)
-bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.0001 & gt.pmiss$missing < 4),])
+bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.001 & gt.pmiss$missing < 6),])
 
 ## Bad data individuals
 toss.related <- c("ELR_10978","ELR_10977","ELR_10982","ELR_10974","ELR_10980","ELR_10973","ELR_10971","ELR_10979","ELR_10987")
 toss.badata <- c("ELR_10869","ELR_10967","ELR_11592","ELR_11115","ELR_11103","ELR_10981","ELR_11593")
 
+crossbk <- cross
+cross <- crossbk
 cross <- drop.markers(cross,DROP)
 cross <- switchAlleles(cross, markers = bfix_swit)
 cross <- pull.markers(cross,bfixA)
@@ -183,11 +185,11 @@ write.cross(cross,filestem=fl,format="csv")
 
 system('sbatch 02_map.sh "ELR"')
 
-png(paste0('~/public_html/',pop,'_RF_physpo.png'))
+png(paste0('~/public_html/',pop,'_RF_physpo.png'),width=1000, height=1000)
 par(mfrow=c(4,6))
 for(i in 1:24){
  Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
  X <- 1:length(Y)
  plot(X,Y, xlab=paste('chr',i), ylab='physical position')
-dev.off()
 }
+dev.off()
