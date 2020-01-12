@@ -31,3 +31,5 @@ sbatch 04_fit_long.sh 'NBH'
 sbatch 04_fit_long.sh 'BRP'
 sbatch 04_fit_long.sh 'NEW'
 sbatch 04_fit_long.sh 'ELR'
+
+/Users/jeffreymiller/Documents/Projects/Killifish/QTL_agri/MAP/R/04_final_bin_hk_QTL.R
