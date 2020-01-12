@@ -5,10 +5,13 @@
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
+script_dir='/home/jmiller1/QTL_agri/MAP'
+
 ## sbatch 01_filter.sh 'BRP'
 ## sbatch 01_filter.sh 'NBH'
 ## sbatch 01_filter.sh 'ELR'
 ## sbatch 01_filter.sh 'NEW'
+## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R
 
 ## sbatch 02_map.sh 'BRP'
 ## sbatch 02_map.sh 'NBH'
@@ -16,20 +19,12 @@
 ## sbatch 02_map.sh 'NEW'
 ## sbatch 02_map_missing.sh 'ELR'
 
-sbatch 03_fit.sh 'NBH'
-sbatch 03_fit.sh 'ELR'
-sbatch 03_fit.sh 'NEW'
-sbatch 03_fit.sh 'BRP'
-sbatch 03_fit_missing.sh 'ELR'
-##
-##sbatch 04_fit_short.sh 'NBH'
-##sbatch 04_fit_short.sh 'BRP'
-##sbatch 04_fit_short.sh 'NEW'
-##sbatch 04_fit_short.sh 'ELR'
-##
-sbatch 04_fit_long.sh 'NBH'
-sbatch 04_fit_long.sh 'BRP'
-sbatch 04_fit_long.sh 'NEW'
-sbatch 04_fit_long.sh 'ELR'
+sbatch 03_write_map_cross.sh 'NBH'
+sbatch 03_write_map_cross.sh 'ELR'
+sbatch 03_write_map_cross.sh 'BRP'
+sbatch 03_write_map_cross.sh 'NEW'
 
-/Users/jeffreymiller/Documents/Projects/Killifish/QTL_agri/MAP/R/04_final_bin_hk_QTL.R
+sbatch 04_QTL.R 'NBH'
+sbatch 04_QTL.R 'ELR'
+sbatch 04_QTL.R 'BRP'
+sbatch 04_QTL.R 'NEW'
