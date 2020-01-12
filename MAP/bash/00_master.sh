@@ -1,11 +1,10 @@
 ### MASTER
+script_dir='/home/jmiller1/QTL_agri/MAP'
 
 #Sys.setenv(TAR = "/bin/tar")
 ##install_github("kbroman/ASMap")
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
-
-script_dir='/home/jmiller1/QTL_agri/MAP'
 
 ## sbatch 01_filter.sh 'BRP'
 ## sbatch 01_filter.sh 'NBH'
