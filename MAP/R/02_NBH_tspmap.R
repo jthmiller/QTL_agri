@@ -69,7 +69,7 @@ if(cor(pos,map, use="complete.obs") < 0){
 
 cross <- shiftmap(cross, offset=0)
 
-cross_map <-  est.map(cross, error.prob=0.04,map.function="kosambi",maxit=100000,tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+cross_map <-  est.map(cross, error.prob=0.05,map.function="kosambi",maxit=100000,tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
 
@@ -80,7 +80,7 @@ X <- 1:length(Y)
 
 png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=1000)
 par(mfrow=c(1,2))
- plotRF(cross)
+ plotRF(cross,main=NULL)
  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
  points(X,Y)
 dev.off()

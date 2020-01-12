@@ -64,6 +64,9 @@ cross <- qtl:::replace.map(cross,cross_map)
 
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
-png(paste0('~/public_html/ELR_RF_concord_missing',i,'_tsp.png'))
-  plotRF(cross)
+png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=1000)
+par(mfrow=c(1,2))
+ plotRF(cross,main=NULL)
+ plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
+ points(X,Y)
 dev.off()
