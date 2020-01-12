@@ -74,7 +74,7 @@ cross <- qtl:::replace.map(cross,cross_map)
 
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
-Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
 X <- 1:length(Y)
 
 png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'))
