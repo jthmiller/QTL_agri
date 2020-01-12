@@ -38,11 +38,11 @@ dev.off()
 ################################################################################
 
 cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
-cross <- calc.errorlod(cross, err=0.03)
+cross <- calc.errorlod(cross, err=0.05)
 cross <- removeDoubleXO(cross, chr=i)
-cross <- calc.errorlod(cross, err=0.03)
+cross <- calc.errorlod(cross, err=0.05)
 cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
-cross <- calc.errorlod(cross, err=0.03)
+cross <- calc.errorlod(cross, err=0.05)
 ################################################################################
 
 ################################################################################
