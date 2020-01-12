@@ -27,7 +27,8 @@ gg_step2 <- reduce2grid(gg)
 bin.add.imp <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = F, max.qtl=5)
 bin.add.imp.qtls <- summary(bin.add.imp)
 bin.add.imp.qtls <- makeqtl(gg_step2, chr=as.character(bin.add.imp.qtls$chr), pos=as.numeric(bin.add.imp.qtls$pos), what="draws")
-full.bin.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=bin.add.imp.qtls, additive.only = F, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=5, chr=c(1,2,5,8,13,18,24))
+qtls_chr <- unique(c(bin.add.imp.qtls$chr,1,2,5,8,13,18,24))
+full.bin.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=bin.add.imp.qtls, additive.only = F, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=5, chr=qtls_chr)
 
 ## binary imp is not supported in rQTL
 grid.perms.bin.em <- scanone(gg_step2, method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 10)

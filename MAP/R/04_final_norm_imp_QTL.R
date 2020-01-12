@@ -7,8 +7,6 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
-plotpub <- function(X) { png(paste0('~/public_html/',X,'.png')) }
-
 ################################################################################
 print(pop)
 ################################################################################
@@ -30,8 +28,8 @@ gg_step2 <- reduce2grid(gg)
 norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = F, max.qtl=5)
 norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls$chr), pos=as.numeric(norm.add.qtls$pos), what="draws")
-full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, chr=c(1,2,5,8,13,18,24))
-
+qtls_chr <- unique(c(norm.add.qtls$chr,1,2,5,8,13,18,24))
+full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, chr=qtls_chr)
 grid.perms.norm.imp <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 10)
 
 ## normal
