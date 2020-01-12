@@ -7,7 +7,6 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
-plotpub <- function(X) { png(paste0('~/public_html/',X,'.png')) }
 
 ################################################################################
 ################################################################################
@@ -41,7 +40,7 @@ scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
 bins <- data.frame(em=summary(scan.bin.em),mr=summary(scan.bin.mr),hk=summary(scan.bin.hk))
 
 ####################################################################################
-## PERMS WITH ALL LOCI  s 
+## PERMS WITH ALL LOCI  s
 perms.bin.em <- scanone(cross, method = "hk", model = "binary", maxit = 1000,
   n.perm = 10000, pheno.col = 4, n.cluster = 10)
 ####################################################################################

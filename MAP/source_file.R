@@ -1496,8 +1496,8 @@ conv_maps <- function(cross.base, cross.interp){
  return(interp_map(interp_this$pmap, base_map$pmap, base_map$gmap))
 }
 ################################################
-
-
+## for plotting to my public dir
+plotpub <- function(X) { png(paste0('~/public_html/',X,'.png')) }
 ################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
