@@ -28,7 +28,7 @@ gg_step2 <- reduce2grid(gg)
 
 bin.add.hk <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='binary', method = "hk", pheno.col = 4, scan.pairs = F, max.qtl=5)
 bin.add.hk.qtls <- summary(bin.add.hk)
-bin.add.hk.qtls <- makeqtl(gg_step2, chr=as.character(bin.add.hk.qtls$chr), pos=as.numeric(bin.add.hk.qtls$pos), what="draws")
+bin.add.hk.qtls <- makeqtl(gg_step2, chr=as.character(bin.add.hk.qtls$chr), pos=as.numeric(bin.add.hk.qtls$pos), what="prob")
 qtls_chr <- unique(c(bin.add.hk.qtls$chr,1,2,5,8,13,18,24))
 full.bin.hk <- stepwiseqtl(gg_step2, incl.markers=F, qtl=bin.add.hk.qtls, additive.only = F, model='binary', method = "hk", pheno.col = 4, scan.pairs = T, max.qtl=5, chr=qtls_chr)
 grid.perms.bin.em <- scanone(gg_step2, method = "hk", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 10)
