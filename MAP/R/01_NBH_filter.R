@@ -93,10 +93,6 @@ DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
 DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
 DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
 
-## table(gsub(":.*","",DROP))/table(gsub(":.*","",markernames(cross2)))
-################################################################################
-
-
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
@@ -149,7 +145,13 @@ fl.par <- file.path(paste0(pop,'_parents_filtered')
 fl.par <- file.path(mpath,fl.par)
 write.cross(cross.par,filestem=fl.par,format="csv")
 
+system('sbatch 02_map.sh "ELR"')
 
-#reorg <- formLinkageGroups(cross, max.rf = 0.1, min.lod = 10, reorgMarkers = TRUE)
-#fl <- file.path(mpath,'NBH_unmapped_reassigned_markers')
-#write.cross(reorg,filestem=fl,format="csv")
+png(paste0('~/public_html/',pop,'_RF_physpo.png'))
+par(mfrow=c(4,6))
+for(i in 1:24){
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+ X <- 1:length(Y)
+ plot(X,Y, xlab=paste('chr',i), ylab='physical position')
+dev.off()
+}

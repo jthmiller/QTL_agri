@@ -184,4 +184,13 @@ for(Z in 1:24){
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
 
-system('sbatch 02_map.sh 'ELR')
+system('sbatch 02_map.sh "ELR"')
+
+png(paste0('~/public_html/',pop,'_RF_physpo.png'))
+par(mfrow=c(4,6))
+for(i in 1:24){
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+ X <- 1:length(Y)
+ plot(X,Y, xlab=paste('chr',i), ylab='physical position')
+dev.off()
+}

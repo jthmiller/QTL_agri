@@ -52,11 +52,12 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
 cross <- pull.markers(cross,bfixA)
 ################################################################################
 
+################################################################################
 png(paste0('~/public_html/NBH_gts_postclean',i,'.png'),height=2500,width=4500)
  plotGeno(cross, chr=i, cex=2)
 dev.off()
-
 ################################################################################
+
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
 pos <- as.numeric(gsub(".*:","",markernames(cross)))
