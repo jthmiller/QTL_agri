@@ -7,6 +7,8 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
+plotpub <- function(X) { png(paste0('~/public_html/',X,'.png')) }
+
 ################################################################################
 ################################################################################
 ## Read cross
@@ -19,8 +21,8 @@ cross <- read.cross(
 cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
 cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
 
-gg <- sim.geno(cross, step=1, error.prob=0.025, off.end=5, map.function="kosambi", stepwidth='max', n.draws=160)
-gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", stepwidth='max')
+gg <- sim.geno(cross, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
+gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 gg_step2 <- reduce2grid(gg)
 ################################################################################
 
