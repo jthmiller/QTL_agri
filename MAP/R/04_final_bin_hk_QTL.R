@@ -41,7 +41,7 @@ scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
 bins <- data.frame(em=summary(scan.bin.em),mr=summary(scan.bin.mr),hk=summary(scan.bin.hk))
 
 ####################################################################################
-## PERMS WITH ALL LOCI
+## PERMS WITH ALL LOCI  s 
 perms.bin.em <- scanone(cross, method = "hk", model = "binary", maxit = 1000,
   n.perm = 10000, pheno.col = 4, n.cluster = 10)
 ####################################################################################
