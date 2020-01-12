@@ -2,6 +2,9 @@
 
 ##pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
+## USE MARKER REGRESSION TO COMPARE ALL LOCI ON BRP AND NEW
+
+
 pop <- 'NBH'
 
 library('qtl')

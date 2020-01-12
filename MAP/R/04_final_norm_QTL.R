@@ -38,10 +38,11 @@ scan.norm.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
 norm.imp.qtl <- makeqtl(cross, chr=c(2,13,18), pos=c(30,33,28),  what="draws")
 ################################################################################
 
+################################################################################
 perms.norm.imp <- scanone(cross, method = "imp", model = "normal", maxit = 1000,
   n.perm = 10000, pheno.col = 5, n.cluster = 10)
 ####################################################################################
 print(summary(perms.norm.imp))
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'.rsave'))
+save.image(file.path(mpath,paste0(pop,'norm_imp.rsave'))
 ################################################################################
