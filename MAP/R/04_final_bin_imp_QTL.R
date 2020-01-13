@@ -8,8 +8,6 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
-plotpub <- function(X) { png(paste0('~/public_html/',X,'.png')) }
-
 ################################################################################
 ################################################################################
 ## Read cross
@@ -45,5 +43,5 @@ scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
 ##############################################################################
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'bin_imp.rsave'))
+save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
 ################################################################################

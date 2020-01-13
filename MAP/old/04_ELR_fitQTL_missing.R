@@ -26,7 +26,10 @@ gnos <- lapply(elr,function(X){
 })
 gnos <- do.call(cbind,gnos)
 gnos <- cbind(elr[[1]]$pheno,gnos)
+
 gnos$ID <- as.character(gnos$ID)
+gnos$bin <- ifelse(gnos$Pheno > 2, 1 , 0)
+gnos$pheno_norm <- as.character(round(nqrank(gnos$Pheno),4))
 
 m_names <- unlist(sapply(elr,function(X){
   markernames(X)
@@ -38,7 +41,8 @@ rownames(gnos) <- elr[[1]]$pheno$ID
 map <- c(colnames(elr[[1]]$pheno),unname(unlist(sapply(elr,pull.map))))
 zd <- as.numeric(gsub(":.*","",m_names))
 
-zd[is.na(zd)] <- c(1,2,2)
+##zd[is.na(zd)] <- c(1,2,2)
+zd[is.na(zd)] <- c(1)
 chr <- c(colnames(elr[[1]]$pheno),zd)
 info <- c(colnames(elr[[1]]$pheno),m_names)
 headers <- rbind(info,chr,map)

@@ -44,5 +44,5 @@ perms.norm.imp <- scanone(cross, method = "imp", model = "normal", maxit = 1000,
 ####################################################################################
 print(summary(perms.norm.imp))
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'norm_imp.rsave'))
+save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
