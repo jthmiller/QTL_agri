@@ -22,6 +22,10 @@ gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosam
 gg_step2 <- reduce2grid(gg)
 ################################################################################
 
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
+################################################################################
+
 bin.add.imp <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = F, max.qtl=5)
 bin.add.imp.qtls <- summary(bin.add.imp)
 bin.add.imp.qtls <- makeqtl(gg_step2, chr=as.character(bin.add.imp.qtls$chr), pos=as.numeric(bin.add.imp.qtls$pos), what="draws")
@@ -31,8 +35,12 @@ full.bin.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=bin.add.imp.qtls, addi
 ## binary imp is not supported in rQTL
 grid.perms.bin.em <- scanone(gg_step2, method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 10)
 ################################################################################
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
 ################################################################################
 
+################################################################################
 cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
 cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
 
