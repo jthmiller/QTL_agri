@@ -3,24 +3,38 @@
 ##pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 ## USE MARKER REGRESSION TO COMPARE ALL LOCI ON BRP AND NEW
-
-
-pop <- 'NBH'
-
+## pop <- 'NBH'
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
+################################################################################
+################################################################################
+## Read cross
+cross <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
 
-load(file.path(mpath,'single_scans.nbh.rsave'))
-sw_nbh <- full.norm.add_only
-pni_nbh <- perms.norm.imp
-pbe_nbh <- perms.bin.em
-sbe_nbh <- scan.bin.em
-sbm_nbh <- scan.bin.mr
-nbh_cross <- cross
+cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
+cross <- calc.genoprob(cross,step=0,error.prob=0.025,off.end=5)
+
+bin.add.imp <- stepwiseqtl(cross, incl.markers=T, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=3)
+bin.add.imp.qtls <- summary(bin.add.imp)
+bin.add.imp.qtls <- makeqtl(gg_step2, chr=as.character(bin.add.imp.qtls$chr), pos=as.numeric(bin.add.imp.qtls$pos), what="draws")
+
+
+norm.add <- stepwiseqtl(cross, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5)
+norm.add.qtls <- summary(norm.add)
+norm.add.qtls <- makeqtl(cross, chr=as.character(norm.add.qtls$chr), pos=as.numeric(norm.add.qtls$pos), what="draws")
+
+loc_a <- find.marker(cross, norm.add.qtls$chr[1],norm.add.qtls$pos[1])
+loc_b <- find.marker(cross, norm.add.qtls$chr[2],norm.add.qtls$pos[2])
+
 
 get_phenos <- function(crs,pheno){
  index <- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
@@ -33,19 +47,22 @@ pheno_ind <- function(crs,pheno){
 
 ################################################################################
 ### NBH ####
+nbh_cross <- cross
 nbh_sens <- as.character(nbh_cross$pheno$ID[which(nbh_cross$pheno$ID %in% pheno_ind(nbh_cross,1))])
 nbh_tol <- as.character(nbh_cross$pheno$ID[which(nbh_cross$pheno$ID %in% pheno_ind(nbh_cross,0))])
 
-## From MR
-loc_a <- '2:35718468'
-loc_b <- '18:17874376'
 
-## EM
-loc_a <- '2:35740383'
-loc_b <- '18:17665127'
+#### From MR
+##loc_a <- '2:35718468'
+##loc_b <- '18:17874376'
+##
+#### EM
+##loc_a <- '2:35740383'
+##loc_b <- '18:17665127'
 
 nbh_gts <- pull.geno(nbh_cross)[,c(loc_a,loc_b)]
 rownames(nbh_gts) <- as.character(nbh_cross$pheno$ID)
+
 ################################################################################
 ## single locus
 nbh_sens_2 <- factor(nbh_gts[nbh_sens,c(loc_a)],levels=c(NA,1,2,3),exclude = NULL)

@@ -1498,6 +1498,16 @@ conv_maps <- function(cross.base, cross.interp){
 ################################################
 ## for plotting to my public dir
 plotpub <- function(X) { png(paste0('~/public_html/',X,'.png')) }
+
+get_phenos <- function(crs,pheno){
+ index <- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
+ subset(crs,ind=index)
+}
+
+pheno_ind <- function(crs,pheno){
+ as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
+}
+
 ################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')

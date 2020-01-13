@@ -4,29 +4,28 @@
 
 pop <- 'ELR'
 
-library('qtl')
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
-mpath <- '/home/jmiller1/QTL_agri/data'
-fl <- paste0(pop,'.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
+## Read cross
+cross <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
 
-# single scans
-load(file.path(mpath,'single_scans.elr.rsave'))
-sw_elr <- full.norm.add_only
-pni_elr <- perms.norm.imp
-pbe_elr <- perms.bin.em
-sbe_elr <- scan.bin.em
-sbm_elr <- scan.bin.mr
-elr_cross <- cross
+cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
+cross <- calc.genoprob(cross,step=0,error.prob=0.025,off.end=5)
 
-get_phenos <- function(crs,pheno){
- index <- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
- subset(crs,ind=index)
-}
+bin.add.imp <- stepwiseqtl(cross, incl.markers=T, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=3)
+bin.add.imp.qtls <- summary(bin.add.imp)
+bin.add.imp.qtls <- makeqtl(gg_step2, chr=as.character(bin.add.imp.qtls$chr), pos=as.numeric(bin.add.imp.qtls$pos), what="draws")
 
-pheno_ind <- function(crs,pheno){
- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
-}
+
+norm.add <- stepwiseqtl(cross, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5)
+norm.add.qtls <- summary(norm.add)
+norm.add.qtls <- makeqtl(cross, chr=as.character(norm.add.qtls$chr), pos=as.numeric(norm.add.qtls$pos), what="draws")
+
+loc_a <- find.marker(cross, norm.add.qtls$chr[1],norm.add.qtls$pos[1])
+loc_b <- find.marker(cross, norm.add.qtls$chr[2],norm.add.qtls$pos[2])
+
 
 ################################################################################
 ### ELR ####
