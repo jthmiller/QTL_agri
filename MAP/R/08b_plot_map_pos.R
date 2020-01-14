@@ -64,15 +64,15 @@ ol.rank <- all.rank[which(all.rank$chr %in% qtl_pg), ]
 ################################################
 
 ### GGriges plot
-scan_NBH <- scan.norm.imp.NBH
-scan_ELR <- scan.norm.imp.ELR
-scan_NEW <- scan.norm.imp.NEW
-scan_BRP <- scan.norm.imp.BRP
-
-scan_NBH <- scan.bin.mr.NBH
-scan_ELR <- scan.bin.mr.ELR
-scan_NEW <- scan.bin.mr.NEW
-scan_BRP <- scan.bin.mr.BRP
+#scan_NBH <- scan.norm.imp.NBH
+#scan_ELR <- scan.norm.imp.ELR
+#scan_NEW <- scan.norm.imp.NEW
+#scan_BRP <- scan.norm.imp.BRP
+#
+#scan_NBH <- scan.bin.mr.NBH
+#scan_ELR <- scan.bin.mr.ELR
+#scan_NEW <- scan.bin.mr.NEW
+#scan_BRP <- scan.bin.mr.BRP
 
 scan_NBH <- scan.bin.imp.NBH
 scan_ELR <- scan.bin.imp.ELR
@@ -148,7 +148,43 @@ names(popcol)[2] <- 'BRP'
 
 ################################################
 ################################################
-## use 	no_annot_.qtl.png
+
+p <- ggplot(qtlmelt, aes(x = pos, y = lod, colour = pop))
+pdf("/home/jmiller1/public_html/all_pop_qtl_only.pdf",width=15,height=11)
+p +
+  facet_wrap(~chr, nrow = 1, scales = "free_x", ncol = 4) +
+  scale_color_manual(values = popcol) +
+  scale_y_continuous(limits = c(-2.5, 22)) +
+  ### gene line
+  geom_label_repel(aes(x = pos, y = 0.1, label = gene),fill='white', color = "black", segment.size = 1,
+    label.padding = unit(0.2, "lines"), data = qtl.gens, direction = "y", size = 5,
+    seed = 666, nudge_y = 2, ylim = c(5, 20), segment.alpha = 0.5) + ## plot lines
+
+  geom_line(size = 2, alpha = 0.75) + ### gene label
+
+  geom_label_repel(aes(x = pos, y = 0.1, label = gene), color = "black", segment.size = 0,
+    label.padding = unit(0.2, "lines"), data = qtl.gens, direction = "y", size = 5,
+    seed = 666, nudge_y = 2, ylim = c(5, 20), max.iter = 6000, ) + ### Rank line
+
+  geom_label_repel(aes(x = pos, y = 0, color = pop, label = rank), data = qtl.rank,
+    size = 5, segment.size = 1, force = 4, min.segment.length = 0.1, point.padding = unit(0.4,
+    "lines"), direction = "both", ylim = c(0, -8), seed = 666, box.padding = 0.1) +
+    ### Rank label
+
+  geom_label_repel(aes(x = pos, y = 0, color = pop,label = rank), fontface = "bold", data = qtl.rank,
+    size = 5, segment.size = 0, force = 4, min.segment.length = 0.1, point.padding = unit(0.4,
+    "lines"), direction = "both", ylim = c(0, -8), seed = 666, box.padding = 0.1) +
+
+  theme(axis.title.x = element_blank(),
+    axis.title.y = element_text(face = "bold", color = "black", size = 16),
+    axis.text.y=element_text(face = "bold", color = "black", size = 16),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    strip.text.x = element_text(face = "bold", color = "black",size=16),
+    legend.position = "none") +
+
+  labs(x = "Chromosome", y = "LOD", linetype = "")
+dev.off()
 
 
 

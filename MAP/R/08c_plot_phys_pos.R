@@ -15,6 +15,36 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
 #############################################
+### Color for stat comparisons
+statcol <- popcol
+names(statcol) <- c('BI.NBH','BP.F','NYC.SH','ER.KC')
+################################################
+
+for (ch in c(1,2,8,13,18,24)){
+ pdf(paste0("/home/jmiller1/public_html/pfst_location_",ch,".pdf"), width = 14)
+ plot_stat(pfst,ch=ch,poplot=statcol,colnm='mid')
+dev.off()
+}
+
+
+for (ch in c(1,2,8,13,9,18,24)){
+ pdf(paste0("/home/jmiller1/public_html/pbs",ch,".pdf"), width = 14)
+ plot_stat(pbs,ch=ch,poplot=popgen,colnm='mid')
+
+ dev.off()
+}
+
+for (ch in c(1,2,8,13,9,18,24)){
+ pdf(paste0("/home/jmiller1/public_html/taj",ch,".pdf"), width = 14)
+ plot_stat(taj,ch=ch,poplot=popgen,colnm='mid')
+
+ dev.off()
+}
+
+
+
+
+
 ### pfst
 statcol_mod <- popcol
 names(statcol_mod) <- c('BI.NBH','F.NBH','ER.KC','ER.SH')
