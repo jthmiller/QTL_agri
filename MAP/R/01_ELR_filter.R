@@ -106,14 +106,19 @@
 pop <- 'ELR'
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
+
 cross <- read.cross.jm(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
 format = "csvr", geno = c(1:3), estimate.map = FALSE)
+
 path <- file.path(mpath, paste(pop, ".ped", sep = ""))
 popname <- system(paste("cut -f1 -d' '", path), intern = TRUE)
 indname <- system(paste("cut -f2 -d' '", path), intern = TRUE)
 cross$pheno$ID <- paste(popname, indname, sep = "_")
 cross$pheno$bin <- ifelse(cross$pheno$Pheno > 2, 1 , 0)
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
+
+par.genos <- pull.geno(cross)[cross$pheno$ID=='BLI_BI1124M',]
+
 ################################################################################
 
 flt <- file.path(mpath,paste0(pop,'_ABxAB_markernames.tsv'))
@@ -133,14 +138,11 @@ toss.related <- c("ELR_10978","ELR_10977","ELR_10982","ELR_10974","ELR_10980","E
 ##toss.badata <- c("ELR_10869","ELR_10967","ELR_11592","ELR_11115","ELR_11103","ELR_10981","ELR_11593")
 toss.badata <- c("ELR_10869","ELR_10987")
 
-crossbk <- cross
-cross <- crossbk
 cross <- drop.markers(cross,DROP)
 cross <- switchAlleles(cross, markers = bfix_swit)
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.related,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
 ################################################################################
-
 
 LOD <- 14
 RF <- 0.15
@@ -181,8 +183,12 @@ for(Z in 1:24){
 
 }
 
+################################################################################
+## write ############
+################################################################################
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
+################################################################################
 
 system('sbatch 02_map.sh "ELR"')
 
@@ -194,3 +200,34 @@ for(i in 1:24){
  plot(X,Y, xlab=paste('chr',i), ylab='physical position')
 }
 dev.off()
+
+
+cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
+
+
+################################################################################
+inds <- which(crossbk$pheno$ID %in% cross$pheno$ID)
+old.gt <- as.matrix(pull.geno(crossbk))
+new.gt <- as.matrix(pull.geno(cross))
+old.gt[old.gt == 2] <- NA
+new.gt[new.gt == 2] <- NA
+marks <- intersect(colnames(old.gt), colnames(new.gt))
+old.gt <- old.gt[inds,marks]
+new.gt <- new.gt[,marks]
+
+switched <- colnames(old.gt)[which(colSums(old.gt == new.gt, na.rm =T) == 0)]
+
+crossbk <- switchAlleles(crossbk, switched)
+BLI_BI1124M <- pull.geno(crossbk)[which(crossbk$pheno$ID == 'BLI_BI1124M'),marks]
+
+
+
+
+ new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
+ orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
+
+ new_gts[new_gts == 2] <- NA
+ orig_gts[orig_gts == 2] <- NA
+
+ switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]

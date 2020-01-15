@@ -1,10 +1,10 @@
 #!/bin/R
 
-##pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 ## USE MARKER REGRESSION TO COMPARE ALL LOCI ON BRP AND NEW
-## pop <- 'NBH'
-pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
+
+pop <- 'NBH'
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
@@ -12,6 +12,9 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
+load(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
+################################################################################
+
 ################################################################################
 ## Read cross
 cross <- read.cross(
@@ -19,66 +22,65 @@ cross <- read.cross(
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE
 )
+################################################################################
 
-
-loc_2 <- find.marker(cross, full.norm.imp$chr[1],full.norm.imp$pos[1])
-loc_8 <- find.marker(cross, full.norm.imp$chr[2],full.norm.imp$pos[2])
-loc_13 <- find.marker(cross, full.norm.imp$chr[3],full.norm.imp$pos[3])
-loc_18 <- find.marker(cross, full.norm.imp$chr[4],full.norm.imp$pos[4])
-loc_24a <- find.marker(cross, full.norm.imp$chr[5],full.norm.imp$pos[5])
-loc_24b <- find.marker(cross, full.norm.imp$chr[6],full.norm.imp$pos[6])
-
+markers <- mapply(
+  function(crs=cross,X,Y){ find.marker(crs,X,Y) },
+   X = full.norm.imp$chr, Y = full.norm.imp$pos)
 
 ################################################################################
-### NBH ####
-nbh_cross <- cross
-nbh_sens <- as.character(nbh_cross$pheno$ID[which(nbh_cross$pheno$ID %in% pheno_ind(nbh_cross,1))])
-nbh_tol <- as.character(nbh_cross$pheno$ID[which(nbh_cross$pheno$ID %in% pheno_ind(nbh_cross,0))])
 
-nbh_gts <- pull.geno(nbh_cross)[,c(loc_2,loc_8,loc_13,loc_18,loc_24a,loc_24b)]
-rownames(nbh_gts) <- as.character(nbh_cross$pheno$ID)
+sens <- as.character(cross$pheno$ID[which(cross$pheno$ID %in% pheno_ind(cross,1))])
+tol <- as.character(cross$pheno$ID[which(cross$pheno$ID %in% pheno_ind(cross,0))])
 
-################################################################################
-## single locus
-nbh_sens_2 <- factor(nbh_gts[nbh_sens,c(loc_2)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_sens_8 <- factor(nbh_gts[nbh_sens,c(loc_8)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_sens_13 <- factor(nbh_gts[nbh_sens,c(loc_13)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_sens_18 <- factor(nbh_gts[nbh_sens,c(loc_18)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_sens_24 <- factor(nbh_gts[nbh_sens,c(loc_24a)],levels=c(NA,1,2,3),exclude = NULL)
+gts <- pull.geno(cross)[,markers]
+rownames(gts) <- as.character(cross$pheno$ID)
 
-nbh_tol_2 <- factor(nbh_gts[nbh_tol,c(loc_2)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_tol_8 <- factor(nbh_gts[nbh_tol,c(loc_8)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_tol_13 <- factor(nbh_gts[nbh_tol,c(loc_13)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_tol_18 <- factor(nbh_gts[nbh_tol,c(loc_18)],levels=c(NA,1,2,3),exclude = NULL)
-nbh_tol_24 <- factor(nbh_gts[nbh_tol,c(loc_24a)],levels=c(NA,1,2,3),exclude = NULL)
+#################################################################################
+#gt_sens <- factor(gts[sens,mark],levels=c(NA,1,2,3),exclude = NULL)
+#gt_tol <- factor(gts[tol,mark],levels=c(NA,1,2,3),exclude = NULL)
 
-nbh_2 <- table(nbh_sens_2) + table(nbh_tol_2)
-nbh_8 <- table(nbh_sens_8) + table(nbh_tol_8)
-nbh_13 <- table(nbh_sens_13) + table(nbh_tol_13)
-nbh_18 <- table(nbh_sens_18) + table(nbh_tol_18)
-nbh_24 <- table(nbh_sens_24) + table(nbh_tol_24)
+gt_sens <- lapply(markers, function(mark){
+ factor(gts[sens,mark],levels=c(NA,1,2,3),exclude = NULL)
+ }
+)
 
-nbh_2_total <- table(nbh_sens_2) + table(nbh_tol_2)
-nbh_8_total <- table(nbh_sens_8) + table(nbh_tol_8)
-nbh_13_total <- table(nbh_sens_13) + table(nbh_tol_13)
-nbh_18_total <- table(nbh_sens_18) + table(nbh_tol_18)
-nbh_24_total <- table(nbh_sens_24) + table(nbh_tol_24)
-
-nbh_tol_2 <- table(nbh_sens_2) / nbh_2_total
-nbh_tol_8 <- table(nbh_sens_8) / nbh_8_total
-nbh_tol_13 <- table(nbh_sens_13) / nbh_13_total
-nbh_tol_18 <- table(nbh_sens_18) / nbh_18_total
-nbh_tol_24 <- table(nbh_sens_24) / nbh_24_total
+gt_tol <- lapply(markers, function(mark){
+ factor(gts[tol,mark],levels=c(NA,1,2,3),exclude = NULL)
+ }
+)
 
 ################################################################################
-## single plot 2
-cex_single <- c(.25,.5,.25) * 94
-xdir <- c(1,2,3)
+## list for plotting
+prop_total <- mapply(function(sens,tol){ return(table(sens) + table(tol)) }, gt_sens, gt_tol, SIMPLIFY = F, USE.NAMES = FALSE)
+names(prop_total) <- markers
+prop_sens <- mapply( function(prop,total){ return(table(prop) / total) }, gt_sens, prop_total, SIMPLIFY = F,USE.NAMES = FALSE)
+names(prop_sens) <- markers
 
+pop_chr <- as.list(paste('CHR',names(gt_sens),'QTL genotype'))
+names(pop_chr) <- markers
+loc_name <- as.list(c('AIP (CHR 2)','ARNT (CHR 8)','ARNT (CHR 13)','AHRb (CHR 18)','QTLa (CHR 24)','QTLb (CHR 24)'))
+names(loc_name) <- markers
+chr <- names(gt_sens)
+chr <- ifelse(duplicated(chr),paste0(chr,'.',sum(duplicated(chr))),chr)
+names(chr) <- markers
+################################################################################
 
-single <- function(ydir, pop_chr, mainL, chrL, pdfL){
+single <- function(mark, pop = 'NBH'){
 
-pdf(paste0("/home/jmiller1/public_html/", pdfL,".pdf"), width=3.5)
+ ydir <- prop_sens[[mark]]
+ ytot <- prop_total[[mark]]
+ chromo <- pop_chr[[mark]]
+ mainL <- loc_name[[mark]]
+ chrL <- pop_chr[[mark]]
+
+ pdfL <- paste0("/home/jmiller1/public_html/", pop, chr[mark],".pdf")
+
+ pdf(pdfL, width=3.5)
+
+ cex_single <- c(.25,.5,.25) * nind(cross)
+ xdir <- c(1,2,3)
+
  plot(c(0.65,3.35), c(-0.1,1.1),
   xaxs="i", xaxt="n", xlab="",
   yaxs="i", yaxt="n", ylab="",
@@ -88,9 +90,9 @@ pdf(paste0("/home/jmiller1/public_html/", pdfL,".pdf"), width=3.5)
   lines(xdir, ydir[as.character(c(1,2,3))],col='black',lwd=5)
 
   points(xdir, ydir[as.character(c(1,2,3))],col=c('black','darkblue','cornflowerblue'), pch=21,bg=c('black','darkblue','cornflowerblue'),
-   cex= (12 * (nbh[as.character(c(1,2,3))] / cex_single)))
+   cex= (12 * (ytot[as.character(c(1,2,3))] / cex_single)))
 
-  text(xdir, ydir[as.character(c(1,2,3))], labels=nbh[as.character(c(1,2,3))],col='white',font=2, cex=2)
+  text(xdir, ydir[as.character(c(1,2,3))], labels=ytot[as.character(c(1,2,3))],col='white',font=2, cex=2)
 
   mtext(side=1, line=3, chrL, col="black", font=2,cex=1.5)
   mtext(side=2, line=3, "Proportion Deformed", col="black", font=2, cex=1.5)
@@ -101,13 +103,7 @@ dev.off()
 }
 
 
-single(nbh_tol_2, pop_chr = nbh_2, mainL = 'QTL2', chrL = 'CHR 2', pdfL = "nbh_2")
-single(nbh_tol_8, pop_chr = nbh_8, mainL = 'QTL8', chrL = 'CHR 8', pdfL = "nbh_8")
-single(nbh_tol_13, pop_chr = nbh_13, mainL = 'QTL13', chrL = 'CHR 13', pdfL = "nbh_13")
-single(nbh_tol_18, pop_chr = nbh_18, mainL = 'QTL18', chrL = 'CHR 18', pdfL = "nbh_18")
-single(nbh_tol_24, pop_chr = nbh_24, mainL = 'QTL24', chrL = 'CHR 24', pdfL = "nbh_24")
-
-#
+sapply(markers,single,pop = 'NBH')
 
 ################################################################################
 ## single plot AIP
@@ -138,6 +134,9 @@ pdf(paste0("/home/jmiller1/public_html/",pdfL,".pdf"), width=3.5)
 dev.off()
 }
 ################################################################################
+
+
+markers
 
 
 
