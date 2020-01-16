@@ -14,7 +14,7 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-load(file.path(mpath,'08_phys_plots_pos.rsave'))
+#load(file.path(mpath,'08_phys_plots_pos.rsave'))
 
 
 ####################################################################################
