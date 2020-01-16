@@ -142,6 +142,7 @@ dev.off()
 
 
 ## CHR1 ###################################
+21610008 21865786
 ################################################################################
 elr_ab <- ahr_elr[which(ahr_elr$chr==1),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==1),'pos1']
@@ -192,27 +193,35 @@ dev.off()
 
 ################################################################################
 ################################################################################
+for(ch in 1:24){
+pdf(paste0("/home/jmiller1/public_html/nbh_pbs_phys",ch,".pdf"), width=6, height=3.5)
+plot_pgen(crs = cross_NBH, chrs=ch, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1),stat_name='pbs' )
+dev.off()
 
-
+pdf(paste0("/home/jmiller1/public_html/nbh_pfst_phys",ch,".pdf"), width=6, height=3.5)
+plot_pgen(crs = cross_NBH,  chrs=ch, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1),stat_name='pfst' )
+dev.off()
+}
 
 ##PHYS##########################################################################
-png("/home/jmiller1/public_html/nbh_pbs_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/nbh_pbs_phys.pdf", width=35, height=10)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_NBH, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1),stat_name='pbs' )
+dev.off()
 
-png("/home/jmiller1/public_html/nbh_pfst_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/nbh_pfst_phys.pdf", width=35, height=10)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_NBH, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1),stat_name='pfst' )
 
-png("/home/jmiller1/public_html/elr_pbs_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr_pbs_phys.pdf", width=35, height=10)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pbs, map = 'mid' , ahr = ahr_elr,ahr_clm= 'stp',  colnm = 'ER', popgen = elr.rank, rank_clm='end', ylimo=c(-1,2),stat_name='pbs' )
 
-png("/home/jmiller1/public_html/elr.sh_pfst_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr.sh_pfst_phys.pdf", width=35, height=10)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.SH', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5),stat_name='pfst' )
 
-png("/home/jmiller1/public_html/elr.kc_pfst_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr.kc_pfst_phys.pdf", width=35, height=10)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.KC', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5),stat_name='pfst' )
 #####################################################################################
@@ -246,7 +255,7 @@ a <- pull.markers(cross_ELR,a)
 a <- subset(a,ind=a$pheno$bin==0)
 rf <- est.rf(a, maxit=10000, tol=1e-6)
 
-png("/home/jmiller1/public_html/elr_rf.png", width=1000, height=1000)
+pdf("/home/jmiller1/public_html/elr_rf.pdf", width=1000, height=1000)
  plotRF(rf, zmax=8, col.scheme="redblue",what='lod')
 dev.off()
 
@@ -256,7 +265,7 @@ a <- pull.markers(cross_NBH,a)
 #a <- subset(a,ind=a$pheno$bin==0)
 rf <- est.rf(a, maxit=10000, tol=1e-6)
 
-png("/home/jmiller1/public_html/nbh_rf.png", width=1000, height=1000)
+pdf("/home/jmiller1/public_html/nbh_rf.pdf", width=1000, height=1000)
  plotRF(rf, zmax=10, col.scheme="redblue",what='lod')
 dev.off()
 ################################################################################

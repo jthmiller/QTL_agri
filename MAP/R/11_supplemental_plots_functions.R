@@ -18,7 +18,7 @@ setwd(mpath)
 
 ######## Plot phys pos x marker order ##########################################
 
-png("/home/jmiller1/public_html/ELR_NBH_physpo_filt.png", width=1500, height=1500)
+pdf("/home/jmiller1/public_html/ELR_NBH_physpo_filt.pdf", width=21, height=21)
 par(mfrow=c(4,6))
 
 for (i in 1:24){
@@ -42,7 +42,7 @@ dev.off()
 
 ######## Plot phys pos x marker order ##########################################
 
-png("/home/jmiller1/public_html/NBH_physpo_filt.png", width=1500, height=1500)
+pdf("/home/jmiller1/public_html/NBH_physpo_filt.pdf", width=21, height=21)
 par(mfrow=c(4,6))
 
 for (i in 1:24){
@@ -57,10 +57,10 @@ for (i in 1:24){
 dev.off()
 ################################################################################
 
-#### SEG DISTORTION X PHYSICAL POSITION
+#### SEG DISTORTION X PHYSICAL POSITION#########################################
 gt <- geno.table(cross_nbh)
 
-png("/home/jmiller1/public_html/NBH_segdist.png", width=1500, height=1500)
+pdf("/home/jmiller1/public_html/NBH_segdist.pdf", width=21, height=21)
 par(mfrow=c(4,6))
 
 for (i in 1:24){
@@ -78,7 +78,7 @@ dev.off()
 
 
 #### ELR and NBH seg dist
-png("/home/jmiller1/public_html/NBH_ELR_segdist.png", width=1750, height=1750)
+pdf("/home/jmiller1/public_html/NBH_ELR_segdist.pdf", width=1750, height=1750)
 par(mfrow=c(4,6))
 
 for (i in 1:24){
@@ -106,7 +106,7 @@ dev.off()
 
 ################################################################################
 
-png("/home/jmiller1/public_html/NBH_ELR_segdist_binary.png", width=1750, height=1750)
+pdf("/home/jmiller1/public_html/NBH_ELR_segdist_binary.pdf", width=1750, height=1750)
 par(mfrow=c(4,6))
 
 for (i in 1:24){
@@ -167,23 +167,23 @@ plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm")){
 
 }
 
-png("/home/jmiller1/public_html/NBH_effectplot.png", width=1500, height=1000)
+pdf("/home/jmiller1/public_html/NBH_effectplot.pdf", width=21, height=14)
 par(mfrow=c(4,6))
-plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank,chs=1:24)
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank,chs=1:24, main='NBH', model='bin')
 dev.off()
 
-png("/home/jmiller1/public_html/ELR_effectplot.png", width=1500, height=1000)
+pdf("/home/jmiller1/public_html/ELR_effectplot.pdf", width=21, height=14)
 par(mfrow=c(4,6))
-plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank,chs=1:24)
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank,chs=1:24, main='NBH', model='bin')
 dev.off()
 ################################################################################
 
 ################################################################################
 ################################################################################
 
-plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name){
+plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name){
 
- for (chr in 1:24){
+ for (chr in chrs){
 
   xl <- summary(pull.map(crs))[chr,'length']
   ind <- which(stat$chr == chr)
@@ -192,7 +192,7 @@ plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm
   X <- stat[ind,map]
 ##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
 
-  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, main=paste('CHR',chr), cex.lab=2, cex.main=2, xlab='physical position', ylab=stat_name)
+  plot(X, Y, col='black',type="n", cex.axis = 2, ylim = ylimo, main=paste('CHR',chr), cex.lab=2, cex.main=2, xlab='physical position', ylab=stat_name,pch=19)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
@@ -203,8 +203,8 @@ plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm
       indx <- which(popgen$chr %in% chr)
       abline(v=as.numeric(popgen[indx,rank_clm]), col='red')
     }
+  points(X, Y, col='black',pch=19)
  }
-dev.off()
 }
 
 
@@ -217,7 +217,7 @@ a <- pull.markers(cross_ELR,a)
 a <- subset(a,ind=a$pheno$bin==0)
 rf <- est.rf(a, maxit=10000, tol=1e-6)
 
-png("/home/jmiller1/public_html/elr_rf.png", width=1000, height=1000)
+pdf("/home/jmiller1/public_html/elr_rf.pdf", width=1000, height=14)
  plotRF(rf, zmax=8, col.scheme="redblue",what='lod')
 dev.off()
 
@@ -228,6 +228,6 @@ a <- pull.markers(cross_NBH,a)
 #a <- subset(a,ind=a$pheno$bin==0)
 rf <- est.rf(a, maxit=10000, tol=1e-6)
 
-png("/home/jmiller1/public_html/nbh_rf.png", width=1000, height=1000)
+pdf("/home/jmiller1/public_html/nbh_rf.pdf", width=1000, height=14)
  plotRF(rf, zmax=10, col.scheme="redblue",what='lod')
 dev.off()

@@ -45,8 +45,8 @@ cross_ELR <- calc.genoprob(cross_ELR, step=1, error.prob=0.025, off.end=5, map.f
 
 #scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
 #scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
-scan_nbh <- scanone(cross_NBH, method = "imp", model = "binary", pheno.col = 4)
-scan_elr <- scanone(cross_ELR, method = "imp", model = "binary", pheno.col = 4)
+scan_nbh <- scanone(cross_NBH, method = "em", model = "binary", pheno.col = 4)
+scan_elr <- scanone(cross_ELR, method = "em", model = "binary", pheno.col = 4)
 ################################################################################
 ################################################################################
 ###### plot_ef rQTL2
@@ -144,18 +144,6 @@ pfst$elr_cm <- conv_popstat(cross_ELR, popgen=pfst, whichcol='mid',newname='elr_
 ###
 
 ################################################################################
-## plot_ef in rQTL2 ############################################################
-col <- c("slateblue", "violetred", "green3")
-
-nbh <- convert2cross2(cross_NBH)
-nbh_map <- insert_pseudomarkers(nbh$gmap, step=1)
-nbh_pr <- calc_genoprob(nbh, nbh_map, error_prob=0.025, cores=4)
-
-elr <- convert2cross2(cross_ELR)
-elr_map <- insert_pseudomarkers(elr$gmap, step=1)
-elr_pr <- calc_genoprob(elr, elr_map, error_prob=0.025, cores=4)
-
-################################################################################
 ################################################################################
 ################################################################################
 ## Correlate lod and segregation distortion
@@ -238,5 +226,9 @@ sb_pbs <- sb_pbs[order(sb_pbs$start),]
 chr8_elr_pbs_peak <- get_genes_cm(chr=8, start = 16449074, stop = 18239074,models = nbh_gene_models, colm = 'start')
 
 ################################################################################
+
+chr1_nbh_rank_incompat_peak <- get_genes_cm(chr=1, start = 21600000, stop =  21800000,models = nbh_gene_models, colm = 'start')
+## kcnj3 regulates heartbeat
+
 ################################################################################
 ################################################################################
