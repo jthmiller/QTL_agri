@@ -26,11 +26,11 @@ cross$pheno <- as.data.frame(cross$pheno)
 gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
 
 gg <- pull.markers(cross,gg_marks)
-gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=100)
-gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 ggmap <- est.map(gg,error.prob=0.025,map.function="kosambi",sex.sp=F,n.cluster=8)
 gg <- replace.map(gg,ggmap)
-
+gg <- jittermap(gg)
+gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=100)
+gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 gg_step2 <- reduce2grid(gg)
 ##gg_step2$pheno <- as.data.frame(gg_step2$pheno)
 ################################################################################
@@ -41,7 +41,8 @@ norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='norm
 norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls$chr), pos=as.numeric(norm.add.qtls$pos), what="draws")
 qtls_chr <- unique(c(norm.add.qtls$chr,1,2,5,8,13,18,24))
-full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=5, chr=qtls_chr)
+##full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
+full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=F, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
 grid.perms.norm.imp <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 10)
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
