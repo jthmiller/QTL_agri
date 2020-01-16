@@ -22,7 +22,7 @@ cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
 
 gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
 gg <- pull.markers(cross,gg_marks)
-gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
+gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=100)
 gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 gg_step2 <- reduce2grid(gg)
 ################################################################################
