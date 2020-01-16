@@ -53,64 +53,117 @@ dev.off()
 
 png("/home/jmiller1/public_html/NBH_ELR_8_effectplot.png", width=750, height=250)
 par(mfrow=c(1,2))
-plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=8)
-plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=8)
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=8, main='NBH',model="bin")
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=8, main='ELR',model="bin")
+dev.off()
+################################################################################
+
+## CHR13 ###################################
+################################################################################
+elr_ab <- ahr_elr[which(ahr_elr$chr==13),'pos1']
+nbh_ab <- ahr_nbh[which(ahr_nbh$chr==13),'pos1']
+
+png("/home/jmiller1/public_html/NBH_ELR_effect_scan_13.png", width=750, height=250)
+par(mfrow=c(1,2))
+effectscan(cross_NBH, pheno.col=4, chr=13, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=nbh_ab,col='red')
+effectscan(cross_ELR, pheno.col=4, chr=13, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'ELR',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=elr_ab,col='red')
 dev.off()
 
-
-
+png("/home/jmiller1/public_html/NBH_ELR_13_effectplot.png", width=750, height=250)
+par(mfrow=c(1,2))
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=13, main='NBH',model="bin")
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=13, main='ELR',model="bin")
+dev.off()
 ################################################################################
 ################################################################################
-col <- c("slateblue", "violetred", "green3")
 
-nbh <- convert2cross2(cross_NBH)
-nbh_map <- insert_pseudomarkers(nbh$gmap, step=1)
-nbh_pr <- calc_genoprob(nbh, nbh_map, error_prob=0.025, cores=4)
+## CHR2 ###################################
+################################################################################
+elr_ab <- ahr_elr[which(ahr_elr$chr==2),'pos1']
+nbh_ab <- ahr_nbh[which(ahr_nbh$chr==2),'pos1']
 
-elr <- convert2cross2(cross_ELR)
-elr_map <- insert_pseudomarkers(elr$gmap, step=1)
-elr_pr <- calc_genoprob(elr, elr_map, error_prob=0.025, cores=4)
+png("/home/jmiller1/public_html/NBH_ELR_effect_scan_2.png", width=750, height=250)
+par(mfrow=c(1,2))
+effectscan(cross_NBH, pheno.col=4, chr=2, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=nbh_ab,col='red')
+effectscan(cross_ELR, pheno.col=4, chr=2, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'ELR',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=elr_ab,col='red')
+dev.off()
 
-cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
+png("/home/jmiller1/public_html/NBH_ELR_2_effectplot.png", width=750, height=250)
+par(mfrow=c(1,2))
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=2, main='NBH',model="bin")
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=2, main='ELR',model="bin")
+dev.off()
+################################################################################
+################################################################################
 
-ahr_nbh <- nbh.gens[which(nbh.gens$gene %in% cands),]
-ahr_elr <- nbh.gens[which(elr.gens$gene %in% cands),]
+## CHR18 ###################################
+################################################################################
+elr_ab <- ahr_elr[which(ahr_elr$chr==18),'pos1']
+nbh_ab <- ahr_nbh[which(ahr_nbh$chr==18),'pos1']
+
+png("/home/jmiller1/public_html/NBH_ELR_effect_scan_18.png", width=750, height=250)
+par(mfrow=c(1,2))
+effectscan(cross_NBH, pheno.col=4, chr=18, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=nbh_ab,col='red')
+effectscan(cross_ELR, pheno.col=4, chr=18, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'ELR',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=elr_ab,col='red')
+dev.off()
+
+png("/home/jmiller1/public_html/NBH_ELR_18_effectplot.png", width=750, height=250)
+par(mfrow=c(1,2))
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=18, main='NBH',model="bin")
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=18, main='ELR',model="bin")
+dev.off()
+################################################################################
+################################################################################
+
+## CHR24 ###################################
+################################################################################
+elr_ab <- ahr_elr[which(ahr_elr$chr==24),'pos1']
+nbh_ab <- ahr_nbh[which(ahr_nbh$chr==24),'pos1']
+
+png("/home/jmiller1/public_html/NBH_ELR_effect_scan_24.png", width=750, height=250)
+par(mfrow=c(1,2))
+effectscan(cross_NBH, pheno.col=4, chr=24, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=nbh_ab,col='red')
+effectscan(cross_ELR, pheno.col=4, chr=24, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'ELR',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=elr_ab,col='red')
+dev.off()
+
+png("/home/jmiller1/public_html/NBH_ELR_24_effectplot.png", width=750, height=250)
+par(mfrow=c(1,2))
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=24, main='NBH',model="bin")
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=24, main='ELR',model="bin")
+dev.off()
+################################################################################
+
+
+## CHR1 ###################################
+################################################################################
+elr_ab <- ahr_elr[which(ahr_elr$chr==1),'pos1']
+nbh_ab <- ahr_nbh[which(ahr_nbh$chr==1),'pos1']
+
+png("/home/jmiller1/public_html/NBH_ELR_effect_scan_1.png", width=750, height=250)
+par(mfrow=c(1,2))
+effectscan(cross_NBH, pheno.col=4, chr=1, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=nbh_ab,col='red')
+effectscan(cross_ELR, pheno.col=4, chr=1, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'ELR',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
+abline(v=elr_ab,col='red')
+dev.off()
+
+png("/home/jmiller1/public_html/NBH_ELR_1_effectplot.png", width=750, height=250)
+par(mfrow=c(1,2))
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=1, main='NBH',model="bin")
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=1, main='ELR',model="bin")
+dev.off()
+################################################################################
 
 
 
-
-
-
-
-
-plot_ef <- function(crs,map,pr,ahr,popgen){
-
- for (chr in 1:24){
-
-  c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,"pheno_norm"])
-
-  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,5), cex.axis = 2)
-
-    if(any( chr %in% ahr$chr )) {
-      indx <- which(ahr$chr %in% chr)
-      abline(v=as.numeric(ahr[indx,'pos1']), col='red')
-    }
-
-    if(any( chr %in% popgen$chr )) {
-      indx <- which(popgen$chr %in% chr)
-      abline(v=as.numeric(popgen[indx,'pos1']), col='red')
-    }
-
-
-  last_coef <- unclass(c2eff)[nrow(c2eff),] # pull out last coefficients
-
-  for(i in seq(along=last_coef))
-    axis(side=4, at=last_coef[i], names(last_coef)[i], tick=FALSE, col.axis=col[i])
-  }
-
-
- dev.off()
-}
 
 png("/home/jmiller1/public_html/NBH_effectplot.png", width=1500, height=1000)
 par(mfrow=c(4,6))

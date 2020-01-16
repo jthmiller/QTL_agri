@@ -149,7 +149,8 @@ sb_pbs <- sb_pbs[!is.na(sb_pbs$ER),]
 sb_pbs <- tail(sb_pbs[order(sb_pbs$ER),],60)
 sb_pbs <- sb_pbs[order(sb_pbs$start),]
 
-chr8_elr_pbs_peak <- get_genes_cm(chr=8, start = 16853074, stop = 16935074,models = nbh_gene_models, colm = 'start')
+chr8_elr_pbs_peak <- get_genes_cm(chr=8, start = 16449074, stop = 18239074,models = nbh_gene_models, colm = 'start')
+
 
 ################################################################################
 ################################################################################

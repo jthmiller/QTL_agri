@@ -20,13 +20,15 @@ cross <- read.cross(
 cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
 cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
 
-gg <- sim.geno(cross, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
+gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
+gg <- pull.markers(cross,gg_marks)
+gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
 gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 gg_step2 <- reduce2grid(gg)
 ################################################################################
+################################################################################
 save.image(file.path(mpath,paste0(pop,'_bin_hk.rsave')))
 ################################################################################
-
 ################################################################################
 bin.add.hk <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='binary', method = "hk", pheno.col = 4, scan.pairs = F, max.qtl=5)
 bin.add.hk.qtls <- summary(bin.add.hk)

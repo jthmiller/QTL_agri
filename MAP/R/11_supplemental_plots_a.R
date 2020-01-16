@@ -105,19 +105,6 @@ dev.off()
 
 
 ################################################################################
-cross_NBH$pheno$pheno_norm <- round(nqrank(cross_NBH$pheno$Pheno),5)
-cross_ELR$pheno$pheno_norm <- round(nqrank(cross_ELR$pheno$Pheno),5)
-
-cross_NBH <- sim.geno(cross_NBH, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
-cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
-cross_NBH <- calc.genoprob(cross_NBH, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
-cross_ELR <- calc.genoprob(cross_ELR, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
-scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
-scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
-scan_nbh <- scanone(cross_NBH, method = "imp", model = "binary", pheno.col = 4)
-scan_elr <- scanone(cross_ELR, method = "imp", model = "binary", pheno.col = 4)
-
-
 
 png("/home/jmiller1/public_html/NBH_ELR_segdist_binary.png", width=1750, height=1750)
 par(mfrow=c(4,6))
@@ -150,15 +137,7 @@ for (i in 1:24){
  }
 dev.off()
 
-
-
-
-
 ################################################################################
-## Effect plot (uses sim.geno)
-cross_NBH <- sim.geno(cross_NBH, step=1, error.prob=0.05, off.end=5, map.function="kosambi", n.draws=160)
-cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.05, off.end=5, map.function="kosambi", n.draws=160)
-
 
 png("/home/jmiller1/public_html/NBH_effect_scan.png", width=1500, height=500)
 par(mfrow=c(2,1))
@@ -178,13 +157,13 @@ dev.off()
 
 
 
-plot_ef <- function(crs,map,pr,ahr,popgen,chs){
+plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm")){
 
  for (chr in chs){
 
-  c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,"pheno_norm"])
+  c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,model])
 
-  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,5), cex.axis = 2)
+  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,1), cex.axis = 2,main=main)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
@@ -256,7 +235,7 @@ dev.off()
 ################################################################################
 ################################################################################
 
-plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm){
+plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name){
 
  for (chr in 1:24){
 
@@ -267,7 +246,7 @@ plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm
   X <- stat[ind,map]
 ##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
 
-  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, main=paste('CHR',chr), cex.main=2)
+  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, main=paste('CHR',chr), cex.lab=2, cex.main=2, xlab='physical position', ylab=stat_name)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
@@ -286,25 +265,25 @@ dev.off()
 ##PHYS##############################
 png("/home/jmiller1/public_html/nbh_pbs_phys.png", width=2500, height=750)
 par(mfrow=c(4,6))
-plot_pgen(crs = cross_NBH, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1) )
+plot_pgen(crs = cross_NBH, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1),stat_name='pbs' )
 
 png("/home/jmiller1/public_html/nbh_pfst_phys.png", width=2500, height=750)
 par(mfrow=c(4,6))
-plot_pgen(crs = cross_NBH, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1) )
+plot_pgen(crs = cross_NBH, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1),stat_name='pfst' )
+
+
 
 png("/home/jmiller1/public_html/elr_pbs_phys.png", width=2500, height=750)
 par(mfrow=c(4,6))
-plot_pgen(crs = cross_ELR, stat = pbs, map = 'mid' , ahr = ahr_elr,ahr_clm= 'stp',  colnm = 'ER', popgen = elr.rank, rank_clm='end', ylimo=c(-1,2) )
+plot_pgen(crs = cross_ELR, stat = pbs, map = 'mid' , ahr = ahr_elr,ahr_clm= 'stp',  colnm = 'ER', popgen = elr.rank, rank_clm='end', ylimo=c(-1,2),stat_name='pbs' )
 
 png("/home/jmiller1/public_html/elr.sh_pfst_phys.png", width=2500, height=750)
 par(mfrow=c(4,6))
-plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.SH', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5) )
+plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.SH', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5),stat_name='pfst' )
 
 png("/home/jmiller1/public_html/elr.kc_pfst_phys.png", width=2500, height=750)
 par(mfrow=c(4,6))
-plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.KC', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5) )
-
-
+plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.KC', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5),stat_name='pfst' )
 ####################################
 
 ##CM POS############################
