@@ -71,8 +71,8 @@ brp.popgen <- read.table(file.path(mpath,"outliersBP.txt.ncbi.lifted"), sep = "\
 ################################################
 ### Use nbh coords but elr and new popgen
 #new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
-nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 50)
-elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 50)
+nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 75)
+elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 75)
 #brp.rank <- cnv.popgen(cross.nbh, brp.popgen, top = 50)
 ################################################
 
@@ -92,6 +92,50 @@ elr_gene_models$cm_mid <- conv_popstat(cross_ELR, popgen=genes.bed, whichcol='en
 
 
 ## get_genes_cm(chr=1, start = 20,stop = 30,models = nbh_gene_models, colm = 'cm_mid')
+####################################################################################
+####################################################################################
+pbs <- file.path(mpath, 'pbstat.txt.ncbi.lifted')
+pbs <- read.table(pbs, sep = "\t", header = T)
+pbs$mid <- pbs$V2 + (abs(pbs$V3 - pbs$V2) * .5)
+pbs$V1 <- gsub('chr',"",pbs$V1)
+colnames(pbs)[1:3] <- c('chr','start','end')
+pbs <- pbs[!is.na(as.numeric(pbs$chr)),]
+pbs$nbh_cm <- conv_popstat(cross_NBH, popgen=pbs, whichcol='mid',newname='nbh_cm')$nbh_cm
+pbs$elr_cm <- conv_popstat(cross_ELR, popgen=pbs, whichcol='mid',newname='elr_cm')$elr_cm
+
+pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
+pfst <- read.table(pfst, sep = "\t", header = T)
+pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
+pfst$Scaffold <- gsub('chr',"",pfst$Scaffold)
+colnames(pfst)[1] <- 'chr'
+pfst <- pfst[!is.na(as.numeric(pfst$chr)),]
+pfst$nbh_cm <- conv_popstat(cross_NBH, popgen=pfst, whichcol='mid',newname='nbh_cm')$nbh_cm
+pfst$elr_cm <- conv_popstat(cross_ELR, popgen=pfst, whichcol='mid',newname='elr_cm')$elr_cm
+####################################################################################
+####################################################################################
+
+###taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
+###taj <- read.table(taj, sep = "\t", header = T)
+###taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
+###taj$Scaffold <- gsub('chr',"",taj$Scaffold)
+###colnames(taj)[1] <- 'chr'
+###taj <- conv_popstat(cross.nbh, popgen=taj, whichcol='mid',newname='nbh_mp')
+#####taj <- conv_popstat(cross.elr, popgen=taj, whichcol='mid',newname='elr_mp')
+###
+###pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
+###pi <- read.table(pi, sep = "\t", header = T)
+###pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
+###pi$Scaffold <- gsub('chr',"",pi$Scaffold)
+###colnames(pi)[1] <- 'chr'
+###pi <- conv_popstat(cross.nbh, popgen=pi, whichcol='mid',newname='nbh_mp')
+#####pi <- conv_popstat(cross.elr, popgen=pi, whichcol='mid',newname='elr_mp')
+###
+
+
+
+####################################################################################
+
+
 ######## Plot phys pos x marker order ##########################################
 
 png("/home/jmiller1/public_html/ELR_NBH_physpo_filt.png", width=1500, height=1500)
@@ -341,4 +385,96 @@ png("/home/jmiller1/public_html/lodxdist_elr_AABB.png", width=500, height=500)
 plot(-log10(elr_seg),elr_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
 points(-log10(elr_seg),elr_c2eff[,'BB'], col = 'red',pch=19)
 ##points(-log10(elr_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
+dev.off()
+
+
+################################################################################
+################################################################################
+
+plot_pgen <- function(crs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm){
+
+ for (chr in 1:24){
+
+  xl <- summary(pull.map(crs))[chr,'length']
+  ind <- which(stat$chr == chr)
+
+  Y <- stat[ind,colnm]
+  X <- stat[ind,map]
+##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
+
+  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, main=paste('CHR',chr), cex.main=2)
+
+    if(any( chr %in% ahr$chr )) {
+      indx <- which(ahr$chr %in% chr)
+      abline(v=as.numeric(ahr[indx,ahr_clm]), col='red')
+    }
+
+    if(any( chr %in% popgen$chr )) {
+      indx <- which(popgen$chr %in% chr)
+      abline(v=as.numeric(popgen[indx,rank_clm]), col='red')
+    }
+ }
+dev.off()
+}
+
+
+##PHYS##############################
+png("/home/jmiller1/public_html/nbh_pbs_phys.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_NBH, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1) )
+
+png("/home/jmiller1/public_html/nbh_pfst_phys.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_NBH, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1) )
+
+png("/home/jmiller1/public_html/elr_pbs_phys.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_ELR, stat = pbs, map = 'mid' , ahr = ahr_elr,ahr_clm= 'stp',  colnm = 'ER', popgen = elr.rank, rank_clm='end', ylimo=c(-1,2) )
+
+png("/home/jmiller1/public_html/elr_pfst_phys.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.SH', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5) )
+####################################
+
+##CM POS############################
+
+png("/home/jmiller1/public_html/nbh_pfst.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_NBH, stat = pfst, map = 'nbh_cm' , ahr = ahr_nbh, ahr_clm= 'pos1',  colnm = 'BI.NBH' , popgen = nbh.rank, ylimo=c(0,0.75) )
+
+png("/home/jmiller1/public_html/nbh_pbs.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_NBH, stat = pbs, map = 'nbh_cm' , ahr = ahr_nbh,  colnm = 'NBH' , popgen = nbh.rank, ylimo=c(-1,2) )
+
+png("/home/jmiller1/public_html/elr_pfst.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_ELR, stat = pfst, map = 'elr_cm', ahr = ahr_elr, ahr_clm= 'stp',  colnm = 'ER.KC' , popgen = elr.rank,rank_clm='end', ylimo=c(0,1) )
+
+png("/home/jmiller1/public_html/elr_pfst.png", width=2500, height=750)
+par(mfrow=c(4,6))
+plot_pgen(crs = cross_ELR, stat = pfst, map = 'elr_cm', ahr = ahr_elr, ahr_clm= 'stp',  colnm = 'ER.KC' , popgen = elr.rank,rank_clm='end', ylimo=c(0,1) )
+
+
+get_genes_cm(chr=2, start = 32809365,stop = 32962365, models = nbh_gene_models, colm = 'start')
+
+######
+
+a <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross_ELR)[[X]], 0.25)} ))
+a <- pull.markers(cross_ELR,a)
+a <- subset(a,ind=a$pheno$bin==0)
+rf <- est.rf(a, maxit=10000, tol=1e-6)
+
+png("/home/jmiller1/public_html/elr_rf.png", width=1000, height=1000)
+ plotRF(rf, zmax=8, col.scheme="redblue",what='lod')
+dev.off()
+
+
+
+a <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross_NBH)[[X]], 0.25)} ))
+a <- pull.markers(cross_NBH,a)
+#a <- subset(a,ind=a$pheno$bin==0)
+rf <- est.rf(a, maxit=10000, tol=1e-6)
+
+png("/home/jmiller1/public_html/nbh_rf.png", width=1000, height=1000)
+ plotRF(rf, zmax=10, col.scheme="redblue",what='lod')
 dev.off()
