@@ -54,7 +54,7 @@ elr.gens <- cnv.ahrs(cross_ELR, AHRdf = AHR.bed, EXP = F)
 ################################################
 cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
 ahr_nbh <- nbh.gens[which(nbh.gens$gene %in% cands),]
-ahr_elr <- nbh.gens[which(elr.gens$gene %in% cands),]
+ahr_elr <- elr.gens[which(elr.gens$gene %in% cands),]
 ################################################################################
 ### ggplot popgen locations
 nbh.popgen <- read.table(file.path(mpath,"outliersNBH.txt.ncbi.lifted"), sep = "\t", header = T)
@@ -85,7 +85,60 @@ elr_gene_models$cm_mid <- conv_popstat(cross_ELR, popgen=genes.bed, whichcol='en
 
 ## get_genes_cm(chr=2, start = 32809365,stop = 32962365, models = nbh_gene_models, colm = 'start')
 ## get_genes_cm(chr=1, start = 20,stop = 30,models = nbh_gene_models, colm = 'cm_mid')
- get_genes_cm(chr=1, start = 3000000,stop = 5000000,models = nbh_gene_models, colm = 'start')
+chr24_195 <- get_genes_cm(chr=24, start = 37087357,stop = 37192357,models = nbh_gene_models, colm = 'start')
+chr24_196 <- get_genes_cm(chr=24, start = 38000000,stop = 39000000,models = nbh_gene_models, colm = 'start')
+chr24_198 <- get_genes_cm(chr=24, start = 34684831,stop = 34754831,models = nbh_gene_models, colm = 'start')
+
+chr13_293 <- get_genes_cm(chr=13, start = 7039628,stop = 7101628,models = nbh_gene_models, colm = 'start')
+
+chr13_fst_out <- get_genes_cm(chr=13, start = 23896922, stop = 24223422,models = nbh_gene_models, colm = 'start')
+
+chr13_AB_QTL <- get_genes_cm(chr=13, start = 35, stop = 45,models = nbh_gene_models, colm = 'cm_mid')
+chr13_AB_QTL <- chr13_AB_QTL[grep('LOC',chr13_AB_QTL$name,invert=T),]
+
+thrt <- pfst[which(pfst$chr == 13),]
+thrt <- thrt[!is.na(thrt$ER.KC),]
+tail(thrt[order(thrt$ER.KC),])
+37087357 37192357
+t[grep('LOC',t$name,invert=T),]
+
+
+sb_pbs <- pbs[which(pbs$chr == 13),]
+sb_pbs <- sb_pbs[!is.na(sb_pbs$ER),]
+sb_pbs <- tail(sb_pbs[order(sb_pbs$ER),],30)
+sb_pbs <- sb_pbs[order(sb_pbs$start),]
+###       chr    start      end        NBH          BP          NYC        ER
+### 790629  13  8173628  8178628 0.14751252 0.016933220 -0.022930839 1.6930752
+chr13_elr_pbs_peak <- get_genes_cm(chr=13, start = 7973628, stop = 8178628,models = nbh_gene_models, colm = 'start')
+
+
+
+sb_pfst <- pfst[which(pfst$chr == 13),]
+sb_pfst <- sb_pfst[!is.na(sb_pfst$ER.S),]
+tail(sb_pfst[order(sb_pfst$ER.SH),],30)
+
+chr13_elr_pfst_peak <- get_genes_cm(chr=13, start = 7873628, stop = 8378628,models = nbh_gene_models, colm = 'start')
+
+c('16419','939044','939045')
+
+
+chr13_elr_pfst_peak2 <- get_genes_cm(chr=13, start = 23891922, stop = 25728077, models = nbh_gene_models, colm = 'start')
+
+pfst['790629',]
+
+thrt <- pbs[which(pbs$chr == 13),]
+thrt <- thrt[!is.na(thrt$ER),]
+tail(thrt[order(thrt$ER),])
+
+
+
+sb_pbs <- pbs[which(pbs$chr == 8),]
+sb_pbs <- sb_pbs[!is.na(sb_pbs$ER),]
+sb_pbs <- tail(sb_pbs[order(sb_pbs$ER),],60)
+sb_pbs <- sb_pbs[order(sb_pbs$start),]
+
+chr8_elr_pbs_peak <- get_genes_cm(chr=8, start = 16853074, stop = 16935074,models = nbh_gene_models, colm = 'start')
+
 ################################################################################
 ################################################################################
 
