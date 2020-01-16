@@ -16,15 +16,23 @@ cross <- read.cross(
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE
 )
+cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
+cross$pheno <- as.data.frame(cross$pheno)
 
-cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
-cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
-cross <- jittermap(cross, amount=1e-6)
+##cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
+##cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
+##cross <- jittermap(cross, amount=1e-6)
+
 gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
+
 gg <- pull.markers(cross,gg_marks)
 gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=100)
 gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
+ggmap <- est.map(gg,error.prob=0.025,map.function="kosambi",sex.sp=F,n.cluster=8)
+gg <- replace.map(gg,ggmap)
+
 gg_step2 <- reduce2grid(gg)
+##gg_step2$pheno <- as.data.frame(gg_step2$pheno)
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################

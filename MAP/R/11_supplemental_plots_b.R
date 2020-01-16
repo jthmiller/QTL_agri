@@ -21,14 +21,14 @@ cross_NBH <- sim.geno(cross_NBH, step=1, error.prob=0.05, off.end=5, map.functio
 cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.05, off.end=5, map.function="kosambi", n.draws=160)
 
 
-png("/home/jmiller1/public_html/NBH_effect_scan.png", width=1500, height=500)
+pdf("/home/jmiller1/public_html/NBH_effect_scan.pdf", width=1500, height=500)
 par(mfrow=c(2,1))
 effectscan(cross_NBH, pheno.col=5, chr=c(1:24), get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-2,2), main= 'normal')
 effectscan(cross_NBH, pheno.col=4, chr=c(1:24), get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'binary')
 dev.off()
 
 
-png("/home/jmiller1/public_html/ELR_effect_scan.png", width=1500, height=500)
+pdf("/home/jmiller1/public_html/ELR_effect_scan.pdf", width=1500, height=500)
 par(mfrow=c(2,1))
 effectscan(cross_ELR, pheno.col=5, chr=c(1:24), get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-2,2), main= 'normal')
 effectscan(cross_ELR, pheno.col=4, chr=c(1:24), get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'binary')
@@ -41,7 +41,7 @@ dev.off()
 elr_ab <- ahr_elr[which(ahr_elr$chr==8),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==8),'pos1']
 
-png("/home/jmiller1/public_html/NBH_ELR_effect_scan_8.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_effect_scan_8.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 effectscan(cross_NBH, pheno.col=4, chr=8, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
 abline(v=nbh_ab,col='red')
@@ -51,7 +51,7 @@ dev.off()
 
 ################################################################################
 
-png("/home/jmiller1/public_html/NBH_ELR_8_effectplot.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_8_effectplot.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=8, main='NBH',model="bin")
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=8, main='ELR',model="bin")
@@ -63,7 +63,7 @@ dev.off()
 elr_ab <- ahr_elr[which(ahr_elr$chr==13),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==13),'pos1']
 
-png("/home/jmiller1/public_html/NBH_ELR_effect_scan_13.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_effect_scan_13.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 effectscan(cross_NBH, pheno.col=4, chr=13, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
 abline(v=nbh_ab,col='red')
@@ -71,7 +71,7 @@ effectscan(cross_ELR, pheno.col=4, chr=13, get.se=T, draw=TRUE, gap=25, mtick="l
 abline(v=elr_ab,col='red')
 dev.off()
 
-png("/home/jmiller1/public_html/NBH_ELR_13_effectplot.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_13_effectplot.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=13, main='NBH',model="bin")
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=13, main='ELR',model="bin")
@@ -84,7 +84,7 @@ dev.off()
 elr_ab <- ahr_elr[which(ahr_elr$chr==2),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==2),'pos1']
 
-png("/home/jmiller1/public_html/NBH_ELR_effect_scan_2.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_effect_scan_2.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 effectscan(cross_NBH, pheno.col=4, chr=2, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
 abline(v=nbh_ab,col='red')
@@ -92,7 +92,7 @@ effectscan(cross_ELR, pheno.col=4, chr=2, get.se=T, draw=TRUE, gap=25, mtick="li
 abline(v=elr_ab,col='red')
 dev.off()
 
-png("/home/jmiller1/public_html/NBH_ELR_2_effectplot.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_2_effectplot.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=2, main='NBH',model="bin")
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=2, main='ELR',model="bin")
@@ -105,7 +105,7 @@ dev.off()
 elr_ab <- ahr_elr[which(ahr_elr$chr==18),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==18),'pos1']
 
-png("/home/jmiller1/public_html/NBH_ELR_effect_scan_18.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_effect_scan_18.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 effectscan(cross_NBH, pheno.col=4, chr=18, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
 abline(v=nbh_ab,col='red')
@@ -113,7 +113,7 @@ effectscan(cross_ELR, pheno.col=4, chr=18, get.se=T, draw=TRUE, gap=25, mtick="l
 abline(v=elr_ab,col='red')
 dev.off()
 
-png("/home/jmiller1/public_html/NBH_ELR_18_effectplot.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_18_effectplot.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=18, main='NBH',model="bin")
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=18, main='ELR',model="bin")
@@ -126,7 +126,7 @@ dev.off()
 elr_ab <- ahr_elr[which(ahr_elr$chr==24),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==24),'pos1']
 
-png("/home/jmiller1/public_html/NBH_ELR_effect_scan_24.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_effect_scan_24.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 effectscan(cross_NBH, pheno.col=4, chr=24, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
 abline(v=nbh_ab,col='red')
@@ -134,7 +134,7 @@ effectscan(cross_ELR, pheno.col=4, chr=24, get.se=T, draw=TRUE, gap=25, mtick="l
 abline(v=elr_ab,col='red')
 dev.off()
 
-png("/home/jmiller1/public_html/NBH_ELR_24_effectplot.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_24_effectplot.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=24, main='NBH',model="bin")
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=24, main='ELR',model="bin")
@@ -147,7 +147,7 @@ dev.off()
 elr_ab <- ahr_elr[which(ahr_elr$chr==1),'pos1']
 nbh_ab <- ahr_nbh[which(ahr_nbh$chr==1),'pos1']
 
-png("/home/jmiller1/public_html/NBH_ELR_effect_scan_1.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_effect_scan_1.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 effectscan(cross_NBH, pheno.col=4, chr=1, get.se=T, draw=TRUE, gap=25, mtick="line",add.legend=F, alternate.chrid=T,ylim=c(-0.5,0.5), main= 'NBH',ylab='Effect Est. (+/- 1 SE)',cex.axis=1.25,cex.lab=1.25,cex.main=1.25)
 abline(v=nbh_ab,col='red')
@@ -155,7 +155,7 @@ effectscan(cross_ELR, pheno.col=4, chr=1, get.se=T, draw=TRUE, gap=25, mtick="li
 abline(v=elr_ab,col='red')
 dev.off()
 
-png("/home/jmiller1/public_html/NBH_ELR_1_effectplot.png", width=750, height=250)
+pdf("/home/jmiller1/public_html/NBH_ELR_1_effectplot.pdf", width=750, height=250)
 par(mfrow=c(1,2))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr , ahr = ahr_nbh, popgen = nbh.rank, chs=1, main='NBH',model="bin")
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank, chs=1, main='ELR',model="bin")
@@ -165,11 +165,11 @@ dev.off()
 
 
 
-png("/home/jmiller1/public_html/NBH_effectplot.png", width=1500, height=1000)
+pdf("/home/jmiller1/public_html/NBH_effectplot.pdf", width=1500, height=1000)
 par(mfrow=c(4,6))
 plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank)
 
-png("/home/jmiller1/public_html/ELR_effectplot.png", width=1500, height=1000)
+pdf("/home/jmiller1/public_html/ELR_effectplot.pdf", width=1500, height=1000)
 par(mfrow=c(4,6))
 plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank)
 ################################################################################
@@ -190,21 +190,21 @@ nbh_seg <- geno.table(cross_NBH)[rownames(nbh_c2eff),'P.value']
 
 
 
-png("/home/jmiller1/public_html/lodxdist.png", width=500, height=500)
+pdf("/home/jmiller1/public_html/lodxdist.pdf", width=500, height=500)
 plot(-log10(nbh_seg),nbh_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
 points(-log10(nbh_seg),nbh_c2eff[,'BB'], col = 'blue',pch=19)
 points(-log10(nbh_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
 
 dev.off()
 
-png("/home/jmiller1/public_html/lodxdist_nbh_AABB.png", width=500, height=500)
+pdf("/home/jmiller1/public_html/lodxdist_nbh_AABB.pdf", width=500, height=500)
 plot(-log10(nbh_seg),nbh_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
 points(-log10(nbh_seg),nbh_c2eff[,'BB'], col = 'red',pch=19)
 ##points(-log10(nbh_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
 dev.off()
 
 
-png("/home/jmiller1/public_html/lodxdist_elr_AABB.png", width=500, height=500)
+pdf("/home/jmiller1/public_html/lodxdist_elr_AABB.pdf", width=500, height=500)
 plot(-log10(elr_seg),elr_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
 points(-log10(elr_seg),elr_c2eff[,'BB'], col = 'red',pch=19)
 ##points(-log10(elr_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
@@ -242,23 +242,23 @@ dev.off()
 
 
 ##PHYS##############################
-png("/home/jmiller1/public_html/nbh_pbs_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/nbh_pbs_phys.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_NBH, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1) )
 
-png("/home/jmiller1/public_html/nbh_pfst_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/nbh_pfst_phys.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_NBH, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1) )
 
-png("/home/jmiller1/public_html/elr_pbs_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr_pbs_phys.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pbs, map = 'mid' , ahr = ahr_elr,ahr_clm= 'stp',  colnm = 'ER', popgen = elr.rank, rank_clm='end', ylimo=c(-1,2) )
 
-png("/home/jmiller1/public_html/elr.sh_pfst_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr.sh_pfst_phys.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.SH', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5) )
 
-png("/home/jmiller1/public_html/elr.kc_pfst_phys.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr.kc_pfst_phys.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'stp', colnm = 'ER.KC', popgen = elr.rank, rank_clm='end', ylimo=c(0,1.5) )
 
@@ -267,19 +267,19 @@ plot_pgen(crs = cross_ELR, stat = pfst, map = 'mid', ahr = ahr_elr, ahr_clm= 'st
 
 ##CM POS############################
 
-png("/home/jmiller1/public_html/nbh_pfst.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/nbh_pfst.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_NBH, stat = pfst, map = 'nbh_cm' , ahr = ahr_nbh, ahr_clm= 'pos1',  colnm = 'BI.NBH' , popgen = nbh.rank, ylimo=c(0,0.75) )
 
-png("/home/jmiller1/public_html/nbh_pbs.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/nbh_pbs.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_NBH, stat = pbs, map = 'nbh_cm' , ahr = ahr_nbh,  colnm = 'NBH' , popgen = nbh.rank, ylimo=c(-1,2) )
 
-png("/home/jmiller1/public_html/elr_pfst.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr_pfst.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pfst, map = 'elr_cm', ahr = ahr_elr, ahr_clm= 'stp',  colnm = 'ER.KC' , popgen = elr.rank,rank_clm='end', ylimo=c(0,1) )
 
-png("/home/jmiller1/public_html/elr_pfst.png", width=2500, height=750)
+pdf("/home/jmiller1/public_html/elr_pfst.pdf", width=2500, height=750)
 par(mfrow=c(4,6))
 plot_pgen(crs = cross_ELR, stat = pfst, map = 'elr_cm', ahr = ahr_elr, ahr_clm= 'stp',  colnm = 'ER.KC' , popgen = elr.rank,rank_clm='end', ylimo=c(0,1) )
 
@@ -293,7 +293,7 @@ a <- pull.markers(cross_ELR,a)
 a <- subset(a,ind=a$pheno$bin==0)
 rf <- est.rf(a, maxit=10000, tol=1e-6)
 
-png("/home/jmiller1/public_html/elr_rf.png", width=1000, height=1000)
+pdf("/home/jmiller1/public_html/elr_rf.pdf", width=1000, height=1000)
  plotRF(rf, zmax=8, col.scheme="redblue",what='lod')
 dev.off()
 
@@ -304,6 +304,6 @@ a <- pull.markers(cross_NBH,a)
 #a <- subset(a,ind=a$pheno$bin==0)
 rf <- est.rf(a, maxit=10000, tol=1e-6)
 
-png("/home/jmiller1/public_html/nbh_rf.png", width=1000, height=1000)
+pdf("/home/jmiller1/public_html/nbh_rf.pdf", width=1000, height=1000)
  plotRF(rf, zmax=10, col.scheme="redblue",what='lod')
 dev.off()
