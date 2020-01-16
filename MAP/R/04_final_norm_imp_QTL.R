@@ -39,8 +39,7 @@ grid.perms.norm.imp <- scanone(gg_step2, method = "imp", model = "normal", maxit
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
-
-out.fq <- fitqtl(gg_step2, qtl=full.norm.imp, formula=y ~ Q1 + Q2 + Q3 + Q4 + Q1:Q4 + Q2:Q3)
+##out.fq <- fitqtl(gg_step2, qtl=full.norm.imp, formula=y ~ Q1 + Q2 + Q3 + Q4 + Q1:Q4 + Q2:Q3)
 
 ################################################################################
 ## normal
