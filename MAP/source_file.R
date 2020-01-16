@@ -1518,9 +1518,3 @@ get_phenos <- function(crs,pheno){
 pheno_ind <- function(crs,pheno){
  as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
 }
-################################################
-
-environment(plot.draws) <- asNamespace('qtl')
-environment(read.cross.jm) <- asNamespace('qtl')
-##environment(parallel.droponemarker) <- asNamespace('qtl')
-assignInNamespace

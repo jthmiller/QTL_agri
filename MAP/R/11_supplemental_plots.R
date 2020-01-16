@@ -15,6 +15,83 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
 load(file.path(mpath,'08_phys_plots_pos.rsave'))
+
+
+####################################################################################
+fl <- paste0('ELR.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
+cross_ELR <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
+cross_ELR$pheno$pheno_norm <- round(nqrank(cross_ELR$pheno$Pheno),5)
+
+
+#gt.elr <- geno.table(cross_ELR)
+
+fl <- paste0('NBH.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
+cross_NBH <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
+cross_NBH$pheno$pheno_norm <- round(nqrank(cross_NBH$pheno$Pheno))
+
+#gt.nbh <- geno.table(cross_NBH)
+####################################################################################
+
+####################################################################################
+#### AHRs #####
+AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
+colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
+AHR.bed$chrom <- as.numeric(gsub("chr", "", AHR.bed$chrom))
+AHR.bed$str <- as.numeric(AHR.bed$str)
+AHR.bed$stp <- as.numeric(AHR.bed$stp)
+AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
+AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
+AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
+# add arnts (forgot to scan for them)
+################################################
+nbh.gens <- cnv.ahrs(cross_NBH, AHRdf = AHR.bed, EXP = F)
+#new.gens <- cnv.ahrs(cross.new, AHRdf = AHR.bed, EXP = F)
+elr.gens <- cnv.ahrs(cross_ELR, AHRdf = AHR.bed, EXP = F)
+#brp.gens <- cnv.ahrs(cross.brp, AHRdf = AHR.bed, EXP = F)
+####################################################################################
+
+################################################
+### ggplot popgen locations
+nbh.popgen <- read.table(file.path(mpath,"outliersNBH.txt.ncbi.lifted"), sep = "\t", header = T)
+new.popgen <- read.table(file.path(mpath,"outliersNYC.txt.ncbi.lifted"), sep = "\t", header = T)
+elr.popgen <- read.table(file.path(mpath,"outliersER.txt.ncbi.lifted"), sep = "\t", header = T)
+brp.popgen <- read.table(file.path(mpath,"outliersBP.txt.ncbi.lifted"), sep = "\t", header = T)
+################################################
+
+################################################
+### Use nbh coords but elr and new popgen
+#new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
+nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 50)
+elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 50)
+#brp.rank <- cnv.popgen(cross.nbh, brp.popgen, top = 50)
+################################################
+
+## ALL GENES
+genes.bed <- read.table(file.path(mpath,"lifted_genes.bed"), stringsAsFactors = F, header = T)
+genes.bed$chr <- gsub('chr','',genes.bed$chr)
+genes.bed <- genes.bed[genes.bed$chr %in% c(1:24),]
+genes.bed$mid <- round(apply(genes.bed[c('start','end')],1,mean))
+
+nbh_gene_models <- conv_popstat(cross_NBH, popgen=genes.bed, whichcol='start',newname='cm_start')
+nbh_gene_models$cm_end <- conv_popstat(cross_NBH, popgen=genes.bed, whichcol='end',newname='cm_end')[,'cm_end']
+nbh_gene_models$cm_mid <- conv_popstat(cross_NBH, popgen=genes.bed, whichcol='end',newname='cm_mid')[,'cm_mid']
+
+elr_gene_models <- conv_popstat(cross_ELR, popgen=genes.bed, whichcol='start',newname='cm_start')
+elr_gene_models$cm_end <- conv_popstat(cross_ELR, popgen=genes.bed, whichcol='end',newname='cm_end')[,'cm_end']
+elr_gene_models$cm_mid <- conv_popstat(cross_ELR, popgen=genes.bed, whichcol='end',newname='cm_mid')[,'cm_mid']
+
+
+## get_genes_cm(chr=1, start = 20,stop = 30,models = nbh_gene_models, colm = 'cm_mid')
 ######## Plot phys pos x marker order ##########################################
 
 png("/home/jmiller1/public_html/ELR_NBH_physpo_filt.png", width=1500, height=1500)
@@ -74,27 +151,6 @@ for (i in 1:24){
  }
 dev.off()
 ################################################################################
-
-fl <- paste0('ELR.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
-cross_ELR <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
-
-gt.elr <- geno.table(cross_ELR)
-
-fl <- paste0('NBH.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
-cross_NBH <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
-
-gt.nbh <- geno.table(cross_NBH)
-
 
 
 #### ELR and NBH seg dist
@@ -195,26 +251,6 @@ dev.off()
 
 ################################################################################
 
-iron <- convert2cross2(cross_ELR)
-map <- insert_pseudomarkers(iron$gmap, step=1)
-pr <- calc_genoprob(iron, map, error_prob=0.025, cores=4)
-apr <- genoprob_to_alleleprob(pr)
-
-chr <- '1'
-
-c2eff <- scan1coef(pr[,as.character(chr)], iron$pheno[,"bin"])
-
-png("/home/jmiller1/public_html/ELR_effect_1.png", width=500, height=500)
-
-par(mar=c(4.1, 4.1, 1.1, 2.6), las=1)
-col <- c("slateblue", "violetred", "green3")
-plot(c2eff, map[as.character(chr)], columns=1:3, col=col)
-last_coef <- unclass(c2eff)[nrow(c2eff),] # pull out last coefficients
-for(i in seq(along=last_coef))
-    axis(side=4, at=last_coef[i], names(last_coef)[i], tick=FALSE, col.axis=col[i])
-
-dev.off()
-
 
 ################################################################################
 ################################################################################
@@ -228,29 +264,81 @@ elr <- convert2cross2(cross_ELR)
 elr_map <- insert_pseudomarkers(elr$gmap, step=1)
 elr_pr <- calc_genoprob(elr, elr_map, error_prob=0.025, cores=4)
 
+cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
 
-plot_ef <- function(crs,map,pr){
+ahr_nbh <- nbh.gens[which(nbh.gens$gene %in% cands),]
+ahr_elr <- nbh.gens[which(elr.gens$gene %in% cands),]
+
+plot_ef <- function(crs,map,pr,ahr,popgen){
 
  for (chr in 1:24){
 
-  c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,"bin"])
+  c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,"pheno_norm"])
 
-  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,1), cex.axis = 2)
+  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,5), cex.axis = 2)
+
+    if(any( chr %in% ahr$chr )) {
+      indx <- which(ahr$chr %in% chr)
+      abline(v=as.numeric(ahr[indx,'pos1']), col='red')
+    }
+
+    if(any( chr %in% popgen$chr )) {
+      indx <- which(popgen$chr %in% chr)
+      abline(v=as.numeric(popgen[indx,'pos1']), col='red')
+    }
+
+
   last_coef <- unclass(c2eff)[nrow(c2eff),] # pull out last coefficients
 
   for(i in seq(along=last_coef))
     axis(side=4, at=last_coef[i], names(last_coef)[i], tick=FALSE, col.axis=col[i])
-
   }
+
+
  dev.off()
 }
 
 png("/home/jmiller1/public_html/NBH_effectplot.png", width=1500, height=1000)
 par(mfrow=c(4,6))
-plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr )
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank)
 
 png("/home/jmiller1/public_html/ELR_effectplot.png", width=1500, height=1000)
 par(mfrow=c(4,6))
-plot_ef(crs = elr, map = elr_map, pr = elr_pr )
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank)
 ################################################################################
 ################################################################################
+## Correlate lod and segregation distortion
+
+elr_c2eff <- lapply(1:24,function(X) {
+ scan1coef(elr_pr[,as.character(X)], elr$pheno[,"bin"])
+})
+elr_c2eff <- do.call(rbind,elr_c2eff)
+elr_seg <- geno.table(cross_ELR)[rownames(elr_c2eff),'P.value']
+
+nbh_c2eff <- lapply(1:24,function(X) {
+ scan1coef(nbh_pr[,as.character(X)], nbh$pheno[,"bin"])
+})
+nbh_c2eff <- do.call(rbind,nbh_c2eff)
+nbh_seg <- geno.table(cross_NBH)[rownames(nbh_c2eff),'P.value']
+
+
+
+png("/home/jmiller1/public_html/lodxdist.png", width=500, height=500)
+plot(-log10(nbh_seg),nbh_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
+points(-log10(nbh_seg),nbh_c2eff[,'BB'], col = 'blue',pch=19)
+points(-log10(nbh_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
+
+dev.off()
+
+png("/home/jmiller1/public_html/lodxdist_nbh_AABB.png", width=500, height=500)
+plot(-log10(nbh_seg),nbh_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
+points(-log10(nbh_seg),nbh_c2eff[,'BB'], col = 'red',pch=19)
+##points(-log10(nbh_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
+dev.off()
+
+
+png("/home/jmiller1/public_html/lodxdist_elr_AABB.png", width=500, height=500)
+plot(-log10(elr_seg),elr_c2eff[,'AA'], col = 'blue',pch=19, ylim=c(0,1))
+points(-log10(elr_seg),elr_c2eff[,'BB'], col = 'red',pch=19)
+##points(-log10(elr_seg),nbh_c2eff[,'AB'], col='yellow',pch=19)
+dev.off()
