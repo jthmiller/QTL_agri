@@ -36,6 +36,18 @@ cross_NBH$pheno$pheno_norm <- round(nqrank(cross_NBH$pheno$Pheno))
 ################################################################################
 
 ################################################################################
+###### plot_ef rQTL2
+col <- c("slateblue", "violetred", "green3")
+
+nbh <- convert2cross2(cross_NBH)
+nbh_map <- insert_pseudomarkers(nbh$gmap, step=1)
+nbh_pr <- calc_genoprob(nbh, nbh_map, error_prob=0.025, cores=4)
+
+elr <- convert2cross2(cross_ELR)
+elr_map <- insert_pseudomarkers(elr$gmap, step=1)
+elr_pr <- calc_genoprob(elr, elr_map, error_prob=0.025, cores=4)
+################################################################################
+################################################################################
 #### AHRs #####
 AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
 colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")

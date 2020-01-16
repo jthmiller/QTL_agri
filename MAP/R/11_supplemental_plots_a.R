@@ -176,26 +176,11 @@ dev.off()
 ################################################################################
 
 
-################################################################################
-################################################################################
-col <- c("slateblue", "violetred", "green3")
 
-nbh <- convert2cross2(cross_NBH)
-nbh_map <- insert_pseudomarkers(nbh$gmap, step=1)
-nbh_pr <- calc_genoprob(nbh, nbh_map, error_prob=0.025, cores=4)
 
-elr <- convert2cross2(cross_ELR)
-elr_map <- insert_pseudomarkers(elr$gmap, step=1)
-elr_pr <- calc_genoprob(elr, elr_map, error_prob=0.025, cores=4)
+plot_ef <- function(crs,map,pr,ahr,popgen,chs){
 
-cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
-
-ahr_nbh <- nbh.gens[which(nbh.gens$gene %in% cands),]
-ahr_elr <- nbh.gens[which(elr.gens$gene %in% cands),]
-
-plot_ef <- function(crs,map,pr,ahr,popgen){
-
- for (chr in 1:24){
+ for (chr in chs){
 
   c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,"pheno_norm"])
 
@@ -218,17 +203,17 @@ plot_ef <- function(crs,map,pr,ahr,popgen){
     axis(side=4, at=last_coef[i], names(last_coef)[i], tick=FALSE, col.axis=col[i])
   }
 
-
- dev.off()
 }
 
 png("/home/jmiller1/public_html/NBH_effectplot.png", width=1500, height=1000)
 par(mfrow=c(4,6))
-plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank)
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank,chs=1:24)
+dev.off()
 
 png("/home/jmiller1/public_html/ELR_effectplot.png", width=1500, height=1000)
 par(mfrow=c(4,6))
-plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank)
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank,chs=1:24)
+dev.off()
 ################################################################################
 ################################################################################
 ## Correlate lod and segregation distortion
