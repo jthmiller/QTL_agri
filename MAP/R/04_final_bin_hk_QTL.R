@@ -11,9 +11,9 @@ fl <- file.path(mpath,fl)
 print(pop)
 print('binary imp')
 ## Error prob = 0.025
-if(pop == 'NBH') erp <- 0.025
-if(pop == 'ELR') erp <- 0.025
-if(pop == 'ELR_Missing') erp <- 0.025
+if(pop == 'NBH') erp <- 0.0025
+if(pop == 'ELR') erp <- 0.0025
+if(pop == 'ELR_Missing') erp <- 0.0025
 ################################################################################
 ################################################################################
 ## Read cross
