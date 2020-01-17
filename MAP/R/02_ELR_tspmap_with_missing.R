@@ -58,15 +58,35 @@ if(cor(pos,map) < 0){
 
 cross <- shiftmap(cross, offset=0)
 
-cross_map <-  est.map(cross, error.prob=0.03,map.function="kosambi",maxit=100000,tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+################################################################################
+
+loglik <- err <- c(0.001, 0.0025, 0.005, 0.01, 0.015, 0.02)
+for(i in seq(along=err)) {
+  cat(i, "of", length(err), "\n")
+  tempmap <- est.map(cross, error.prob=err[i])
+  loglik[i] <- sum(sapply(tempmap, attr, "loglik"))
+}
+
+lod <- (loglik - max(loglik))/log(10)
+
+erpob <- err[which.max(lod)]
+
+cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=100000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
 
 write.cross(cross,chr=i,filestem=filename,format="csv")
+
+print(paste(pop, 'cross written'))
+################################################################################
+
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
+X <- 1:length(Y)
 
 png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=1000)
 par(mfrow=c(1,2))
  plotRF(cross,main=NULL)
  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
  points(X,Y)
+ plot(err, lod, xlab="Genotyping error rate", xlim=c(0,0.02), ylab=expression(paste(log[10], " likelihood")))
 dev.off()
