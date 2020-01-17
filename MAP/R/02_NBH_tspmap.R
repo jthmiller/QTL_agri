@@ -95,7 +95,7 @@ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
 X <- 1:length(Y)
 
 png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=1000)
-par(mfrow=c(1,2))
+par(mfrow=c(1,3))
  plotRF(cross,main=NULL)
  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
  points(X,Y)
