@@ -29,7 +29,7 @@ cross <- jittermap(cross, amount=1e-6)
 cross <- sim.geno(cross,step=0,off.end=5, error.prob=erp,map.function="kosambi")
 cross <- calc.genoprob(cross,step=1,error.prob=erp,off.end=5)
 
-gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 1)} ))
+gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 2)} ))
 #gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
 if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
 gg <- pull.markers(cross,gg_marks)
