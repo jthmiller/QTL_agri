@@ -48,6 +48,7 @@ norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos
 qtls_chr <- unique(c(norm.add.qtls[['chr']],1,2,5,8,13,18,23,24))
 full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=T, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
 grid.perms.norm.imp <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 10)
+
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
