@@ -153,5 +153,5 @@ for(i in 1:24){
  Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
  X <- 1:length(Y)
  plot(X,Y, xlab=paste('chr',i), ylab='physical position')
-dev.off()
 }
+dev.off()
