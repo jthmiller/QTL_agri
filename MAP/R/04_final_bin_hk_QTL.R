@@ -7,15 +7,13 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 ################################################################################
-print(pop)
-print('bin hk')
 ################################################################################
-
-
-## NBH Downsample Error prob = 0.025
+print(pop)
+print('binary imp')
+## Error prob = 0.025
 if(pop == 'NBH') erp <- 0.025
 if(pop == 'ELR') erp <- 0.025
-if(pop == 'NBH') erp <- 0.025
+if(pop == 'ELR_Missing') erp <- 0.025
 ################################################################################
 ################################################################################
 ## Read cross
@@ -28,21 +26,17 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross$pheno <- as.data.frame(cross$pheno)
 cross <- jittermap(cross, amount=1e-6)
 
-cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.01,map.function="kosambi")
-cross <- calc.genoprob(cross,step=1,error.prob=0.01,off.end=5)
+cross <- sim.geno(cross,step=0,off.end=5, error.prob=erp,map.function="kosambi")
+cross <- calc.genoprob(cross,step=1,error.prob=erp,off.end=5)
 
 gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 1)} ))
 if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
-
 gg <- pull.markers(cross,gg_marks)
-
-
-
-ggmap <- est.map(gg,error.prob=0.0025,map.function="kosambi",sex.sp=F,n.cluster=6)
+ggmap <- est.map(gg,error.prob=erp,map.function="kosambi",sex.sp=F,n.cluster=6)
 gg <- replace.map(gg,ggmap)
 gg <- jittermap(gg)
-gg <- sim.geno(gg, step=1, error.prob=0.0025, off.end=5, map.function="kosambi", n.draws=100)
-gg <- calc.genoprob(gg, step=1, error.prob=0.0025, off.end=5, map.function="kosambi")
+gg <- sim.geno(gg, step=1, error.prob=erp, off.end=5, map.function="kosambi", n.draws=100)
+gg <- calc.genoprob(gg, step=1, error.prob=erp, off.end=5, map.function="kosambi")
 gg_step2 <- gg
 ##gg_step2 <- reduce2grid(gg)
 

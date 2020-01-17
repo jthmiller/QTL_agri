@@ -9,7 +9,12 @@ fl <- file.path(mpath,fl)
 
 ################################################################################
 print(pop)
-print('norm imp')
+print('binary imp')
+## Error prob = 0.025
+if(pop == 'NBH') erp <- 0.025
+if(pop == 'ELR') erp <- 0.025
+if(pop == 'ELR_Missing') erp <- 0.025
+################################################################################
 ################################################################################
 ## Read cross
 cross <- read.cross(
@@ -21,16 +26,14 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross$pheno <- as.data.frame(cross$pheno)
 cross <- jittermap(cross, amount=1e-6)
 
-cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
-cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
+cross <- sim.geno(cross,step=0,off.end=5, error.prob=erp,map.function="kosambi")
+cross <- calc.genoprob(cross,step=1,error.prob=erp,off.end=5)
 
 gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 1)} ))
 #gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
-
-
 if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
 gg <- pull.markers(cross,gg_marks)
-ggmap <- est.map(gg,error.prob=0.025,map.function="kosambi",sex.sp=F,n.cluster=8)
+ggmap <- est.map(gg,error.prob=erp,map.function="kosambi",sex.sp=F,n.cluster=8)
 gg <- replace.map(gg,ggmap)
 gg <- jittermap(gg)
 gg <- sim.geno(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi", n.draws=100)
@@ -58,7 +61,6 @@ save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ## normal
 scan.norm.mr <- scanone(cross, method = "mr", model = "normal", pheno.col = 5)
 scan.norm.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
-norm.imp.qtl <- makeqtl(cross, chr=c(2,13,18), pos=c(30,33,28),  what="draws")
 ################################################################################
 
 ################################################################################
