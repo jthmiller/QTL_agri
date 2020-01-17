@@ -3,6 +3,7 @@
 #SBATCH -p med
 #SBATCH --array=1-24
 #SBATCH --mem=20G
+#SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/%x_%a_qtl.out
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
 
