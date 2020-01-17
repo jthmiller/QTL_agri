@@ -194,11 +194,11 @@ dev.off()
 ################################################################################
 ################################################################################
 for(ch in 1:24){
-pdf(paste0("/home/jmiller1/public_html/nbh_pbs_phys",ch,".pdf"), width=6, height=3.5)
+svg(paste0("/home/jmiller1/public_html/nbh_pbs_phys",ch,".svg"), width=6, height=3.5)
 plot_pgen(crs = cross_NBH, chrs=ch, stat = pbs, map = 'mid' , ahr = ahr_nbh, ahr_clm= 'stp',  colnm = 'NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(-0.25,1.1),stat_name='pbs' )
 dev.off()
 
-pdf(paste0("/home/jmiller1/public_html/nbh_pfst_phys",ch,".pdf"), width=6, height=3.5)
+svg(paste0("/home/jmiller1/public_html/nbh_pfst_phys",ch,".svg"), width=6, height=3.5)
 plot_pgen(crs = cross_NBH,  chrs=ch, stat = pfst, map = 'mid', ahr = ahr_nbh, ahr_clm= 'stp', colnm = 'BI.NBH', popgen = nbh.rank, rank_clm='end', ylimo=c(0,1),stat_name='pfst' )
 dev.off()
 }
