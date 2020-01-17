@@ -71,10 +71,10 @@ cross <- shiftmap(cross, offset=0)
 ################################################################################
 ### Determine error rate
 loglik <- err <- c(0.001, 0.0025, 0.005, 0.01, 0.015, 0.02)
-for(i in seq(along=err)) {
-  cat(i, "of", length(err), "\n")
-  tempmap <- est.map(cross, error.prob=err[i])
-  loglik[i] <- sum(sapply(tempmap, attr, "loglik"))
+for(z in seq(along=err)) {
+  cat(z, "of", length(err), "\n")
+  tempmap <- est.map(cross, error.prob=err[z])
+  loglik[z] <- sum(sapply(tempmap, attr, "loglik"))
 }
 
 lod <- (loglik - max(loglik))/log(10)
