@@ -9,7 +9,10 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
+print(pop)
+print('binary imp')
 ################################################################################
+
 ## Read cross
 cross <- read.cross(
  file = fl,
