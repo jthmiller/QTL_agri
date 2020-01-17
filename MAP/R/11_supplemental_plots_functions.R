@@ -105,6 +105,7 @@ dev.off()
 
 
 ################################################################################
+## gt.nbh, gt.elr, scan_elr,
 
 pdf("/home/jmiller1/public_html/NBH_ELR_segdist_binary.pdf", width=1750, height=1750)
 par(mfrow=c(4,6))
@@ -128,7 +129,7 @@ for (i in 1:24){
  if(max(Ylod) > 5 ) Ylod <- rescale(scan_nbh$lod[ind.nbh],c(0,5))
  if(max(Blod) > 5 ) Blod <- rescale(scan_elr$lod[ind.elr],c(0,5))
 
- plot(c(0,xmax),c(0,ymax),ylim=c(0,5), type="n", xlab=paste('chr',i,'phys position'), ylab='-log10 p.value',cex.lab=2,cex.sub=2, cex.axis=2,cex.main=2)
+ plot(c(0,xmax),c(0,ymax),ylim=c(0,4), type="n", xlab=paste('chr',i,'phys position'), ylab='-log10 p.value',cex.lab=2,cex.sub=2, cex.axis=2,cex.main=2)
  points(X,Ylod, col='cornflowerblue',pch=21)
  points(A,Blod, col='pink',pch=21)
  points(X,Y, col='blue',pch=19)

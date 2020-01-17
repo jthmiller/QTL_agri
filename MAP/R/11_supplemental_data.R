@@ -43,10 +43,10 @@ cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.025, off.end=5, map.functi
 cross_NBH <- calc.genoprob(cross_NBH, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 cross_ELR <- calc.genoprob(cross_ELR, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
 
-#scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
-#scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
-scan_nbh <- scanone(cross_NBH, method = "em", model = "binary", pheno.col = 4)
-scan_elr <- scanone(cross_ELR, method = "em", model = "binary", pheno.col = 4)
+scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
+scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
+#scan_nbh <- scanone(cross_NBH, method = "em", model = "binary", pheno.col = 4)
+#scan_elr <- scanone(cross_ELR, method = "em", model = "binary", pheno.col = 4)
 ################################################################################
 ################################################################################
 ###### plot_ef rQTL2
@@ -159,76 +159,6 @@ nbh_c2eff <- lapply(1:24,function(X) {
 })
 nbh_c2eff <- do.call(rbind,nbh_c2eff)
 nbh_seg <- geno.table(cross_NBH)[rownames(nbh_c2eff),'P.value']
-
-################################################################################
-################################################################################
-
-################################################################################
-################################################################################
-### CANDIDATE GENES ######
-################################################################################
-################################################################################
-
-## get_genes_cm(chr=2, start = 32809365,stop = 32962365, models = nbh_gene_models, colm = 'start')
-## get_genes_cm(chr=1, start = 20,stop = 30,models = nbh_gene_models, colm = 'cm_mid')
-chr24_195 <- get_genes_cm(chr=24, start = 37087357,stop = 37192357,models = nbh_gene_models, colm = 'start')
-chr24_196 <- get_genes_cm(chr=24, start = 38000000,stop = 39000000,models = nbh_gene_models, colm = 'start')
-chr24_198 <- get_genes_cm(chr=24, start = 34684831,stop = 34754831,models = nbh_gene_models, colm = 'start')
-
-chr13_293 <- get_genes_cm(chr=13, start = 7039628,stop = 7101628,models = nbh_gene_models, colm = 'start')
-
-chr13_fst_out <- get_genes_cm(chr=13, start = 23896922, stop = 24223422,models = nbh_gene_models, colm = 'start')
-
-chr13_AB_QTL <- get_genes_cm(chr=13, start = 35, stop = 45,models = nbh_gene_models, colm = 'cm_mid')
-chr13_AB_QTL <- chr13_AB_QTL[grep('LOC',chr13_AB_QTL$name,invert=T),]
-
-thrt <- pfst[which(pfst$chr == 13),]
-thrt <- thrt[!is.na(thrt$ER.KC),]
-tail(thrt[order(thrt$ER.KC),])
-37087357 37192357
-t[grep('LOC',t$name,invert=T),]
-
-
-sb_pbs <- pbs[which(pbs$chr == 13),]
-sb_pbs <- sb_pbs[!is.na(sb_pbs$ER),]
-sb_pbs <- tail(sb_pbs[order(sb_pbs$ER),],30)
-sb_pbs <- sb_pbs[order(sb_pbs$start),]
-###       chr    start      end        NBH          BP          NYC        ER
-### 790629  13  8173628  8178628 0.14751252 0.016933220 -0.022930839 1.6930752
-chr13_elr_pbs_peak <- get_genes_cm(chr=13, start = 7973628, stop = 8178628,models = nbh_gene_models, colm = 'start')
-
-
-
-sb_pfst <- pfst[which(pfst$chr == 13),]
-sb_pfst <- sb_pfst[!is.na(sb_pfst$ER.S),]
-tail(sb_pfst[order(sb_pfst$ER.SH),],30)
-
-chr13_elr_pfst_peak <- get_genes_cm(chr=13, start = 7873628, stop = 8378628,models = nbh_gene_models, colm = 'start')
-
-c('16419','939044','939045')
-
-
-chr13_elr_pfst_peak2 <- get_genes_cm(chr=13, start = 23891922, stop = 25728077, models = nbh_gene_models, colm = 'start')
-
-pfst['790629',]
-
-thrt <- pbs[which(pbs$chr == 13),]
-thrt <- thrt[!is.na(thrt$ER),]
-tail(thrt[order(thrt$ER),])
-
-
-
-sb_pbs <- pbs[which(pbs$chr == 8),]
-sb_pbs <- sb_pbs[!is.na(sb_pbs$ER),]
-sb_pbs <- tail(sb_pbs[order(sb_pbs$ER),],60)
-sb_pbs <- sb_pbs[order(sb_pbs$start),]
-
-chr8_elr_pbs_peak <- get_genes_cm(chr=8, start = 16449074, stop = 18239074,models = nbh_gene_models, colm = 'start')
-
-################################################################################
-
-chr1_nbh_rank_incompat_peak <- get_genes_cm(chr=1, start = 21600000, stop =  21800000,models = nbh_gene_models, colm = 'start')
-## kcnj3 regulates heartbeat
 
 ################################################################################
 ################################################################################

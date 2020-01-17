@@ -69,3 +69,20 @@ perms.bin.em <- scanone(cross, method = "hk", model = "binary", maxit = 1000,
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_bin_hk.rsave')))
 ################################################################################
+
+
+
+
+
+##loglik <- err <- c(0.001, 0.0025, 0.005, 0.0075, 0.01, 0.0125, 0.015, 0.0175, 0.02)
+##for(i in seq(along=err)) {
+##  cat(i, "of", length(err), "\n")
+##  tempmap <- est.map(gg_step2, error.prob=err[i])
+##  loglik[i] <- sum(sapply(tempmap, attr, "loglik"))
+##}
+##
+##lod <- (loglik - max(loglik))/log(10)
+##
+##png(paste0('~/public_html/',pop,'_error_est_',i,'_tsp.png'),width=100,height=100)
+##plot(err, lod, xlab="Genotyping error rate", xlim=c(0,0.02), ylab=expression(paste(log[10], " likelihood")))
+##dev.off()
