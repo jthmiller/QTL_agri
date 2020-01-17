@@ -69,7 +69,7 @@ if(cor(pos,map, use="complete.obs") < 0){
 cross <- shiftmap(cross, offset=0)
 
 ################################################################################
-
+### Determine error rate
 loglik <- err <- c(0.001, 0.0025, 0.005, 0.01, 0.015, 0.02)
 for(i in seq(along=err)) {
   cat(i, "of", length(err), "\n")
