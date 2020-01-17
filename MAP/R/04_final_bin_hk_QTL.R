@@ -35,7 +35,8 @@ gg <- replace.map(gg,ggmap)
 gg <- jittermap(gg)
 gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=100)
 gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
-gg_step2 <- reduce2grid(gg)
+gg_step2 <- gg
+##gg_step2 <- reduce2grid(gg)
 
 ################################################################################
 ################################################################################

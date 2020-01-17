@@ -24,15 +24,19 @@ cross <- jittermap(cross, amount=1e-6)
 cross <- sim.geno(cross,step=0,off.end=5, error.prob=0.025,map.function="kosambi")
 cross <- calc.genoprob(cross,step=1,error.prob=0.025,off.end=5)
 
-gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
+gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 1)} ))
+#gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.50)} ))
+
+
 if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
 gg <- pull.markers(cross,gg_marks)
 ggmap <- est.map(gg,error.prob=0.025,map.function="kosambi",sex.sp=F,n.cluster=8)
 gg <- replace.map(gg,ggmap)
 gg <- jittermap(gg)
-gg <- sim.geno(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=100)
-gg <- calc.genoprob(gg, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
-gg_step2 <- reduce2grid(gg)
+gg <- sim.geno(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi", n.draws=100)
+gg <- calc.genoprob(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi")
+gg_step2 <- gg
+##gg_step2 <- reduce2grid(gg)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
@@ -41,7 +45,7 @@ save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = F, max.qtl=5)
 norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos=as.numeric(norm.add.qtls[['pos']]), what="draws")
-qtls_chr <- unique(c(norm.add.qtls[['chr']],1,2,5,8,13,18,24))
+qtls_chr <- unique(c(norm.add.qtls[['chr']],1,2,5,8,13,18,23,24))
 full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=T, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
 grid.perms.norm.imp <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 10)
 ################################################################################
