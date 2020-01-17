@@ -39,7 +39,7 @@ gg <- jittermap(gg)
 gg <- sim.geno(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi", n.draws=100)
 gg <- calc.genoprob(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi")
 gg_step2 <- gg
-##gg_step2 <- reduce2grid(gg)
+
 norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = F, max.qtl=5)
 norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos=as.numeric(norm.add.qtls[['pos']]), what="draws")

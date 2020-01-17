@@ -41,34 +41,36 @@ gg <- sim.geno(gg, step=1, error.prob=0.01, off.end=5, map.function="kosambi", n
 gg <- calc.genoprob(gg, step=1, error.prob=0.01, off.end=5, map.function="kosambi")
 #gg_step2 <- reduce2grid(gg)
 gg_step2 <- gg
-################################################################################
-################################################################################
-save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
-################################################################################
+
 ################################################################################
 bin.add.imp <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = F, max.qtl=5)
 bin.add.imp.qtls <- summary(bin.add.imp)
 bin.add.imp.qtls <- makeqtl(gg_step2, chr=bin.add.imp.qtls[['chr']], pos=bin.add.imp.qtls[['pos']], what="draws")
 qtls_chr <- unique(c(bin.add.imp.qtls[['chr']],1,2,5,8,13,18,24))
-full.bin.imp <- stepwiseqtl(gg_step2, incl.markers=T, qtl=bin.add.imp.qtls, additive.only = F, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=5, chr=qtls_chr)
 
-## binary imp is not supported in rQTL
-grid.perms.bin.em <- scanone(gg_step2, method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 10)
 ################################################################################
+save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
+################################################################################
+
+perms <- scantwo(gg_step2, chr = c(1:4,6:24), pheno.col=4, model="binary", method="imp",incl.markers=F, clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1000,assumeCondIndep=T,n.cluster=22)
+pens <- calc.penalties(perms, alpha=0.10)
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
+################################################################################
+
+full.bin.imp <- stepwiseqtl(gg_step2,  penalties=pens, incl.markers=T, qtl=bin.add.imp.qtls, additive.only = F, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=5, chr=qtls_chr)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
 ################################################################################
 
 ################################################################################
-cross <- sim.geno(cross,step=0,off.end=5, error.prob=erp ,map.function="kosambi")
-cross <- calc.genoprob(cross,step=1,error.prob=erp ,off.end=5)
-
-## binary imp is not supported in rQTL
-## binary
+## bin imp is not supported in rQTL
 scan.bin.em <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
 scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
-##############################################################################
+perms.bin.em.dwnsmpl <- scanone(gg_step2, chr = c(1:4,6:24), method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 22)
+perms.bin.em <- scanone(cross, chr = c(1:4,6:24), method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 22)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
