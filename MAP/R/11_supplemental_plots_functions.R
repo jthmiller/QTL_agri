@@ -14,7 +14,7 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-#load(file.path(mpath,'08_phys_plots_pos.rsave'))
+load(file.path(mpath,'supplemental_plot_env.rsave'))
 
 ######## Plot phys pos x marker order ##########################################
 
@@ -232,3 +232,7 @@ rf <- est.rf(a, maxit=10000, tol=1e-6)
 pdf("/home/jmiller1/public_html/nbh_rf.pdf", width=1000, height=14)
  plotRF(rf, zmax=10, col.scheme="redblue",what='lod')
 dev.off()
+
+################################################################################
+save.image(file.path(mpath,'supplemental_plot_env.rsave'))
+################################################################################

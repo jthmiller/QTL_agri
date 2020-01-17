@@ -37,11 +37,11 @@ cross_NBH$pheno$pheno_norm <- round(nqrank(cross_NBH$pheno$Pheno))
 ################################################################################
 ################################################################################
 
-cross_NBH <- sim.geno(cross_NBH, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
-cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.025, off.end=5, map.function="kosambi", n.draws=160)
+cross_NBH <- sim.geno(cross_NBH, step=1, error.prob=0.0025, off.end=5, map.function="kosambi", n.draws=160)
+cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.0025, off.end=5, map.function="kosambi", n.draws=160)
 
-cross_NBH <- calc.genoprob(cross_NBH, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
-cross_ELR <- calc.genoprob(cross_ELR, step=1, error.prob=0.025, off.end=5, map.function="kosambi")
+cross_NBH <- calc.genoprob(cross_NBH, step=1, error.prob=0.0025, off.end=5, map.function="kosambi")
+cross_ELR <- calc.genoprob(cross_ELR, step=1, error.prob=0.0025, off.end=5, map.function="kosambi")
 
 scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
 scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
@@ -161,4 +161,5 @@ nbh_c2eff <- do.call(rbind,nbh_c2eff)
 nbh_seg <- geno.table(cross_NBH)[rownames(nbh_c2eff),'P.value']
 
 ################################################################################
+save.image(file.path(mpath,'supplemental_plot_env.rsave'))
 ################################################################################
