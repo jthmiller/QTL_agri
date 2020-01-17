@@ -40,35 +40,38 @@ gg <- sim.geno(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi", 
 gg <- calc.genoprob(gg, step=1, error.prob=0.001, off.end=5, map.function="kosambi")
 gg_step2 <- gg
 ##gg_step2 <- reduce2grid(gg)
-
-################################################################################
-save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
-################################################################################
-
 norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = F, max.qtl=5)
 norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos=as.numeric(norm.add.qtls[['pos']]), what="draws")
 qtls_chr <- unique(c(norm.add.qtls[['chr']],1,2,5,8,13,18,23,24))
-full.norm.imp <- stepwiseqtl(gg_step2, incl.markers=T, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
-grid.perms.norm.imp <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 10)
+
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
-##out.fq <- fitqtl(gg_step2, qtl=full.norm.imp, formula=y ~ Q1 + Q2 + Q3 + Q4 + Q1:Q4 + Q2:Q3)
+perms <- scantwo(gg_step2, chr = c(1:4,6:24), pheno.col=5, model="normal", method="imp",incl.markers=F, clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1000,assumeCondIndep=T,n.cluster=22)
+pens <- calc.penalties(perms, alpha=0.10)
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
+################################################################################
+
+full.norm.imp <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=T, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
+################################################################################
 
 ################################################################################
 ## normal
+perms.norm.imp.dwnsmpl <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 22)
+perms.norm.imp <- scanone(cross, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 22)
 scan.norm.mr <- scanone(cross, method = "mr", model = "normal", pheno.col = 5)
 scan.norm.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
 ################################################################################
 
 ################################################################################
-perms.norm.imp <- scanone(cross, method = "imp", model = "normal", maxit = 1000,
-  n.perm = 10000, pheno.col = 5, n.cluster = 10)
-####################################################################################
 print(summary(perms.norm.imp))
-################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 full.norm.hk <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = F, model='normal', method = "hk", pheno.col = 5, scan.pairs = T, max.qtl=8)
