@@ -168,16 +168,6 @@ plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm")){
 
 }
 
-pdf("/home/jmiller1/public_html/NBH_effectplot.pdf", width=21, height=14)
-par(mfrow=c(4,6))
-plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank,chs=1:24, main='NBH', model='bin')
-dev.off()
-
-pdf("/home/jmiller1/public_html/ELR_effectplot.pdf", width=21, height=14)
-par(mfrow=c(4,6))
-plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank,chs=1:24, main='NBH', model='bin')
-dev.off()
-################################################################################
 
 ################################################################################
 ################################################################################
@@ -193,7 +183,7 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
   X <- stat[ind,map]
 ##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
 
-  plot(X, Y, col='black',type="n", cex.axis = 2, ylim = ylimo, main=paste('CHR',chr), cex.lab=2, cex.main=2, xlab='physical position', ylab=stat_name,pch=19)
+  plot(X, Y, col='black',type="n", cex.axis = 2,xlim=c(0,max(X)), ylim = ylimo, main=paste('CHR',chr), cex.lab=2, cex.main=2, xlab='physical position', ylab=stat_name,pch=19)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)

@@ -141,7 +141,7 @@ RF <- 0.15
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
 
-fl.par <- file.path(paste0(pop,'_parents_filtered')
+fl.par <- file.path(paste0(pop,'_parents_filtered'))
 fl.par <- file.path(mpath,fl.par)
 write.cross(cross.par,filestem=fl.par,format="csv")
 

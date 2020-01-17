@@ -192,6 +192,17 @@ dev.off()
 
 
 ################################################################################
+pdf("/home/jmiller1/public_html/NBH_effectplot.pdf", width=21, height=14)
+par(mfrow=c(4,6))
+plot_ef(crs = nbh, map = nbh_map, pr = nbh_pr, ahr = ahr_nbh, popgen = nbh.rank,chs=1:24, main='NBH', model='bin')
+dev.off()
+
+pdf("/home/jmiller1/public_html/ELR_effectplot.pdf", width=21, height=14)
+par(mfrow=c(4,6))
+plot_ef(crs = elr, map = elr_map, pr = elr_pr , ahr = ahr_elr, popgen = elr.rank,chs=1:24, main='NBH', model='bin')
+dev.off()
+################################################################################
+
 ################################################################################
 for(ch in 1:24){
 svg(paste0("/home/jmiller1/public_html/nbh_pbs_phys",ch,".svg"), width=6, height=3.5)
