@@ -145,7 +145,7 @@ fl.par <- file.path(paste0(pop,'_parents_filtered')
 fl.par <- file.path(mpath,fl.par)
 write.cross(cross.par,filestem=fl.par,format="csv")
 
-system('sbatch 02_map.sh "ELR"')
+system('sbatch -J "NBH" 02_map.sh "NBH"')
 
 png(paste0('~/public_html/',pop,'_RF_physpo.png'))
 par(mfrow=c(4,6))
