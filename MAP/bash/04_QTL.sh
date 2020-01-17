@@ -3,6 +3,7 @@
 #SBATCH -p med
 #SBATCH --mem=60G
 #SBATCH --array=1-3
+#SBATCH  --job-name=$(echo -e "$1"_"$SLURM_ARRAY_TASK_ID")
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
 
