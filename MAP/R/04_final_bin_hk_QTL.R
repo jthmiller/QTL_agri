@@ -55,7 +55,7 @@ qtls_chr <- unique(c(bin.add.hk.qtls[['chr']],1,2,5,8,13,18,24))
 save.image(file.path(mpath,paste0(pop,'_bin_hk.rsave')))
 ################################################################################
 
-perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=4, model="binary", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1000,assumeCondIndep=T,n.cluster=22)
+perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=4, model="binary", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1000,assumeCondIndep=T,n.cluster=cores)
 pens <- calc.penalties(perms, alpha=0.10)
 
 ################################################################################
@@ -75,14 +75,14 @@ full.bin.hk <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, qtl=bin.add
 scan.bin.hk <- scanone(cross, method = "hk", model = "binary", pheno.col = 4)
 scan.bin.em <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
 scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
+
 scan.bin.em <- scanone(gg_step2, method = "em", model = "binary", pheno.col = 4)
-perms.bin.em.dwnsmpl <- scanone(gg_step2, method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 22)
-bins <- data.frame(em=summary(scan.bin.em),mr=summary(scan.bin.mr),hk=summary(scan.bin.hk))
+perms.bin.em.dwnsmpl <- scanone(gg_step2, method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = cores)
 
 ####################################################################################
 ## PERMS WITH ALL LOCI  s
 perms.bin.em <- scanone(cross, method = "hk", model = "binary", maxit = 1000,
-  n.perm = 10000, pheno.col = 4, n.cluster = 10)
+  n.perm = 10000, pheno.col = 4, n.cluster = cores)
 ####################################################################################
 
 ################################################################################
