@@ -1,8 +1,6 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
-
 pop <- 'NBH'
-
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library("ggridges")
 library("plyr")
@@ -16,7 +14,7 @@ setwd(mpath)
 
 #load(file.path(mpath,'supplemental_plot_env.rsave'))
 #cross <- cross_NBH
-#cross <- cross_ELR
+cross <- cross_ELR
 
 fl <- file.path(mpath,paste0(pop'.mapped.tsp.csv'))
 
@@ -25,6 +23,8 @@ cross <- read.cross(
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE
 )
+################################################################################
+################################################################################
 
 erp <- 0.0025
 cross <- sim.geno(cross, step=1, error.prob=erp, off.end=5, map.function="kosambi", n.draws=100, stepwidth="fixed")
@@ -49,18 +49,22 @@ pr <- calc_genoprob(cross2, map, error_prob=0.0025, cores=4)
 bin <- scan1(pr, pheno=cross2$pheno[,'bin'] , model = "binary", cores = 8)
 
 ################################################################################
-
+################################################################################
 #bottom, left, top and right
 #location the labels (i.e. xlab and ylab in plot), the second the tick-mark labels, and third the tick marks
-
-ch <- 8
+ch <- 13
 len <- mpl[ch,'length']
 ind <- which(gt$chr == ch)
 segX <- gt.map[[ch]][rownames(gt)[ind]]
 #segX <- c(as.numeric(gsub(".*:","",rownames(gt)[ind])))/1000000
 segY <- c(-log10(gt[ind,'P.value']))
-nbh_ab <- ahr[which(ahr$chr==ch),'pos1']
+ahr <- ahr_elr
+ab <- ahr[which(ahr$chr==ch),'pos1']
+################################################################################
+################################################################################
 
+################################################################################
+################################################################################
 pdf(paste0("/home/jmiller1/public_html/NBH_all",ch,"segdist.pdf"), width=4.5,height=7)
 mat<-matrix(c(1:7),7,1, byrow=T)
 
@@ -98,5 +102,5 @@ plot(segX,segY,ylim=c(0,4),xlim=c(0,max(segX)), xlab="",
  cex=0.25, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75)
 abline(v=nbh_ab,col='red',lwd=0.5)
 dev.off()
-
+################################################################################
 ################################################################################
