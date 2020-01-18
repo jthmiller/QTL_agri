@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH -t 48:00:00
-#SBATCH -p med
+#SBATCH -p high
 #SBATCH --mem=30G
 #SBATCH --array=1-3
 #SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/%x_%a_qtl.out
