@@ -110,8 +110,10 @@ brp.popgen <- read.table(file.path(mpath,"outliersBP.txt.ncbi.lifted"), sep = "\
 ################################################################################
 ### Use nbh coords but elr and new popgen
 #new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
-nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 75)
-elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 75)
+nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 62)
+# dim(elr.popgen[which(elr.popgen$chrom %in% paste0('chr',1:24) & elr.popgen$rank < 100),])
+# top 100 have 50 mapped ranked outliers
+elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 90)
 #brp.rank <- cnv.popgen(cross.nbh, brp.popgen, top = 50)
 ################################################################################
 
@@ -177,6 +179,11 @@ pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
 pi$Scaffold <- gsub('chr',"",pi$Scaffold)
 colnames(pi)[1] <- 'chr'
 pi <- pi[!is.na(as.numeric(pi$chr)),]
+
+pi$BI.NBH <- pi$NBH - pi$BI
+pi$ER.KC <- pi$ER - pi$KC
+pi$ER.SH <- pi$ER - pi$SH
+
 pi$nbh_cm <- conv_popstat(cross_NBH, popgen=pi, whichcol='mid',newname='nbh_mp')$nbh_cm
 pi$elr_cm <- conv_popstat(cross_ELR, popgen=pi, whichcol='mid',newname='elr_mp')$elr_cm
 

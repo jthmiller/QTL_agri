@@ -151,7 +151,7 @@ plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm"),.
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
-      abline(v=as.numeric(ahr[indx,'pos1']), col='red')
+      abline(v=as.numeric(ahr[indx,'pos1']), col='red',lwd=0.5)
     }
 
     #if(any( chr %in% popgen$chr )) {
