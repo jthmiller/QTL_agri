@@ -2,7 +2,9 @@
 
 pop <- 'ELR.missing'
 library('qtl')
+library('parallel')
 library('snow')
+
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
