@@ -48,8 +48,14 @@ to_write <- rbind(headers.u,gnos.u)
 
 write.table(to_write, fl, sep=',',row.names=F,quote=F,col.names = F)
 
+cross <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
+
 ##############################################################################
-if(pop = 'NBH') {
+if(pop == 'NBH') {
  mfl <- paste0(pop,'_markernames.tsv')
  mfl <- file.path(mpath,mfl)
  write.table(markernames(cross), mfl)
