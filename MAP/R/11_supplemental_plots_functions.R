@@ -172,7 +172,7 @@ plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm")){
 ################################################################################
 ################################################################################
 
-plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name){
+plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name,...){
 
  for (chr in chrs){
 
@@ -180,21 +180,22 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
   ind <- which(stat$chr == chr)
 
   Y <- stat[ind,colnm]
-  X <- stat[ind,map]
+  X <- stat[ind,map]/1000000
 ##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
 
-  plot(X, Y, col='black',type="n", cex.axis = 2,xlim=c(0,max(X)), ylim = ylimo, main=paste('CHR',chr), cex.lab=2, cex.main=2, xlab='physical position', ylab=stat_name,pch=19)
+  plot(X, Y, col='black',type="n",xlim=c(0,max(X)), ylim = ylimo, main=NULL,
+   xlab='physical position', ylab=stat_name, xaxs="i", mgp = c(1, 0.5, 0),...)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
-      abline(v=as.numeric(ahr[indx,ahr_clm]), col='red')
+      abline(v=as.numeric(ahr[indx,ahr_clm])/1000000, col='red')
     }
 
     if(any( chr %in% popgen$chr )) {
       indx <- which(popgen$chr %in% chr)
-      abline(v=as.numeric(popgen[indx,rank_clm]), col='red')
+      abline(v=as.numeric(popgen[indx,rank_clm])/1000000, col='red')
     }
-  points(X, Y, col='black',pch=19)
+  points(X, Y, col='black',...)
  }
 }
 
