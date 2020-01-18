@@ -1,5 +1,4 @@
 #!/bin/R
-### binary trait with imputation
 
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 library('qtl')
@@ -13,6 +12,7 @@ fl <- file.path(mpath,fl)
 cores <- detectCores() - 2
 
 ################################################################################
+################################################################################
 print(pop)
 print('binary imp')
 ## Error prob = 0.025
@@ -21,7 +21,6 @@ if(pop == 'ELR') erp <- 0.0025
 if(pop == 'ELR_Missing') erp <- 0.0025
 ################################################################################
 ################################################################################
-
 ## Read cross
 cross <- read.cross(
  file = fl,
