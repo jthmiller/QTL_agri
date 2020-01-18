@@ -11,11 +11,14 @@ library("scales")
 library("ggrepel")
 library('qtl')
 library('RColorBrewer')
+library('parallel')
 
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
 load(file.path(mpath,'08_phys_plots_pos.rsave'))
+
+
 ################################################
 ### get positions of genes
 nbh.gens <- cnv.ahrs(cross.nbh, AHRdf = AHR.bed, EXP = F)

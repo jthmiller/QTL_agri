@@ -2,10 +2,15 @@
 
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 library('qtl')
+library('parallel')
+library('snow')
+
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
+cores <- detectCores() - 2
+
 ################################################################################
 ################################################################################
 print(pop)
