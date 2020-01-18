@@ -72,7 +72,8 @@ AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
 AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 # add arnts (forgot to scan for them)
 ################################################
-nbh.gens <- cnv.ahrs(cross_NBH, AHRdf = AHR.bed, EXP = F)
+nbh.gens <- cnv.ahrs(gg, AHRdf = AHR.bed, EXP = F)
+##nbh.gens <- cnv.ahrs(cross_NBH, AHRdf = AHR.bed, EXP = F)
 #new.gens <- cnv.ahrs(cross.new, AHRdf = AHR.bed, EXP = F)
 elr.gens <- cnv.ahrs(cross_ELR, AHRdf = AHR.bed, EXP = F)
 #brp.gens <- cnv.ahrs(cross.brp, AHRdf = AHR.bed, EXP = F)
@@ -117,6 +118,9 @@ pbs <- pbs[!is.na(as.numeric(pbs$chr)),]
 pbs$nbh_cm <- conv_popstat(cross_NBH, popgen=pbs, whichcol='mid',newname='nbh_cm')$nbh_cm
 pbs$elr_cm <- conv_popstat(cross_ELR, popgen=pbs, whichcol='mid',newname='elr_cm')$elr_cm
 
+pbs$nbh_cm <- conv_popstat(gg, popgen=pbs, whichcol='mid',newname='nbh_cm')$nbh_cm
+
+
 pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
 pfst <- read.table(pfst, sep = "\t", header = T)
 pfst$mid <- pfst$start + (abs(pfst$end - pfst$start) * .5)
@@ -126,21 +130,32 @@ pfst <- pfst[!is.na(as.numeric(pfst$chr)),]
 pfst$nbh_cm <- conv_popstat(cross_NBH, popgen=pfst, whichcol='mid',newname='nbh_cm')$nbh_cm
 pfst$elr_cm <- conv_popstat(cross_ELR, popgen=pfst, whichcol='mid',newname='elr_cm')$elr_cm
 
-###taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
-###taj <- read.table(taj, sep = "\t", header = T)
-###taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
-###taj$Scaffold <- gsub('chr',"",taj$Scaffold)
-###colnames(taj)[1] <- 'chr'
-###taj <- conv_popstat(cross.nbh, popgen=taj, whichcol='mid',newname='nbh_mp')
-#####taj <- conv_popstat(cross.elr, popgen=taj, whichcol='mid',newname='elr_mp')
+pfst$nbh_cm <- conv_popstat(gg, popgen=pfst, whichcol='mid',newname='nbh_cm')$nbh_cm
+
+
+taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
+taj <- read.table(taj, sep = "\t", header = T)
+taj$mid <- taj$start + (abs(taj$end - taj$start) * .5)
+taj$Scaffold <- gsub('chr',"",taj$Scaffold)
+colnames(taj)[1] <- 'chr'
+taj <- taj[!is.na(as.numeric(taj$chr)),]
+taj$nbh_cm <- conv_popstat(cross_NBH, popgen=taj, whichcol='mid',newname='nbh_cm')$nbh_cm
+taj$elr_cm <- conv_popstat(cross_ELR, popgen=taj, whichcol='mid',newname='elr_cm')$elr_cm
+
+taj$nbh_cm <- conv_popstat(gg, popgen=taj, whichcol='mid',newname='nbh_cm')$nbh_cm
+
 ###
-###pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
-###pi <- read.table(pi, sep = "\t", header = T)
-###pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
-###pi$Scaffold <- gsub('chr',"",pi$Scaffold)
-###colnames(pi)[1] <- 'chr'
-###pi <- conv_popstat(cross.nbh, popgen=pi, whichcol='mid',newname='nbh_mp')
-#####pi <- conv_popstat(cross.elr, popgen=pi, whichcol='mid',newname='elr_mp')
+pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
+pi <- read.table(pi, sep = "\t", header = T)
+pi$mid <- pi$start + (abs(pi$end - pi$start) * .5)
+pi$Scaffold <- gsub('chr',"",pi$Scaffold)
+colnames(pi)[1] <- 'chr'
+pi <- pi[!is.na(as.numeric(pi$chr)),]
+pi$nbh_cm <- conv_popstat(cross_NBH, popgen=pi, whichcol='mid',newname='nbh_mp')$nbh_cm
+pi$elr_cm <- conv_popstat(cross_ELR, popgen=pi, whichcol='mid',newname='elr_mp')$elr_cm
+
+pi$nbh_cm <- conv_popstat(gg, popgen=pi, whichcol='mid',newname='nbh_mp')$nbh_cm
+
 ###
 
 ################################################################################

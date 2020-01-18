@@ -141,23 +141,23 @@ dev.off()
 
 ################################################################################
 
-plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm")){
+plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm"),...){
 
  for (chr in chs){
 
   c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,model])
 
-  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,1), cex.axis = 2,main=main)
+  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,1), cex.axis = 2,main=main,...)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
       abline(v=as.numeric(ahr[indx,'pos1']), col='red')
     }
 
-    if(any( chr %in% popgen$chr )) {
-      indx <- which(popgen$chr %in% chr)
-      abline(v=as.numeric(popgen[indx,'pos1']), col='red')
-    }
+    #if(any( chr %in% popgen$chr )) {
+    #  indx <- which(popgen$chr %in% chr)
+    #  abline(v=as.numeric(popgen[indx,'pos1']), col='red')
+    #}
 
 
   last_coef <- unclass(c2eff)[nrow(c2eff),] # pull out last coefficients
@@ -188,12 +188,12 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
-      abline(v=as.numeric(ahr[indx,ahr_clm])/1000000, col='red')
+      abline(v=as.numeric(ahr[indx,ahr_clm])/1000000, col='red',lwd=1)
     }
 
     if(any( chr %in% popgen$chr )) {
       indx <- which(popgen$chr %in% chr)
-      abline(v=as.numeric(popgen[indx,rank_clm])/1000000, col='red')
+      abline(v=as.numeric(popgen[indx,rank_clm])/1000000, col='grey',lwd=2)
     }
   points(X, Y, col='black',...)
  }
