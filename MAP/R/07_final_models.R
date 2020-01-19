@@ -68,3 +68,21 @@ dev.off()
 pdf("/home/jmiller1/public_html/elr_bin.pdf", width=20)
 plot(sbe_elr)
 dev.off()
+
+
+
+
+############################################################
+## NBH
+summary(full.norm.imp)
+      name chr pos n.gen
+
+Q1  2@43.0   2  43     3
+Q2  2@87.0   2  87     3
+Q3  3@31.0   3  31     3
+Q4  3@38.0   3  38     3
+Q5 13@31.0  13  31     3
+Q6 18@51.0  18  51     3
+Q7 19@18.0  19  18     3
+
+Formula: y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q3:Q5 + Q1:Q6

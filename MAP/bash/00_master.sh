@@ -18,7 +18,7 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ## sbatch -J "NEW" 02_map.sh 'NEW'
 ## sbatch -J "ELR_M" 02_map_missing.sh 'ELR'
 
-sbatch -J "NBH" --depend=afterany:17464611 03_write_map_cross.sh 'NBH'
+##sbatch -J "NBH" --depend=afterany:17464611 03_write_map_cross.sh 'NBH'
 ##sbatch -J "NBH" 03_write_map_cross.sh 'NBH'
 sbatch -J "ELR" 03_write_map_cross.sh 'ELR'
 ##sbatch -J "BRP" 03_write_map_cross.sh 'BRP'
@@ -30,3 +30,7 @@ sbatch -J "ELR" 04_QTL.sh 'ELR'
 ##sbatch -J "BRP" 04_QTL.sh 'BRP'
 ##sbatch -J "NEW" 04_QTL.sh 'NEW'
 ##sbatch -J 'ELR_Mis' 04_QTL.sh 'ELR.missing'
+
+sbatch -J "NBH" 05_perms.sh 'NBH' 100
+sbatch -J "ELR" 04_QTL.sh 'ELR' 100
+sbatch -J 'ELR_Mis' 04_QTL.sh 'ELR.missing' 100
