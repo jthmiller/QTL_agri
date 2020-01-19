@@ -1,3 +1,5 @@
+#!/bin/R
+
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 library('qtl')
 library('parallel')
