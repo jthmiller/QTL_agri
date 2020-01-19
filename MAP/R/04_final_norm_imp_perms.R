@@ -38,7 +38,7 @@ cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end
 
 ################################################################################
 
-perms <- scantwo(cross, incl.markers=F, chr = c(1:4,6:24), pheno.col=5, model="normal", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=perm_count, assumeCondIndep=T, n.cluster=22)
+perms <- scantwo(cross, incl.markers=F, chr = c(1:4,6:24), pheno.col=5, model="normal", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=perm_count, assumeCondIndep=T, n.cluster=cores)
 pens <- calc.penalties(perms, alpha=0.05)
 print(paste('done with', perm_count, 'permutations'))
 
