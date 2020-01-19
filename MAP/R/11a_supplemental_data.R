@@ -180,6 +180,7 @@ pi$Scaffold <- gsub('chr',"",pi$Scaffold)
 colnames(pi)[1] <- 'chr'
 pi <- pi[!is.na(as.numeric(pi$chr)),]
 
+pi$F.NBH <- pi$NBH - pi$F
 pi$BI.NBH <- pi$NBH - pi$BI
 pi$ER.KC <- pi$ER - pi$KC
 pi$ER.SH <- pi$ER - pi$SH

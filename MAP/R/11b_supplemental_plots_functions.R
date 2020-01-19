@@ -152,8 +152,9 @@ plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm"),.
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
       abline(v=as.numeric(ahr[indx,'pos1']), col='red',lwd=0.5)
-    }
+      #xleft, ybottom, xright, ytop,
 
+    }
     #if(any( chr %in% popgen$chr )) {
     #  indx <- which(popgen$chr %in% chr)
     #  abline(v=as.numeric(popgen[indx,'pos1']), col='red')
@@ -188,7 +189,8 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
-      abline(v=as.numeric(ahr[indx,ahr_clm])/1000000, col='red',lwd=1)
+      rect(ahr[indx,ahr_clm]/1000000,ylimo[1],ahr[indx,'stp']/1000000,ylimo[2],lwd=0.5,col=alpha('lightgrey',.5))
+      #abline(v=as.numeric(ahr[indx,ahr_clm])/1000000, col='red',lwd=1)
     }
 
     if(any( chr %in% popgen$chr )) {
