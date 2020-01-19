@@ -28,10 +28,13 @@ cross <- read.cross(
  estimate.map = FALSE
 )
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
-cross$pheno <- as.data.frame(cross$pheno)
-cross <- jittermap(cross, amount=1e-6)
 
-cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi")
+dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
+if(pop == 'ELR.missing') dups <- c(dups,"AHR2a_del")
+cross <- pull.markers(cross, names(dups))
+cross$pheno <- as.data.frame(cross$pheno)
+
+cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
 cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
 
 #gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 2)} ))
@@ -47,7 +50,7 @@ cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end
 gg_step2 <- reduce2grid(cross)
 ################################################################################
 ################################################################################
-bin.add.imp <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = F, max.qtl=5)
+bin.add.imp <- stepwiseqtl(gg_step2, incl.markers=F, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = F, max.qtl=8)
 bin.add.imp.qtls <- summary(bin.add.imp)
 bin.add.imp.qtls <- makeqtl(gg_step2, chr=bin.add.imp.qtls[['chr']], pos=bin.add.imp.qtls[['pos']], what="draws")
 qtls_chr <- unique(c(bin.add.imp.qtls[['chr']],1,2,5,8,13,18,24))
