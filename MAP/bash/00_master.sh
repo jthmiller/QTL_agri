@@ -31,6 +31,6 @@ sbatch -J "ELR_Mis_qtl" 04_QTL.sh 'ELR.missing'
 ##sbatch -J "NEW" 04_QTL.sh 'NEW'
 ##
 
-sbatch -J "NBH_perms" 05_perms.sh 'NBH' 100
+sbatch -J "NBH_perms" ../05_perms.sh 'NBH' 22
 sbatch -J "ELR_perms" 05_perms.sh 'ELR' 100
 sbatch -J 'ELR_Mis' 05_perms.sh 'ELR.missing' 100
