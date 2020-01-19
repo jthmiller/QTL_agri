@@ -14,11 +14,13 @@ cores <- detectCores() - 2
 ################################################################################
 ################################################################################
 print(pop)
-print('binary imp')
+print('binary em')
 ## Error prob = 0.025
 if(pop == 'NBH') erp <- 0.0025
 if(pop == 'ELR') erp <- 0.0025
 if(pop == 'ELR.missing') erp <- 0.0025
+################################################################################
+################################################################################
 ################################################################################
 ################################################################################
 ## Read cross
@@ -37,48 +39,42 @@ cross$pheno <- as.data.frame(cross$pheno)
 cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
 cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
 
+################################################################################
+################################################################################
 #gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 2)} ))
 #if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
 #gg <- pull.markers(cross,gg_marks)
-#ggmap <- est.map(gg,error.prob=erp ,map.function="kosambi",sex.sp=F,n.cluster=8)
+#ggmap <- est.map(gg,error.prob=erp,map.function="kosambi",sex.sp=F,n.cluster=6)
 #gg <- replace.map(gg,ggmap)
 #gg <- jittermap(gg)
-#gg <- sim.geno(gg, step=1, error.prob=0.01, off.end=5, map.function="kosambi", n.draws=100)
-#gg <- calc.genoprob(gg, step=1, error.prob=0.01, off.end=5, map.function="kosambi")
-##gg_step2 <- reduce2grid(gg)
+#gg <- sim.geno(gg, step=1, error.prob=erp, off.end=5, map.function="kosambi", n.draws=100)
+#gg <- calc.genoprob(gg, step=1, error.prob=erp, off.end=5, map.function="kosambi")
 #gg_step2 <- gg
+################################################################################
 gg_step2 <- reduce2grid(cross)
 ################################################################################
-################################################################################
-bin.add.imp <- stepwiseqtl(gg_step2, incl.markers=F, additive.only = T, model='binary', method = "imp", pheno.col = 4, scan.pairs = F, max.qtl=8)
-bin.add.imp.qtls <- summary(bin.add.imp)
-bin.add.imp.qtls <- makeqtl(gg_step2, chr=bin.add.imp.qtls[['chr']], pos=bin.add.imp.qtls[['pos']], what="draws")
-qtls_chr <- unique(c(bin.add.imp.qtls[['chr']],1,2,5,8,13,18,24))
-################################################################################
-################################################################################
-save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
-################################################################################
 
-perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=4, model="binary", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1000,assumeCondIndep=T,n.cluster=22)
-pens <- calc.penalties(perms, alpha=0.10)
+bin.add.em.perms <- scanone(gg_step2, pheno.col=4, model='binary', method = "em", n.perm = 2000, n.cluster=cores)
+lod <- summary(bin.add.em.perms)[1]
+bin.add.em <- scanone(gg_step2, pheno.col=4, model='binary', method = "em")
+
+qtl <- summary(bin.add.em,lod)
+bin.add.em.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+qtls_chr <- unique(c(bin.add.em.qtls[['chr']],1,2,5,8,13,18,24))
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
+save.image(file.path(mpath,paste0(pop,'_bin_em.rsave')))
 ################################################################################
 
-full.bin.imp <- stepwiseqtl(gg_step2,  penalties=pens, incl.markers=F, qtl=bin.add.imp.qtls, additive.only = F, model='binary', method = "imp", pheno.col = 4, scan.pairs = T, max.qtl=5, chr=qtls_chr)
+perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=4, model="binary", method="em", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=22, assumeCondIndep=T, n.cluster=cores)
+pens <- calc.penalties(perms, alpha=0.05)
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
+save.image(file.path(mpath,paste0(pop,'_bin_em.rsave')))
 ################################################################################
 
-################################################################################
-## bin imp is not supported in rQTL
-scan.bin.em <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
-scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
-perms.bin.em.dwnsmpl <- scanone(gg_step2, chr = c(1:4,6:24), method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 22)
-perms.bin.em <- scanone(cross, chr = c(1:4,6:24), method = "em", model = "binary", maxit = 1000, n.perm = 10000, pheno.col = 4, n.cluster = 22)
+full.bin.em <- stepwiseqtl(gg_step2,  penalties=pens, incl.markers=F, qtl=bin.add.em.qtls, additive.only = F, model='binary', method = "em", pheno.col = 4, scan.pairs = T, max.qtl=8)
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_bin_imp.rsave')))
+save.image(file.path(mpath,paste0(pop,'_bin_em.rsave')))
 ################################################################################
