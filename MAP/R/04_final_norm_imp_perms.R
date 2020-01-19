@@ -1,5 +1,8 @@
+#!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 perm_count <- commandArgs(TRUE)[is.numeric(commandArgs(TRUE))]
+
+print(commandArgs(TRUE))
 print(paste(pop,perm_count))
 
 library('qtl')
