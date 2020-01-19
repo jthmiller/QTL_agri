@@ -24,7 +24,7 @@ sbatch -J "ELR" 03_write_map_cross.sh 'ELR'
 ##sbatch -J "BRP" 03_write_map_cross.sh 'BRP'
 ##sbatch -J "NEW"  03_write_map_cross.sh 'NEW'
 
-sbatch -J "NBH" --depend=afterany:17473157 04_QTL.sh 'NBH'
+sbatch -J "NBH" 04_QTL.sh 'NBH'
 ##sbatch -J "NBH" 04_QTL.sh 'NBH'
 sbatch -J "ELR" 04_QTL.sh 'ELR'
 ##sbatch -J "BRP" 04_QTL.sh 'BRP'
