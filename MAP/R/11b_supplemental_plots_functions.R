@@ -185,17 +185,21 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
 ##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
 
   plot(X, Y, col='black',type="n",xlim=c(0,max(X)), ylim = ylimo, main=NULL,
-   xlab='physical position', ylab=stat_name, xaxs="i", mgp = c(1, 0.5, 0),...)
+   xlab='physical position', ylab=stat_name, xaxs="i",yaxs="i", mgp = c(1, 0.5, 0),...)
 
     if(any( chr %in% ahr$chr )) {
       indx <- which(ahr$chr %in% chr)
-      rect(ahr[indx,ahr_clm]/1000000,ylimo[1],ahr[indx,'stp']/1000000,ylimo[2],lwd=0.5,col=alpha('lightgrey',.5))
-      #abline(v=as.numeric(ahr[indx,ahr_clm])/1000000, col='red',lwd=1)
+      #rect(ahr[indx,ahr_clm]/1000000,ylimo[1],ahr[indx,'stp']/1000000,ylimo[2],lwd=0.5,col=alpha('lightgrey',.5))
+      abline(v=as.numeric(ahr[indx,ahr_clm])/1000000,
+       col='red',lwd=0.5)
     }
 
     if(any( chr %in% popgen$chr )) {
       indx <- which(popgen$chr %in% chr)
-      abline(v=as.numeric(popgen[indx,rank_clm])/1000000, col='grey',lwd=2)
+      rect(popgen[indx,'start']/1000000,ylimo[1],popgen[indx,'end']/1000000,ylimo[2],
+       border = NA,lwd=0,col=alpha('lightgrey',.5))
+
+      #abline(v=as.numeric(popgen[indx,rank_clm])/1000000, col='grey',lwd=2)
     }
   points(X, Y, col='black',...)
  }

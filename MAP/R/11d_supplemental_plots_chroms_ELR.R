@@ -1,6 +1,5 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
-pop <- 'NBH'
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library("ggridges")
 library("plyr")
@@ -25,9 +24,9 @@ cross <- read.cross(
 ################################################################################
 
 #load(file.path(mpath,'supplemental_plot_env.rsave'))
-cross <- cross_NBH
+#cross <- cross_NBH
 #cross <- cross_ELR
-cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
+#cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 
 ################################################################################
 ################################################################################
@@ -68,12 +67,12 @@ pr2 <- calc_genoprob(cross2, map2, error_prob=0.0025, cores=cores)
 bin2 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores)
 
 ################################################################################
-if(pop == 'NBH') { rank <- nbh.rank ; ahr <- ahr_nbh ; piname <- pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; pfstname <- 'BI.NBH' }
-if(pop == 'ELR') { rank <- elr.rank ; ahr <- ahr_elr ; piname <- pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; pfstname <- 'ER.KC'  }
+if(pop == 'NBH') { rank <- nbh.rank ; ahr <- ahr_nbh ;  pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH'}
+if(pop == 'ELR') { rank <- elr.rank ; ahr <- ahr_elr ;  pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC'}
 ################################################################################
 #bottom, left, top and right
 #location the labels (i.e. xlab and ylab in plot), the second the tick-mark labels, and third the tick marks
-
+stat <- 'pfst'
 for (ch in 1:24){
 
  pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5,height=6)
@@ -84,15 +83,17 @@ for (ch in 1:24){
  len <- map_sum[ch,'length']
  ind <- which(gt$chr == ch)
  segX <- map[[ch]][rownames(gt)[ind]]
- segY <- c(-log10(gt[ind,'P.value']))
+ segY <- -log10(gt[ind,'P.value'])
+ out <- which(!gt$chr == ch)
+ segB <- -log10(gt[out,'P.value'])
+ segA <- rescale(unlist(map, use.names=F),to = c(0,len))[out]
  ab <- ahr[which(ahr$chr==ch),'pos1']
 
  ################################################################################
-
  plot_pgen(
   crs = cross, chrs=ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
   ahr = ahr, ahr_clm= 'stp',  colnm = pfstNSname, popgen = rank,
-  rank_clm='end', ylimo=c(-0.01,0.8), stat_name='pfst NxS', pch=16,
+  rank_clm='end', ylimo=c(-0.025,0.8), stat_name='pfst NxS', pch=16,
   cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75, xaxt="n"
  )
 
@@ -100,7 +101,7 @@ for (ch in 1:24){
   plot_pgen(
    crs = cross, chrs=ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
    ahr = ahr, ahr_clm= 'stp',  colnm = pfstname, popgen = rank,
-   rank_clm='end', ylimo=c(-0.01,0.6), stat_name='pfst', pch=16,
+   rank_clm='end', ylimo=c(-0.025,0.6), stat_name='pfst', pch=16,
    cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75, xaxt="n"
   )
  } else {
@@ -115,7 +116,7 @@ for (ch in 1:24){
  plot_pgen(
   crs = cross, chrs=ch, stat = pi, map = 'mid', mgp = c(1.25, 0.5, 0),
   ahr = ahr, ahr_clm= 'stp', colnm = piname, popgen = rank,
-  rank_clm = 'end', ylimo=c(-0.02,0.07), stat_name='delta pi', pch=16,
+  rank_clm = 'end', ylimo=c(-0.03,0.03), stat_name='delta pi', pch=16,
   cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75
  )
 
@@ -144,11 +145,12 @@ for (ch in 1:24){
  )
  abline(v=ab,col='red',lwd=0.5)
 
- plot(
-  segX,segY,ylim=c(0,4),xlim=c(0,max(segX)), xlab="",
-  ylab='-log10 pval', pch=16, xaxs="i", mgp = c(1.25, 0.5, 0),
-  cex=0.25, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75
- )
+ plot(segA,segB, ylim=c(0,4), xlim=c(0,max(segX)), pch=16, col='lightgrey',
+  xlab="",ylab='-log10 pval',xaxs="i", mgp = c(1.25, 0.5, 0),
+  cex=0.25, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75)
+
+ points(segX,segY,pch=16,cex=0.25)
+
  abline(v=ab,col='red',lwd=0.5)
  dev.off()
 }

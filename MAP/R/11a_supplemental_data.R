@@ -1,6 +1,6 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
-pop <- 'NBH'
+pop <- 'ELR'
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library("ggridges")
 library("plyr")
@@ -111,9 +111,10 @@ brp.popgen <- read.table(file.path(mpath,"outliersBP.txt.ncbi.lifted"), sep = "\
 ### Use nbh coords but elr and new popgen
 #new.rank <- cnv.popgen(cross.nbh, new.popgen, top = 50)
 nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 62)
+nbh.rank <- cnv.popgen(cross_NBH, nbh.popgen, top = 121)
 # dim(elr.popgen[which(elr.popgen$chrom %in% paste0('chr',1:24) & elr.popgen$rank < 100),])
 # top 100 have 50 mapped ranked outliers
-elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 90)
+elr.rank <- cnv.popgen(cross_ELR, elr.popgen, top = 200)
 #brp.rank <- cnv.popgen(cross.nbh, brp.popgen, top = 50)
 ################################################################################
 
