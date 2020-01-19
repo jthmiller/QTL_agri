@@ -32,21 +32,8 @@ cross <- jittermap(cross, amount=1e-6)
 cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi")
 cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
 
-#gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 2)} ))
-#if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
-#gg <- pull.markers(cross,gg_marks)
-#ggmap <- est.map(gg,error.prob=erp ,map.function="kosambi",sex.sp=F,n.cluster=8)
-#gg <- replace.map(gg,ggmap)
-#gg <- jittermap(gg)
-#gg <- sim.geno(gg, step=1, error.prob=0.01, off.end=5, map.function="kosambi", n.draws=100)
-#gg <- calc.genoprob(gg, step=1, error.prob=0.01, off.end=5, map.function="kosambi")
-##gg_step2 <- reduce2grid(gg)
-#gg_step2 <- gg
 gg_step2 <- reduce2grid(cross)
-################################################################################
-################################################################################
-################################################################################
-################################################################################
+
 norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = F, max.qtl=5)
 norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos=as.numeric(norm.add.qtls[['pos']]), what="draws")
