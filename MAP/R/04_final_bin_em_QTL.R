@@ -2,7 +2,7 @@
 
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 library('qtl')
-library('parallel')
+##library('parallel')
 library('snow')
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")

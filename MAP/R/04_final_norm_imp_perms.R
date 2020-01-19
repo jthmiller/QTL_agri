@@ -6,7 +6,7 @@ print(commandArgs(TRUE))
 print(paste(pop,perm_count))
 
 library('qtl')
-library('parallel')
+##library('parallel')
 library('snow')
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")

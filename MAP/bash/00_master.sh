@@ -26,7 +26,7 @@ sbatch -J "ELR_wc" 03_write_map_cross.sh 'ELR'
 
 sbatch -J "NBH_qtl" ../04_QTL.sh 'NBH'
 sbatch -J "ELR_qtl" ../04_QTL.sh 'ELR'
-sbatch -J "ELR_Mis_qtl" 04_QTL.sh 'ELR.missing'
+sbatch -J "ELR_Mis_qtl" ../04_QTL.sh 'ELR.missing'
 ##sbatch -J "BRP" 04_QTL.sh 'BRP'
 ##sbatch -J "NEW" 04_QTL.sh 'NEW'
 ##
