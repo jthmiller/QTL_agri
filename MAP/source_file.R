@@ -1498,7 +1498,7 @@ conv_maps <- function(cross.base, cross.interp){
 ################################################
 ## for plotting to my public dir
 
-plotpub <- function(X='test') { png(paste0('~/public_html/',X,'.png')) }
+plot_test <- function(X='test',...) { png(paste0('~/public_html/',X,'.png'),...) }
 
 get_phenos <- function(crs,pheno){
  index <- as.character(crs$pheno$ID[which(crs$pheno$bin == pheno)])
