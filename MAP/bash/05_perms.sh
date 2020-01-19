@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #SBATCH -t 48:00:00
 #SBATCH -p high
-#SBATCH --mem=30G
+#SBATCH --mem=60G
 #SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/%x_%a_perms.out
 
 echo "${SLURM_NPROCS}"
