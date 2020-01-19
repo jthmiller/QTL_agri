@@ -30,7 +30,7 @@ print(paste('done with', perm_count, 'full.norm.imp'))
 save.image(file.path(mpath,paste0(pop,'_perms_norm_imp.rsave')))
 ################################################################################
 
-full.norm.hk <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = F, model='normal', method = "hk", pheno.col = 5, scan.pairs = T, max.qtl=8)
+full.norm.hk <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, additive.only = F, model='normal', method = "hk", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
 print(paste('done with', perm_count, 'full.norm.hk'))
 
 ################################################################################
