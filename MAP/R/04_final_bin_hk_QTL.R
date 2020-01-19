@@ -10,7 +10,7 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 ##cores <- detectCores() - 2
-cores <- 12
+cores <- 22
 ################################################################################
 ################################################################################
 print(pop)
