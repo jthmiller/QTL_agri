@@ -3,7 +3,7 @@
 #SBATCH -p high
 #SBATCH --mem=30G
 #SBATCH --array=1-3
-#SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/%x_%a_qtl.out
+#SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/%x_%a.out
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
 

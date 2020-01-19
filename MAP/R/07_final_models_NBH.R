@@ -10,7 +10,9 @@ fl <- file.path(mpath,fl)
 ##pens
 ##    main    heavy    light
 ##3.971724 6.831380 3.617315
-
+## 2nd time
+#    main    heavy    light
+#3.595578 6.820764 4.083055
 ############################################################
 pop <- 'NBH'
 load(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
@@ -69,9 +71,6 @@ plot.map(pull.map(cross),est.map(cross))
 dev.off()
 
 ############################################################
-dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
-
-cross2 <- pull.markers(cross, names(dups))
 
 gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.75)} ))
 gg <- pull.markers(cross,gg_marks)
