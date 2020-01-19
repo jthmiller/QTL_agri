@@ -25,12 +25,12 @@ sbatch -J "ELR" 03_write_map_cross.sh 'ELR'
 ##sbatch -J "NEW"  03_write_map_cross.sh 'NEW'
 
 sbatch -J "NBH" 04_QTL.sh 'NBH'
-##sbatch -J "NBH" 04_QTL.sh 'NBH'
 sbatch -J "ELR" 04_QTL.sh 'ELR'
+sbatch -J 'ELR_Mis' 04_QTL.sh 'ELR.missing'
 ##sbatch -J "BRP" 04_QTL.sh 'BRP'
 ##sbatch -J "NEW" 04_QTL.sh 'NEW'
-##sbatch -J 'ELR_Mis' 04_QTL.sh 'ELR.missing'
+##
 
-sbatch -J "NBH" 05_perms.sh 'NBH' 100
-sbatch -J "ELR" 04_QTL.sh 'ELR' 100
-sbatch -J 'ELR_Mis' 04_QTL.sh 'ELR.missing' 100
+sbatch -J "NBH_perms" 05_perms.sh 'NBH' 100
+sbatch -J "ELR_perms" 05_perms.sh 'ELR' 100
+sbatch -J 'ELR_Mis' 05_perms.sh 'ELR.missing' 100
