@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH -t 48:00:00
+#SBATCH -t 13:00:00
 #SBATCH -p low
 #SBATCH --mem=60G
 #SBATCH --array=1-2
