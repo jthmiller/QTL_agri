@@ -29,7 +29,7 @@ cross <- read.cross(
 )
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross$pheno <- as.data.frame(cross$pheno)
-
+cross <- jittermap(cross)
 ################################################################################
 
 dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)

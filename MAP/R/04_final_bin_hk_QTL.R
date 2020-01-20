@@ -33,7 +33,7 @@ dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
 if(pop == 'ELR.missing') dups <- c(dups,"AHR2a_del")
 cross <- pull.markers(cross, names(dups))
 cross$pheno <- as.data.frame(cross$pheno)
-cross <- jittermap(cross)
+
 cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
 cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
 

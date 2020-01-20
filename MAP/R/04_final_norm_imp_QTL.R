@@ -29,7 +29,7 @@ cross <- read.cross(
 )
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross$pheno <- as.data.frame(cross$pheno)
-cross <- jittermap(cross, amount=1e-6)
+cross <- jittermap(cross)
 
 cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi")
 cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
