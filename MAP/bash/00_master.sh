@@ -52,3 +52,8 @@ sbatch -J "ELRM_B.E" ../04b_bin_em_perms.sh 'ELR.missing' 22 22
 sbatch -J "NBH_B.E" ../04b_bin_hk_perms.sh 'NBH' 22 22
 sbatch -J "ELR_B.E" ../04b_bin_hk_perms.sh 'ELR' 22 22
 sbatch -J "ELRM_B.E" ../04b_bin_hk_perms.sh 'ELR.missing' 22 22
+
+
+sbatch -J "NBH_N.I" --depend=afterany:17491246 ../04c_norm_imp_step.sh 'NBH' 22 22
+sbatch -J "ELR_N.I" --depend=afterany:17491247 ../04c_norm_imp_step.sh 'ELR' 22 22
+sbatch -J "ELRM_N.I" --depend=afterany:17491248 ../04c_norm_imp_step.sh 'ELR.missing' 22 22
