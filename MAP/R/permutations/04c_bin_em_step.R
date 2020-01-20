@@ -36,5 +36,5 @@ full.bin.em.step <- stepwiseqtl(cross, model='binary', method = "em", pheno.col 
 
 summary(full.bin.em.step)
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_step_norm_em.rsave')))
+save.image(file.path(mpath,paste0(pop,'_step_bin_em.rsave')))
 ################################################################################
