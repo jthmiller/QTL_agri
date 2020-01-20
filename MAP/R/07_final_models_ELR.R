@@ -7,64 +7,6 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ############################################################
-pop <- 'NBH'
-load(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
-############################################################
-## NBH
-summary(full.norm.imp)
-
-      name chr pos n.gen
-Q1  2@43.0   2  43     3
-Q2  2@87.0   2  87     3
-Q3  3@31.0   3  31     3
-Q4  3@38.0   3  38     3
-Q5 13@31.0  13  31     3
-Q6 18@51.0  18  51     3
-Q7 19@18.0  19  18     3
-
-Formula: y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q3:Q5 + Q1:Q6
-
-pLOD:  49.014
-
-fitqtl(gg_step2, pheno.col=5, qtl=full.norm.imp, method="imp",model="normal",get.ests=T,covar=data.frame(gg_step2$pheno$sex),
- formula = "y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q3:Q5 + Q1:Q6")
-
-
-plot_test('nbh_full.norm.imp',width=1500)
-plotLodProfile(full.norm.imp,incl.markers=F)
-dev.off()
-
-############################################################
-
-summary(full.norm.hk)
-
- name chr pos n.gen
-Q1  2@103.0   2 103     3
-Q2   3@17.0   3  17     3
-Q3   3@84.0   3  84     3
-Q4  11@54.0  11  54     3
-Q5  13@28.0  13  28     3
-Q6 15@114.0  15 114     3
-Q7  18@41.0  18  41     3
-Q8  19@49.0  19  49     3
-
-  Formula: y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q8 + Q1:Q7 + Q2:Q5 + Q4:Q8 +
-                Q3:Q6
-
-  pLOD:  30.266
-
-fitqtl(gg_step2, pheno.col=5, qtl=full.norm.hk, method="hk",model="normal",get.ests=T,covar=data.frame(gg_step2$pheno$sex),
- formula = "y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q8 + Q1:Q7 + Q2:Q5 + Q4:Q8 + Q3:Q6")
-
-############################################################
-
-############################################################
-
-############################################################
-
-############################################################
-
-############################################################
 pop <- 'ELR'
 load(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ############################################################

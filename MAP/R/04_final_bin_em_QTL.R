@@ -31,7 +31,7 @@ cross <- read.cross(
  estimate.map = FALSE
 )
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
-
+cross <- jittermap(cross)
 dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
 if(pop == 'ELR.missing') dups <- c(dups,"AHR2a_del")
 cross <- pull.markers(cross, names(dups))
