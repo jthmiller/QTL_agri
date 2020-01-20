@@ -36,11 +36,15 @@ cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end
 
 gg_step2 <- reduce2grid(cross)
 
-norm.add <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = F, max.qtl=5)
-norm.add.qtls <- summary(norm.add)
-norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos=as.numeric(norm.add.qtls[['pos']]), what="draws")
-qtls_chr <- unique(c(norm.add.qtls[['chr']],1,2,5,8,13,18,23,24))
 ################################################################################
+
+norm.add.imp.perms <- scanone(gg_step2, pheno.col=4, model='normal', method = "imp", n.perm = 2000, n.cluster=cores)
+lod <- summary(norm.add.imp.perms)[1]
+norm.add.imp <- scanone(gg_step2, pheno.col=4, model='normal', method = "imp")
+
+qtl <- summary(norm.add.imp,lod)
+norm.add.imp.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+qtls_chr <- unique(c(norm.add.imp.qtls[['chr']],1,2,5,8,13,18,24))
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
@@ -55,7 +59,7 @@ summary(pens)
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
-full.norm.imp <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8, chr=qtls_chr)
+full.norm.imp <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
