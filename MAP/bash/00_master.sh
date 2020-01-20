@@ -44,3 +44,11 @@ sbatch -J "ELRM_perms" ../04a_downsample.sh 'ELR.missing' 22
 sbatch -J "NBH_N.I" ../04b_norm_imp_perms.sh 'NBH' 22 22
 sbatch -J "ELR_N.I" ../04b_norm_imp_perms.sh 'ELR' 22 22
 sbatch -J "ELRM_N.I" ../04b_norm_imp_perms.sh 'ELR.missing' 22 22
+
+sbatch -J "NBH_B.E" ../04b_bin_em_perms.sh 'NBH' 22 22
+sbatch -J "ELR_B.E" ../04b_bin_em_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_B.E" ../04b_bin_em_perms.sh 'ELR.missing' 22 22
+
+sbatch -J "NBH_B.E" ../04b_bin_hk_perms.sh 'NBH' 22 22
+sbatch -J "ELR_B.E" ../04b_bin_hk_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_B.E" ../04b_bin_hk_perms.sh 'ELR.missing' 22 22
