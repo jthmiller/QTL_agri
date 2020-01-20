@@ -130,6 +130,12 @@ add.em_i3 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3,
 qtl <- max(add.em_i1)
 bin.add.em.qtls4 <- addtoqtl(gg_step2, qtl=bin.add.em.qtls3,chr=qtl$chr, pos=qtl$pos)
 bin.add.em.qtls4 <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls4, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q1:Q2+Q1:Q3)
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls4, formula=y~Q1+Q2+Q3+Q4+Q1:Q2+Q1:Q3, method='hk')
+##no  interactions
+add.em_a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls4, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q1:Q2+Q1:Q3)
+
+
+save.image(file.path(mpath,paste0(pop,'_models.rsave')))
 ### no additional
 
 

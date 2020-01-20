@@ -50,7 +50,7 @@ qtls_chr <- unique(c(norm.add.imp.qtls[['chr']],1,2,5,8,13,18,24))
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
-perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=5, model="normal", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1,assumeCondIndep=T,n.cluster=22)
+perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=5, model="normal", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=22,assumeCondIndep=T,n.cluster=22)
 summary(perms)
 pens <- calc.penalties(perms, alpha=0.10)
 summary(pens)
@@ -59,7 +59,7 @@ summary(pens)
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
-full.norm.imp <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, qtl=norm.add.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
+full.norm.imp <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, qtl=norm.add.imp.qtls, additive.only = F, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
