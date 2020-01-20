@@ -2,7 +2,7 @@
 #SBATCH -t 13:00:00
 #SBATCH -p low
 #SBATCH --mem=60G
-#SBATCH --array=1-2
+#SBATCH --array=1-3
 #SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/%x_%a.out
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
