@@ -105,6 +105,16 @@ Total 90 475.95567         NA       NA       NA           NA        NA
 3@84.0:15@114.0  4    7.185182  8.019416  1.5096327   7.257997 1.861430e-07
 11@54.0:19@49.0  4    2.120934  2.723114  0.4456158   2.142427 1.375410e-02
 
+
+
+nor_imp_fit <- fitqtl(gg_step2, pheno.col=5, qtl=full.norm.imp, method="imp",model="normal",get.ests=T,covar=data.frame(gg_step2$pheno$sex),
+ formula = "y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q3:Q5 + Q1:Q6")
+
+bin_imp_fit <- fitqtl(gg_step2, pheno.col=4, qtl=full.norm.imp, method="imp",model="binary", get.ests=F,covar=data.frame(gg_step2$pheno$sex),
+ formula = "y ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q3:Q5 + Q1:Q6")
+
+
+### DROP QTL
 ############################################################
 qtl_drop <- dropfromqtl(full.norm.hk,qtl.name=c('11@54.0','19@49.0','15@114.0','3@84.0'))
 qtl_drop_fit <- fitqtl(gg_step2, pheno.col=5, qtl=qtl_drop, method="hk",model="normal",get.ests=T,covar=data.frame(gg_step2$pheno$sex),
@@ -115,23 +125,65 @@ plotLodProfile(qtl_drop,incl.markers=F)
 dev.off()
 ############################################################
 
-gg_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross)[[X]], 0.75)} ))
-gg <- pull.markers(cross,gg_marks)
+## manual add stepwise qtl
+bin.add.em.perms <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk", n.perm = 10000, n.cluster=10)
+lod <- summary(bin.add.em.perms)[2]
+bin.add.em <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk")
+qtl <- summary(bin.add.em,lod)
+bin.add.em.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+bin.add.em.qtls <- refineqtl(gg_step2, qtl=bin.add.em.qtls, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3, method='hk')
+bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+#int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3+Q1:Q3, method='hk')
+
+##scan for an additional additive QTL
+add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+##scan for an additional interactive QTL
+add.em.a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q1:Q4)
+add.em.b <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q4)
+add.em.c <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q3:Q4)
+
+## Scan for interacting pair to add (long)
+add.em.c <- addpair(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+
+
+##add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3)
+##add.Z <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4)
+##qtl <- rbind(qtl,summary(add.em,lod))
+##bin.add.em.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+##bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, qtl=bin.add.em.qtls,  model='binary', method = "hk", incl.markers=F)
+##
+###### No more additive
+###add.em <- addqtl(gg_step2,pheno.col=4, qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5)
+###summary(add.em,lod)
+##################################################################################
+##int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3+Q4, method='hk')
+##bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q3:Q4)
+##qtl <- summary(bin.add.em.qtls)
+##################################################################################
+
+add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q3:Q4)
+qtl <- summary(add.em,lod)
+bin.add.em.qtls <- addtoqtl(gg_step2, qtl=bin.add.em.qtls,chr=qtl$chr, pos=qtl$pos)
+bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5+Q3:Q4)
+
+add.em <- addqtl(gg_step2,pheno.col=4, qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5+Q3:Q4)
+qtl <- summary(add.em,lod)
+bin.add.em.qtls <- addtoqtl(gg_step2, qtl=bin.add.em.qtls,chr=qtl$chr, pos=qtl$pos)
+bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5+Q6+Q3:Q4)
+
+bin.add.em.qtls_0.05 <- bin.add.em.qtls
+
+### LESS conservative ############################################
+add.em <- addqtl(gg_step2, pheno.col=4, qtl=bin.add.em.qtls_0.05, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5+Q6+Q3:Q4)
+qtl <- summary(add.em, lod)
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3+Q4+Q5+Q3:Q4, method='hk')
+#### Still none
+### Get rid of extra chr8 QTL
+ ##out.fq <- fitqtl(gg_step2, pheno.col=4,method='hk', qtl=bin.add.em.qtls_0.05,model='binary',formula=y~Q1+Q2+Q3+Q4+Q5+Q6+Q3:Q4)
 
 
 
-if(pop == 'ELR.missing') gg_marks <- c(gg_marks,"AHR2a_del")
-#
 
-cAZross2 <- sim.geno(cross2, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=1000)
-na <- stepwiseqtl(cross2, incl.markers=T, additive.only = T, model='normal', method = "imp", pheno.col = 5, scan.pairs = T, max.qtl=8)
-
-
-
-out.aqi <- addqtl(hyper, qtl=rqtl, formula=y~Q1+Q2+Q3*Q4+Q4*Q5)
-out.aq <- addqtl(hyper, qtl=rqtl, formula=y~Q1+Q2+Q3*Q4)
-
-Figure 4: LOD curves for adding one QTL, interacting with the chromosome 15 locus, to the 4-QTL model, with the hyper data.
 out.ap <- addpair(hyper, qtl=rqtl, chr=1, formula=y~Q2+Q3*Q4, verbose=FALSE)
-
-addtoqtl, dropfromqtl, and replaceqtl

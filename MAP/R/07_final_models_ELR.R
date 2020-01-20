@@ -1,6 +1,7 @@
 #!/bin/R
 
 library('qtl')
+library('snow')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
@@ -92,12 +93,37 @@ $result.drop
 12@25.0:14@54.0  4    40.66522 16.342931 10.632499 19.900342 1.776357e-15
 15@27.0:24@55.0  4    99.20406 27.134235 25.938310 48.547497 0.000000e+00
 
-
-############################################################
-
 hknorm <- scanone(cross, method = "imp", model = "normal", pheno.col = 5, intcovar= data.frame(gg_step2$pheno$sex))
 hknorm <- scanone(gg_step2, method = "hk", model = "normal", pheno.col = 5, intcovar= data.frame(gg_step2$pheno$sex))
 
 plot_test('elr_full.norm.imp.png',width=1500)
 plotLodProfile(full.norm.imp,incl.markers=F, main = 'ELR QTL')
 dev.off()
+
+
+
+############################################################
+############################################################
+## manual add stepwise qtl
+bin.add.em.perms <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk", n.perm = 10000, n.cluster=10)
+lod <- summary(bin.add.em.perms)[2]
+bin.add.em <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk")
+qtl <- summary(bin.add.em,lod)
+bin.add.em.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+bin.add.em.qtls <- refineqtl(gg_step2, qtl=bin.add.em.qtls, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3, method='hk')
+bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+#int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3+Q1:Q3, method='hk')
+
+##scan for an additional additive QTL
+add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+##scan for an additional interactive QTL
+add.em.a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q1:Q4)
+add.em.b <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q4)
+add.em.c <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q3:Q4)
+
+## Scan for interacting pair to add (long)
+add.em.c <- addpair(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+############################################################
+############################################################
