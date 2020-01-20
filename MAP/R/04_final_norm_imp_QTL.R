@@ -38,9 +38,9 @@ gg_step2 <- reduce2grid(cross)
 
 ################################################################################
 
-norm.add.imp.perms <- scanone(gg_step2, pheno.col=4, model='normal', method = "imp", n.perm = 2000, n.cluster=cores)
+norm.add.imp.perms <- scanone(gg_step2, pheno.col=5, model='normal', method = "imp", n.perm = 2000, n.cluster=cores)
 lod <- summary(norm.add.imp.perms)[1]
-norm.add.imp <- scanone(gg_step2, pheno.col=4, model='normal', method = "imp")
+norm.add.imp <- scanone(gg_step2, pheno.col=5, model='normal', method = "imp")
 
 qtl <- summary(norm.add.imp,lod)
 norm.add.imp.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
