@@ -41,12 +41,15 @@ norm.add.qtls <- summary(norm.add)
 norm.add.qtls <- makeqtl(gg_step2, chr=as.character(norm.add.qtls[['chr']]), pos=as.numeric(norm.add.qtls[['pos']]), what="draws")
 qtls_chr <- unique(c(norm.add.qtls[['chr']],1,2,5,8,13,18,23,24))
 ################################################################################
+
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
 perms <- scantwo(gg_step2, incl.markers=F, chr = c(1:4,6:24), pheno.col=5, model="normal", method="imp", clean.output=T, clean.nmar=10,clean.distance=10,n.perm=1,assumeCondIndep=T,n.cluster=22)
+summary(perms)
 pens <- calc.penalties(perms, alpha=0.10)
+summary(pens)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
@@ -58,17 +61,6 @@ full.norm.imp <- stepwiseqtl(gg_step2, penalties=pens, incl.markers=F, qtl=norm.
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 
-################################################################################
-## normal
-perms.norm.imp.dwnsmpl <- scanone(gg_step2, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 22)
-perms.norm.imp <- scanone(cross, method = "imp", model = "normal", maxit = 1000, n.perm = 10000, pheno.col = 5, n.cluster = 22)
-scan.norm.mr <- scanone(cross, method = "mr", model = "normal", pheno.col = 5)
-scan.norm.imp <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
-################################################################################
-
-################################################################################
-print(summary(perms.norm.imp))
-save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
 ################################################################################
 full.norm.hk <- stepwiseqtl(gg_step2, incl.markers=T, additive.only = F, model='normal', method = "hk", pheno.col = 5, scan.pairs = T, max.qtl=8)
 save.image(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
