@@ -26,9 +26,10 @@ cross <- read.cross(
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross <- jittermap(cross)
 dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
+dups <- names(dups)
 if(pop == 'ELR.missing') dups <- c(dups,"AHR2a_del")
-cross <- pull.markers(cross, names(dups))
-
+cross <- pull.markers(cross, dups)
+cross
 ################################################################################
 fl <- file.path(mpath,paste0(pop,'_downsampled'))
 write.cross(cross,filestem=fl,format="csv")
