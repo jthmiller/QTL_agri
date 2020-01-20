@@ -52,7 +52,7 @@ save.image(file.path(mpath,paste0(pop,'_perms_norm_imp.rsave')))
 ################################################################################
 
 norm.add.imp.perms <- scanone(cross, pheno.col=5, model='normal', method = "imp", n.perm = 2000, n.cluster=cores)
-lod <- summary(norm.add.imp.perms)[1]
+lod <- summary(norm.add.imp.perms)[2]
 norm.add.imp <- scanone(cross, pheno.col=5, model='normal', method = "imp")
 
 qtl <- summary(norm.add.imp,lod)
