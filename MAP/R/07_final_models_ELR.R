@@ -109,15 +109,43 @@ bin.add.em.perms <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk"
 lod <- summary(bin.add.em.perms)[2]
 bin.add.em <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk")
 qtl <- summary(bin.add.em,lod)
-bin.add.em.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-bin.add.em.qtls <- refineqtl(gg_step2, qtl=bin.add.em.qtls, pheno.col=4, model='binary', method = "hk", incl.markers=F)
-
-int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3, method='hk')
-bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+bin.add.em.qtls1 <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+bin.add.em.qtls1 <- refineqtl(gg_step2, qtl=bin.add.em.qtls1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls1, formula=y~Q1+Q2, method='hk')
+bin.add.em.qtls2 <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls1, method='hk', incl.markers=F, formula=y~Q1+Q2+Q1:Q2)
 #int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3+Q1:Q3, method='hk')
-
 ##scan for an additional additive QTL
-add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q1:Q2)
+qtl <- max(add.em)
+bin.add.em.qtls3 <- addtoqtl(gg_step2, qtl=bin.add.em.qtls2,chr=qtl$chr, pos=qtl$pos)
+bin.add.em.qtls3 <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q2)
+#####
+add.em_a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q2)
+## no additional additive.
+## scan for interaction
+add.em_i1 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q2+Q1:Q4)
+add.em_i2 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q2+Q2:Q4)
+add.em_i3 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q2+Q3:Q4)
+
+qtl <- max(add.em_i1)
+bin.add.em.qtls4 <- addtoqtl(gg_step2, qtl=bin.add.em.qtls3,chr=qtl$chr, pos=qtl$pos)
+bin.add.em.qtls4 <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls4, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q1:Q2+Q1:Q3)
+### no additional
+
+
+qtl <- max(add.em_a)
+bin.add.em.qtls <- addtoqtl(gg_step2, qtl=bin.add.em.qtls,chr=qtl$chr, pos=qtl$pos)
+bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q2+Q1:Q3)
+
+
+
+
+
+
+out.fq <- fitqtl(gg_step2, pheno.col=4, method='hk', qtl=bin.add.em.qtls, model='binary', formula=y~Q1+Q2+Q3+Q1:Q2+Q1:Q3)
+
+
+
 ##scan for an additional interactive QTL
 add.em.a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q1:Q4)
 add.em.b <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q4)

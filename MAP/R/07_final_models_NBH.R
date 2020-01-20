@@ -130,23 +130,30 @@ bin.add.em.perms <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk"
 lod <- summary(bin.add.em.perms)[2]
 bin.add.em <- scanone(gg_step2, pheno.col=4, model='binary', method = "hk")
 qtl <- summary(bin.add.em,lod)
-bin.add.em.qtls <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-bin.add.em.qtls <- refineqtl(gg_step2, qtl=bin.add.em.qtls, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+bin.add.em.qtls1 <- makeqtl(gg_step2, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+bin.add.em.qtls1 <- refineqtl(gg_step2, qtl=bin.add.em.qtls1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
 
-int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3, method='hk')
-bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls1, formula=y~Q1+Q2+Q3, method='hk')
+bin.add.em.qtls2 <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls1, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
 #int.em <- addint(gg_step2, qtl=bin.add.em.qtls, formula=y~Q1+Q2+Q3+Q1:Q3, method='hk')
-
 ##scan for an additional additive QTL
-add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
-##scan for an additional interactive QTL
-add.em.a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q1:Q4)
-add.em.b <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q4)
-add.em.c <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q3:Q4)
+### add.em.a <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls2, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
+### no additional additive
+## scan for an additional interactive QTL
+int.em <- addint(gg_step2, qtl=bin.add.em.qtls2, formula=y~Q1+Q2+Q3+Q1:Q3, method='hk')
+bin.add.em.qtls3 <- refineqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls2, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q3)
+## scan for additional additive
+add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q3)
+### no additional
+add.em.1 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q1:Q4)
+add.em.2 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q4)
+add.em.3 <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q3:Q4)
+
+
 
 ## Scan for interacting pair to add (long)
-add.em.c <- addpair(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3)
-
+add.em.ap <- addpair(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls3, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q1:Q3+Q2:Q3)
+save.image(file.path(mpath,paste0(pop,'_models.rsave')))
 
 ##add.em <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3)
 ##add.Z <- addqtl(gg_step2, pheno.col=4, model='binary', qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4)
@@ -172,8 +179,6 @@ add.em <- addqtl(gg_step2,pheno.col=4, qtl=bin.add.em.qtls, method='hk', incl.ma
 qtl <- summary(add.em,lod)
 bin.add.em.qtls <- addtoqtl(gg_step2, qtl=bin.add.em.qtls,chr=qtl$chr, pos=qtl$pos)
 bin.add.em.qtls <- refineqtl(gg_step2, pheno.col=4, qtl=bin.add.em.qtls, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5+Q6+Q3:Q4)
-
-bin.add.em.qtls_0.05 <- bin.add.em.qtls
 
 ### LESS conservative ############################################
 add.em <- addqtl(gg_step2, pheno.col=4, qtl=bin.add.em.qtls_0.05, method='hk', incl.markers=F, formula=y~Q1+Q2+Q3+Q4+Q5+Q6+Q3:Q4)
