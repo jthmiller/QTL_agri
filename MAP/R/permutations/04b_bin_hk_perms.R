@@ -44,5 +44,5 @@ print(paste('done with', perm_count, 'scan 2 permutations'))
 print(summary(norm.hk.perms.1))
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan_perms_bin_em.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan_perms_bin_hk.rsave')))
 ################################################################################
