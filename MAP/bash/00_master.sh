@@ -36,4 +36,6 @@ sbatch -J "ELR_perms" ../05_perms.sh 'ELR' 22
 sbatch -J 'ELR_perms' ../05_perms.sh 'ELR.missing' 22
 
 
-sbatch -J "NBH_perms" $perms/04a_downsample.sh 'NBH' 22
+sbatch -J "NBH_perms" 04_permutations.sh 'NBH' 22
+sbatch -J "ELR_perms" 04_permutations.sh 'NBH' 22
+sbatch -J "ELRM_perms" 04_permutations.sh 'ELR.missing' 22
