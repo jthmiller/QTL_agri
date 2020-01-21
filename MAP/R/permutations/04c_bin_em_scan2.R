@@ -29,7 +29,7 @@ names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 cov <- ifelse(pop == 'ELR',18,2)
 so <- summary(scanone(cross,pheno.col=4, model="binary", method="em", intcovar=sex.phen))[cov,]
 mar <- find.marker(cross, so$chr, so$lod)
-g <- pull.genoprob(cross)[,mar]
+g <- pull.geno(fill.geno(cross))[,mar]
 g <- cbind(as.numeric(g==1), as.numeric(g==2))
 summary(scanone(cross,pheno.col=4, model="binary", method="em",addcovar=g))
 ################################################################################
