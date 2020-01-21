@@ -18,19 +18,21 @@ fl <- file.path(mpath,fl)
 
 print(paste(cores,'cores'))
 erp <- 0.0025
-
-################################################################################
-
-################################################################################
-load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
-################################################################################
-
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
+################################################################################
+cov <- ifelse(pop == 'ELR',18,2)
+so <- summary(scanone(cross,pheno.col=4, model="binary", method="em", intcovar=sex.phen))[cov,]
+mar <- find.marker(cross, so$chr, so$lod)
+g <- pull.genoprob(cross)[,mar]
+g <- cbind(as.numeric(g==1), as.numeric(g==2))
+summary(scanone(cross,pheno.col=4, model="binary", method="em",addcovar=g))
+################################################################################
+
 bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
- incl.markers=F,clean.output=T, clean.nmar=15, clean.distance=15,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, maxit=2000)
+ incl.markers=F,clean.output=T, clean.nmar=10, clean.distance=10, maxit=1000
+ assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
