@@ -63,9 +63,9 @@ sbatch -J "NBH_N.I"  $bashsc/04c_norm_imp_step.sh 'NBH' 22 22
 sbatch -J "ELR_N.I"  $bashsc/04c_norm_imp_step.sh 'ELR' 22 22
 sbatch -J "ELRM_N.I" $bashsc/04c_norm_imp_step.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_B.E" --depend=afterany:17491470 $bashsc/04c_bin_em_step.sh 'NBH' 22 22
-sbatch -J "ELR_B.E" --depend=afterany:17491471 $bashsc/04c_bin_em_step.sh 'ELR' 22 22
-sbatch -J "ELRM_B.E" --depend=afterany:17491472 $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
+sbatch -J "NBH_B.E" --depend=afterany:17491668 $bashsc/04c_bin_em_step.sh 'NBH' 22 22
+sbatch -J "ELR_B.E" --depend=afterany:17491669 $bashsc/04c_bin_em_step.sh 'ELR' 22 22
+sbatch -J "ELRM_B.E" --depend=afterany:17491670 $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
 
 sbatch -J "NBH_B.K" --depend=afterany:17491473 $bashsc/04c_bin_hk_step.sh 'NBH' 22 22
 sbatch -J "ELR_B.K" --depend=afterany:17491474 $bashsc/04c_bin_hk_step.sh 'ELR' 22 22

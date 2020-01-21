@@ -26,22 +26,12 @@ erp <- 0.0025
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 
-norm.imp.perms.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
+sex.phen <- pull.pheno(cross, "sex")
+names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+
+norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
  incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=10, clean.distance=10,
- n.perm=perm_count, assumeCondIndep=T, n.cluster=cores, maxit=1000)
-
-norm.imp.perms.pens <- calc.penalties(norm.imp.perms.2, alpha=0.1)
-
-norm.imp.perms.1 <- scanone(cross, pheno.col=5, model='normal', method = "imp",
- n.perm = 10000, n.cluster=cores)
-
-lod <- summary(norm.imp.perms.1)[1]
-
-summary(norm.imp.perms.2)
-summary(norm.imp.perms.pens)
-print(norm.imp.perms.pens)
-print(paste('done with', perm_count, 'scan 2 permutations'))
-print(summary(norm.imp.perms.1))
+ assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan_perms_norm_imp.rsave')))

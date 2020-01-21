@@ -28,7 +28,7 @@ load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 
 norm.hk.perms.2 <- scantwo(cross, pheno.col=4, model="bin", method="hk",
  incl.markers=F, chr = c(1:4,6:24), clean.output=T, clean.nmar=10, clean.distance=10,
- n.perm=perm_count, assumeCondIndep=T, n.cluster=cores)
+ n.perm=perm_count, assumeCondIndep=T, n.cluster=cores, maxit=1000)
 
 norm.hk.perms.pens <- calc.penalties(norm.hk.perms.2, alpha=0.1)
 
