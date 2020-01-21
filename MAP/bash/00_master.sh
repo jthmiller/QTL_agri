@@ -43,17 +43,17 @@ sbatch -J "ELRM_perms" ../permutations/04a_downsample.sh 'ELR.missing' 22
 
 ################################################################################
 
-sbatch -J "NBH_N.I" ../permutations/04b_norm_imp_perms.sh 'NBH' 22 22
-sbatch -J "ELR_N.I" ../permutations/04b_norm_imp_perms.sh 'ELR' 22 22
-sbatch -J "ELRM_N.I" ../permutations/04b_norm_imp_perms.sh 'ELR.missing' 22 22
+sbatch -J "NBH_P.N.I" ../permutations/04b_norm_imp_perms.sh 'NBH' 22 22
+sbatch -J "ELR_P.N.I" ../permutations/04b_norm_imp_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_P.N.I" ../permutations/04b_norm_imp_perms.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_B.E" ../permutations/04b_bin_em_perms.sh 'NBH' 22 22
-sbatch -J "ELR_B.E" ../permutations/04b_bin_em_perms.sh 'ELR' 22 22
-sbatch -J "ELRM_B.E" ../permutations/04b_bin_em_perms.sh 'ELR.missing' 22 22
+sbatch -J "NBH_P.B.E" ../permutations/04b_bin_em_perms.sh 'NBH' 22 22
+sbatch -J "ELR_P.B.E" ../permutations/04b_bin_em_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_P.B.E" ../permutations/04b_bin_em_perms.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_B.K" ../permutations/04b_bin_hk_perms.sh 'NBH' 22 22
-sbatch -J "ELR_B.K" ../permutations/04b_bin_hk_perms.sh 'ELR' 22 22
-sbatch -J "ELRM_B.K" ../permutations/04b_bin_hk_perms.sh 'ELR.missing' 22 22
+sbatch -J "NBH_P.B.K" ../permutations/04b_bin_hk_perms.sh 'NBH' 22 22
+sbatch -J "ELR_P.B.K" ../permutations/04b_bin_hk_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_P.B.K" ../permutations/04b_bin_hk_perms.sh 'ELR.missing' 22 22
 
 ################################################################################
 
