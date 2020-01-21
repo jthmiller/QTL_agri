@@ -42,31 +42,33 @@ sbatch -J "ELR_perms" ../permutations/04a_downsample.sh 'ELR' 22
 sbatch -J "ELRM_perms" ../permutations/04a_downsample.sh 'ELR.missing' 22
 
 ################################################################################
+bashsc="$HOME/QTL_agri/MAP/bash"
 
-sbatch -J "NBH_P.N.I" 04b_norm_imp_perms.sh 'NBH' 22 22
-sbatch -J "ELR_P.N.I" 04b_norm_imp_perms.sh 'ELR' 22 22
-sbatch -J "ELRM_P.N.I" 04b_norm_imp_perms.sh 'ELR.missing' 22 22
+sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
+sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_P.B.E" ../04b_bin_em_perms.sh 'NBH' 22 22
-sbatch -J "ELR_P.B.E" ../04b_bin_em_perms.sh 'ELR' 22 22
-sbatch -J "ELRM_P.B.E" ../04b_bin_em_perms.sh 'ELR.missing' 22 22
+sbatch -J "NBH_P.B.E" $bashsc/04b_bin_em_perms.sh 'NBH' 22 22
+sbatch -J "ELR_P.B.E" $bashsc/04b_bin_em_perms.sh 'ELR' 22 22
+sbatch -p low -t 13:00:00 -J "ELRM_P.B.E" $bashsc/04b_bin_em_perms.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_P.B.K" ../04b_bin_hk_perms.sh 'NBH' 22 22
-sbatch -J "ELR_P.B.K" ../04b_bin_hk_perms.sh 'ELR' 22 22
-sbatch -J "ELRM_P.B.K" ../04b_bin_hk_perms.sh 'ELR.missing' 22 22
+sbatch -J "NBH_P.B.K" $bashsc/04b_bin_hk_perms.sh 'NBH' 22 22
+sbatch -J "ELR_P.B.K" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
+sbatch -J "ELRM_P.B.K" $bashsc/04b_bin_hk_perms.sh 'ELR.missing' 22 22
 
 ################################################################################
+bashsc="$HOME/QTL_agri/MAP/bash"
 
-sbatch -J "NBH_N.I" --depend=afterany:17491246 ../permutations/04c_norm_imp_step.sh 'NBH' 22 22
-sbatch -J "ELR_N.I" --depend=afterany:17491247 ../permutations/04c_norm_imp_step.sh 'ELR' 22 22
-sbatch -J "ELRM_N.I" --depend=afterany:17491248 ../permutations/04c_norm_imp_step.sh 'ELR.missing' 22 22
+sbatch -J "NBH_N.I" --depend=afterany:17491467 $bashsc/04c_norm_imp_step.sh 'NBH' 22 22
+sbatch -J "ELR_N.I" --depend=afterany:17491468 $bashsc/04c_norm_imp_step.sh 'ELR' 22 22
+sbatch -J "ELRM_N.I" --depend=afterany:17491469 $bashsc/04c_norm_imp_step.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_B.E" --depend=afterany:17491260 ../permutations/04c_bin_em_step.sh 'NBH' 22 22
-sbatch -J "ELR_B.E" --depend=afterany:17491261 ../permutations/04c_bin_em_step.sh 'ELR' 22 22
-sbatch -J "ELRM_B.E" --depend=afterany:17491262 ../permutations/04c_bin_em_step.sh 'ELR.missing' 22 22
+sbatch -J "NBH_B.E" --depend=afterany:17491470 $bashsc/04c_bin_em_step.sh 'NBH' 22 22
+sbatch -J "ELR_B.E" --depend=afterany:17491471 $bashsc/04c_bin_em_step.sh 'ELR' 22 22
+sbatch -J "ELRM_B.E" --depend=afterany:17491472 $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
 
-sbatch -J "NBH_B.K" --depend=afterany:17491263 ../permutations/04c_bin_hk_step.sh 'NBH' 22 22
-sbatch -J "ELR_B.K" --depend=afterany:17491264 ../permutations/04c_bin_hk_step.sh 'ELR' 22 22
-sbatch -J "ELRM_B.K" --depend=afterany:17491265 ../permutations/04c_bin_hk_step.sh 'ELR.missing' 22 22
+sbatch -J "NBH_B.K" --depend=afterany:17491473 $bashsc/04c_bin_hk_step.sh 'NBH' 22 22
+sbatch -J "ELR_B.K" --depend=afterany:17491474 $bashsc/04c_bin_hk_step.sh 'ELR' 22 22
+sbatch -J "ELRM_B.K" --depend=afterany:17491475 $bashsc/04c_bin_hk_step.sh 'ELR.missing' 22 22
 
 ################################################################################
