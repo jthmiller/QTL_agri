@@ -35,7 +35,7 @@ summary(scanone(cross,pheno.col=4, model="binary", method="hk",addcovar=g))
 ################################################################################
 
 bin.hk.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
- incl.markers=F,clean.output=T, clean.nmar=100, clean.distance=100,
+ incl.markers=F,clean.output=T, clean.nmar=200, clean.distance=200,
  assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 ################################################################################
