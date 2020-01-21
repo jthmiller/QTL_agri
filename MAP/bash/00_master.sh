@@ -86,3 +86,4 @@ sbatch -J "ELR_SWBK" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR' 22 22
 sbatch -J "ELRM_SWBK" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR.missing' 22 22
 
 ################################################################################
+sbatch -J "power_calc" $bashsc/06_power.sh 'NBH'
