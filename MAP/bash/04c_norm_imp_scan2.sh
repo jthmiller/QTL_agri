@@ -6,4 +6,4 @@
 
 perms="$HOME/QTL_agri/MAP/R/permutations"
 
-Rscript $perms/04b_norm_imp_scan2.R --vanilla "${1}" "${2}"
+Rscript $perms/04c_norm_imp_scan2.R --vanilla "${1}" "${2}"
