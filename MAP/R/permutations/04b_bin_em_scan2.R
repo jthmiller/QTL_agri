@@ -1,7 +1,6 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
-perm_count <- as.numeric(commandArgs(TRUE)[3])
-cores <- as.numeric(commandArgs(TRUE)[4])
+cores <- as.numeric(commandArgs(TRUE)[3])
 
 print(commandArgs(TRUE))
 print(paste(pop,perm_count))
