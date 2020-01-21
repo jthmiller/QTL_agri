@@ -3,7 +3,7 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 cores <- as.numeric(commandArgs(TRUE)[3])
 
 print(commandArgs(TRUE))
-print(paste(pop,perm_count))
+print(paste(pop))
 
 library('qtl')
 ##library('parallel')
