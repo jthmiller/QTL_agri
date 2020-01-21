@@ -25,7 +25,6 @@ erp <- 0.0025
 ################################################################################
 load(file.path(mpath,paste0(pop,'_scan_perms_norm_imp.rsave')))
 ################################################################################
-cross <- jittermap(cross)
 
 norm.add.imp <- scanone(cross, pheno.col=5, model='normal', method = "imp")
 qtl <- summary(norm.add.imp,lod)
@@ -33,7 +32,7 @@ qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
 qtl
 
 full.norm.imp.step <- stepwiseqtl(cross, model='normal', method = "imp", pheno.col = 5,
- penalties=norm.imp.perms.pens, incl.markers=F, qtl=qtl, additive.only = F,  scan.pairs = T,
+ penalties=norm.imp.perms.pens, incl.markers=T, qtl=qtl, additive.only = F,  scan.pairs = T,
  max.qtl=8)
 
 summary(full.norm.imp.step)
