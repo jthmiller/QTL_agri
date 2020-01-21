@@ -56,7 +56,6 @@ summary(norm.imp.perms.pens)
 print(norm.imp.perms.pens)
 print(paste('done with', perm_count, 'scan 2 permutations'))
 print(summary(norm.imp.perms.1))
-
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan_perms_norm_imp.rsave')))
 ################################################################################

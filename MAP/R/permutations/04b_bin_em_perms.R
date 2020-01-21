@@ -46,7 +46,7 @@ bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
 bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
 
 bin.em.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "em",
- n.perm = 10000, n.cluster=cores)
+ n.perm = 10000, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 lod <- summary(bin.em.perms.1)[1]
 
@@ -55,7 +55,6 @@ summary(bin.em.perms.pens)
 print(bin.em.perms.pens)
 print(paste('done with', perm_count, 'scan 2 permutations'))
 print(summary(bin.em.perms.1))
-
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan_perms_bin_em.rsave')))
 ################################################################################
