@@ -35,7 +35,7 @@ summary(scanone(cross,pheno.col=4, model="binary", method="em",addcovar=g))
 ################################################################################
 
 bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
- incl.markers=F, clean.output=T, clean.nmar=15, clean.distance=15, maxit=1000,
+ incl.markers=F, clean.output=T, clean.nmar=100, clean.distance=100, maxit=1000,
  assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 ################################################################################

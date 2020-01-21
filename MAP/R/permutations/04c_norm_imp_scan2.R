@@ -35,7 +35,7 @@ summary(scanone(cross,pheno.col=5, model="normal", method="imp",addcovar=g))
 ################################################################################
 
 norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
- incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=10, clean.distance=10,
+ incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=100, clean.distance=100,
  assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 ################################################################################
