@@ -29,7 +29,7 @@ sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
 norm.hk.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
- incl.markers=F, clean.output=T, clean.nmar=10, clean.distance=10,
+ incl.markers=F, clean.output=T, clean.nmar=200, clean.distance=200,
  n.perm=perm_count, assumeCondIndep=T, n.cluster=cores)
 
 norm.hk.perms.pens <- calc.penalties(norm.hk.perms.2, alpha=0.1)
