@@ -31,7 +31,7 @@ names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
 bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
  incl.markers=F,clean.output=T, clean.nmar=15, clean.distance=15,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, maxit=1000)
+ assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, maxit=2000)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
