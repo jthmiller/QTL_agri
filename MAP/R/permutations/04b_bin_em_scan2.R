@@ -29,10 +29,10 @@ load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
-norm.imp.2 <- scantwo(cross, pheno.col=5, model="bin", method="em",
- incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=10, clean.distance=10,
+bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
+ incl.markers=F,clean.output=T, clean.nmar=15, clean.distance=15,
  assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, maxit=1000)
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan_bin_em.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 ################################################################################
