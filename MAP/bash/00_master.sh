@@ -50,7 +50,7 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 
 sbatch -J "NBH_P.B.E" $bashsc/04b_bin_em_perms.sh 'NBH' 12 22
 sbatch -J "ELR_P.B.E" $bashsc/04b_bin_em_perms.sh 'ELR' 12 22
-sbatch -J "ELRM_P.B.E" $bashsc/04b_bin_em_perms.sh 'ELR.missing' 22 22
+sbatch -J "ELRM_P.B.E" $bashsc/04b_bin_em_perms.sh 'ELR.missing' 12 22
 
 sbatch -J "NBH_P.B.K" $bashsc/04b_bin_hk_perms.sh 'NBH' 22 22
 sbatch -J "ELR_P.B.K" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
