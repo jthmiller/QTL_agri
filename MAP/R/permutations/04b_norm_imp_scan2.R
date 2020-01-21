@@ -34,5 +34,5 @@ norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
  assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen)
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan_perms_norm_imp.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan_norm_imp.rsave')))
 ################################################################################
