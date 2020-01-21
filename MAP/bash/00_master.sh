@@ -31,17 +31,12 @@ sbatch -J "ELR_Mis_qtl" ../models/04_QTL.sh 'ELR.missing'
 ##sbatch -J "NEW" models/04_QTL.sh 'NEW'
 ##
 
-sbatch -J "NBH_perms" ../permutations/05_perms.sh 'NBH' 22
-sbatch -J "ELR_perms" ../permutations/05_perms.sh 'ELR' 22
-sbatch -J 'ELR_perms' ../permutations/05_perms.sh 'ELR.missing' 22
+sbatch -J "NBH_dwns" ../permutations/04a_downsample.sh 'NBH' 22
+sbatch -J "ELR_dwns" ../permutations/04a_downsample.sh 'ELR' 22
+sbatch -J "ELRM_dwns" ../permutations/04a_downsample.sh 'ELR.missing' 22
 
 ################################################################################
-
-sbatch -J "NBH_perms" ../permutations/04a_downsample.sh 'NBH' 22
-sbatch -J "ELR_perms" ../permutations/04a_downsample.sh 'ELR' 22
-sbatch -J "ELRM_perms" ../permutations/04a_downsample.sh 'ELR.missing' 22
-
-################################################################################
+##SCANTWO PERMUTATIONS
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 #sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
@@ -57,6 +52,7 @@ sbatch -J "ELR_P.B.K" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
 sbatch -J "ELRM_P.B.K" $bashsc/04b_bin_hk_perms.sh 'ELR.missing' 22 22
 
 ################################################################################
+##SCANTWO
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 sbatch -J "NBH_N.I"  $bashsc/04c_norm_imp_scan2.sh 'NBH' 22
@@ -64,16 +60,17 @@ sbatch -J "ELR_N.I"  $bashsc/04c_norm_imp_scan2.sh 'ELR' 22
 sbatch -J "ELRM_N.I" $bashsc/04c_norm_imp_scan2.sh 'ELR.missing' 22
 
 sbatch -J "NBH_B.E" $bashsc/04c_bin_em_scan2.sh 'NBH' 22
-sbatch -J "ELR_B.E" --depend=afterany:17491669 $bashsc/04c_bin_em_scan2.sh 'ELR' 22
-sbatch -J "ELRM_B.E" --depend=afterany:17491670 $bashsc/04c_bin_em_scan2.sh 'ELR.missing' 22
+sbatch -J "ELR_B.E"  $bashsc/04c_bin_em_scan2.sh 'ELR' 22
+sbatch -J "ELRM_B.E" $bashsc/04c_bin_em_scan2.sh 'ELR.missing' 22
 
 sbatch -J "NBH_B.K" $bashsc/04c_bin_hk_scan2.sh 'NBH' 22
-sbatch -J "ELR_B.K" --depend=afterany:17491474 $bashsc/04c_bin_hk_scan2.sh 'ELR' 22
-sbatch -J "ELRM_B.K" --depend=afterany:17491475 $bashsc/04c_bin_hk_scan2.sh 'ELR.missing' 22
+sbatch -J "ELR_B.K" $bashsc/04c_bin_hk_scan2.sh 'ELR' 22
+sbatch -J "ELRM_B.K" $bashsc/04c_bin_hk_scan2.sh 'ELR.missing' 22
 
 ################################################################################
 
 ################################################################################
+### STEPWISE QTL
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 sbatch -J "NBH_N.I"  $bashsc/04c_norm_imp_step.sh 'NBH' 22 22
