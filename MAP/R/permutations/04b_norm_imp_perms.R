@@ -28,7 +28,7 @@ load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 
 norm.imp.perms.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
  incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=10, clean.distance=10,
- n.perm=perm_count, assumeCondIndep=T, n.cluster=cores, maxit=1000)
+ n.perm=perm_count, assumeCondIndep=T, n.cluster=cores)
 
 norm.imp.perms.pens <- calc.penalties(norm.imp.perms.2, alpha=0.1)
 
