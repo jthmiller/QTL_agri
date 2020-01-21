@@ -25,9 +25,11 @@ erp <- 0.0025
 ################################################################################
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
+sex.phen <- pull.pheno(cross, "sex")
+names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
 norm.em.perms.2 <- scantwo(cross, pheno.col=4, model="bin", method="em",
- incl.markers=F, chr = c(1:4,6:24), clean.output=T, clean.nmar=15, clean.distance=20,
+ incl.markers=F, clean.output=T, clean.nmar=15, clean.distance=20,
  n.perm=perm_count, assumeCondIndep=T, n.cluster=cores, maxit=1000)
 
 norm.em.perms.pens <- calc.penalties(norm.em.perms.2, alpha=0.1)
