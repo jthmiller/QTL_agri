@@ -37,15 +37,21 @@ sbatch -J "ELRM_dwns" ../permutations/04a_downsample.sh 'ELR.missing' 22
 
 ################################################################################
 ##SCANTWO PERMUTATIONS
+
+## 04b_bin_em_perms.sh --vanilla pop perm_count cores arraynum
+
+
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 #sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
 #sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22
 #sbatch -J "ELRM_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR.missing' 22 22
+## test
+sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 24
 
-sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh 'NBH' 12 50
-sbatch -J "ELR_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh 'ELR' 12 50
-sbatch -J "ELRM_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh 'ELR.missing' 12 50
+
+sbatch -J "ELR_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 12 1
+sbatch -J "ELRM_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 12 1
 
 sbatch -J "NBH_PBK" $bashsc/04b_bin_hk_perms.sh 'NBH' 22 22
 sbatch -J "ELR_PBK" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
