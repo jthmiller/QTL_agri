@@ -52,6 +52,8 @@ bin.em.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "em",
 
 lod <- summary(bin.em.perms.1)[1]
 
+assign(paste0("bin.em.perms.2.",arraynum), bin.em.perms.2)
+
 summary(bin.em.perms.2)
 summary(bin.em.perms.pens)
 print(bin.em.perms.pens)
