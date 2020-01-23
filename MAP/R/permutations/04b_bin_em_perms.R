@@ -2,6 +2,7 @@
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 cores <- as.numeric(commandArgs(TRUE)[4])
+arraynum <- as.numeric(commandArgs(TRUE)[5])
 
 print(commandArgs(TRUE))
 print(paste(pop,perm_count))
@@ -57,5 +58,5 @@ print(bin.em.perms.pens)
 print(paste('done with', perm_count, 'scan 2 permutations'))
 print(summary(bin.em.perms.1))
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan_perms_bin_em.rsave')))
+save.image(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
 ################################################################################
