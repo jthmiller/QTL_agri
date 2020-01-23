@@ -1,11 +1,5 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
-perm_count <- as.numeric(commandArgs(TRUE)[3])
-cores <- as.numeric(commandArgs(TRUE)[4])
-arraynum <- as.numeric(commandArgs(TRUE)[5])
-
-print(commandArgs(TRUE))
-print(paste(pop,perm_count))
 
 library('qtl')
 ##library('parallel')
@@ -18,16 +12,17 @@ fl <- file.path(mpath,fl)
 
 ################################################################################
 
-print(paste(cores,'cores'))
-erp <- 0.0025
-
-################################################################################
-
 ################################################################################
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 
-print(paste(cores,'cores'))
+perm_count <- as.numeric(commandArgs(TRUE)[3])
+cores <- as.numeric(commandArgs(TRUE)[4])
+arraynum <- as.numeric(commandArgs(TRUE)[5])
+
+print(commandArgs(TRUE))
+print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores))
+
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))

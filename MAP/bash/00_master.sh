@@ -48,10 +48,8 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 #sbatch -J "ELRM_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR.missing' 22 22
 ## test
 sbatch -J "NBH_PBE" --array=2-10 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 24
-
-
-sbatch -J "ELR_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 12 1
-sbatch -J "ELRM_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 12 1
+sbatch -J "ELR_PBE" --array=1-10 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 12 1
+sbatch -J "ELRM_PBE" --array=1-10 -p low -t 13:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 12 1
 
 sbatch -J "NBH_PBK" $bashsc/04b_bin_hk_perms.sh 'NBH' 22 22
 sbatch -J "ELR_PBK" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
