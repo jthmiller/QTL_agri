@@ -15,8 +15,8 @@ fl <- file.path(mpath,fl)
 ################################################################################
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
-"--vanilla" 'NBH' '1' '12'
-
+##vanilla
+##pop
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 cores <- as.numeric(commandArgs(TRUE)[4])
 arraynum <- as.numeric(commandArgs(TRUE)[5])
