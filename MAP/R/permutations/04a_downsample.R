@@ -31,7 +31,7 @@ cross <- jittermap(cross)
 
 ## Estimate gt prob and impute before downsample
 cross <- sim.geno(cross, stepwidth="fixed", step=dens,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
-cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
+cross <- calc.genoprob(cross, stepwidth="fixed", step=dens, error.prob=erp, off.end=5)
 
 dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
 dups <- names(dups)
