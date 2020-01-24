@@ -1,5 +1,7 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
+dens <- as.numeric(commandArgs(TRUE)[3])
+
 
 library('qtl')
 ##library('parallel')
@@ -27,7 +29,7 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross <- jittermap(cross)
 
 ## Estimate gt prob and impute before downsample
-cross <- sim.geno(cross, stepwidth="fixed", step=1,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
+cross <- sim.geno(cross, stepwidth="fixed", step=dens,off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
 cross <- calc.genoprob(cross, stepwidth="fixed", step=1, error.prob=erp, off.end=5)
 
 dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
