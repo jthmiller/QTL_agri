@@ -10,3 +10,5 @@ perms="$HOME/QTL_agri/MAP/R/permutations"
 # sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 12 1
 
 Rscript $perms/04b_bin_em_perms.R "${1}" "${2}" "${3}" "${SLURM_ARRAY_TASK_ID}"
+
+"--vanilla" 'NBH' '1' '12'

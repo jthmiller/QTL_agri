@@ -15,13 +15,14 @@ fl <- file.path(mpath,fl)
 ################################################################################
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
+"--vanilla" 'NBH' '1' '12'
 
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 cores <- as.numeric(commandArgs(TRUE)[4])
 arraynum <- as.numeric(commandArgs(TRUE)[5])
 
 print(commandArgs(TRUE))
-print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores))
+print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
 
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
