@@ -47,9 +47,9 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 #sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22
 #sbatch -J "ELRM_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR.missing' 22 22
 ## test
-sbatch -J "NBH_PBE" --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 24
+sbatch -J "NBH_PBE" --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
 sbatch -J "ELR_PBE" --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
-sbatch -J "ELRM_PBE" --array=1-10 -p low -t 13:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 24
+sbatch -J "ELRM_PBE" --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12
 
 sbatch -J "NBH_PBK" $bashsc/04b_bin_hk_perms.sh 'NBH' 22 22
 sbatch -J "ELR_PBK" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
@@ -91,3 +91,13 @@ sbatch -J "ELRM_SWBK" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR.missing
 
 ################################################################################
 sbatch -J "power_calc" $bashsc/06_power.sh 'NBH'
+
+
+
+sbatch -J "NBH_dwns" --depend=afternotok:17524445 $bashsc/04a_downsample.sh 'NBH' 2
+sbatch -J "ELR_dwns" --depend=afternotok:17524512 $bashsc/04a_downsample.sh 'ELR' 2
+sbatch -J "ELRM_dwns" --depend=afternotok:17524512 $bashsc/04a_downsample.sh 'ELR.missing' 2
+
+sbatch -J "NBH_PBE" --depend=afterok:17524745 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
+sbatch -J "ELR_PBE" --depend=afterok:17524746 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
+sbatch -J "ELRM_PBE" --depend=afterok:17524747 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12
