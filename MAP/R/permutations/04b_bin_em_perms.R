@@ -38,7 +38,7 @@ summary(scanone(cross,pheno.col=4, model="binary", method="em",addcovar=g))
 
 bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
  incl.markers=F, clean.output=T, clean.nmar=200, clean.distance=200, maxit=1000,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g, n.perm=perm_count
+ assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g, n.perm=perm_count,
  verbose=2)
 
 bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
