@@ -94,10 +94,15 @@ sbatch -J "power_calc" $bashsc/06_power.sh 'NBH'
 
 
 
-sbatch -J "NBH_dwns" --depend=afternotok:17524445 $bashsc/04a_downsample.sh 'NBH' 2
-sbatch -J "ELR_dwns" --depend=afternotok:17524512 $bashsc/04a_downsample.sh 'ELR' 2
-sbatch -J "ELRM_dwns" --depend=afternotok:17524512 $bashsc/04a_downsample.sh 'ELR.missing' 2
+sbatch -J "NBH_dwns" --depend=afternotok:17525122 $bashsc/04a_downsample.sh 'NBH' 2
+sbatch -J "ELR_dwns" --depend=afternotok:17525123 $bashsc/04a_downsample.sh 'ELR' 2
+sbatch -J "ELRM_dwns" --depend=afternotok:17525141 $bashsc/04a_downsample.sh 'ELR.missing' 2
 
-sbatch -J "NBH_PBE" --depend=afterok:17524745 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
-sbatch -J "ELR_PBE" --depend=afterok:17524746 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
-sbatch -J "ELRM_PBE" --depend=afterok:17524747 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12
+sbatch -J "NBH_PBE" --depend=afterok:17525161 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
+sbatch -J "ELR_PBE" --depend=afterok:17525162 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
+sbatch -J "ELRM_PBE" --depend=afterok:17525163 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12
+
+
+sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 2
+sbatch -J "ELR_dwns"  $bashsc/04a_downsample.sh 'ELR' 2
+sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 2

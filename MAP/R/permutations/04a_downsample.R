@@ -2,6 +2,7 @@
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 dens <- as.numeric(commandArgs(TRUE)[3])
 
+print(dens)
 
 library('qtl')
 ##library('parallel')
