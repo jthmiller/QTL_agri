@@ -99,6 +99,6 @@ sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 2
 sbatch -J "ELR_dwns" $bashsc/04a_downsample.sh 'ELR' 2
 sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 2
 
-sbatch -J "NBH_PBE" --depend=afterok:17542819 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
-sbatch -J "ELR_PBE" --depend=afterok:17542820 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
-sbatch -J "ELRM_PBE" --depend=afterok:17542821 --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12
+sbatch -J "NBH_PBE" --depend=afterok:17542819 --array=6-100 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
+sbatch -J "ELR_PBE" -p med --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
+sbatch -J "ELRM_PBE" -p med --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12

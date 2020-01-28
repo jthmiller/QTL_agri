@@ -1,6 +1,21 @@
 ##interactions
 
 
+
+
+for (i in 1:100){
+
+arraynum <- i
+load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
+perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
+}
+
+## bin (1296 permutations)
+##     full  fv1  int   add  av1  one
+## 5%  14.1 10.5 9.10 11.41 7.24 5.02
+## 10% 13.6 10.4 7.89  9.51 5.63 4.75
+
+
 load(file.path(mpath,'scantwo.scans.elr.short.rsave'))
 elr_gg <- gg
 elr_gg_step2 <- gg_step2
@@ -9,14 +24,12 @@ elr_sc2_normal_imp_perms <- sc2_normal_imp_perms
 
 elr_int <- summary(elr_sc2_normal_imp, thresholds=c(0, Inf, 4, Inf, Inf), what="int")
 
-
-load(file.path(mpath,'scantwo.scans.nbh.short.rsave'))
-nbh_gg <- gg
-nbh_gg_step2 <- gg_step2
-nbh_sc2_normal_imp <- sc2_normal_imp
-nbh_sc2_normal_imp_perms <- sc2_normal_imp_perms
+load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 
 nbh_int <- summary(bin.em.2, thresholds=c(0, Inf, 7.5, Inf, Inf), what="int")
+
+nbh_int <- summary(bin.em.2, thresholds=c(0, Inf, 7.5, Inf, Inf), what="int")
+
          pos1  pos2 lod.full lod.fv1 lod.int lod.add lod.av1
 c1 :c22  20.2  5.44    10.58  8.2239    7.75    2.83   0.470
 c2 :c21 110.0 79.97    17.57 -0.0194   17.57    0.00 -17.586
@@ -34,6 +47,8 @@ c13:c14  66.0  7.49     9.64  7.1322    7.54    2.11  -0.404
 c14:c15  29.5 49.00     9.39  6.8766    7.82    1.57  -0.944
 c17:c24  51.5 72.08    15.11  7.5631    8.41    6.70  -0.846
 c20:c23  31.8 12.00    12.67  8.6475    9.48    3.20  -0.831
+
+summary(bin.em.2, perms=perms, what="int", alpha=0.05)
 
 summary(bin.em.2, thresholds=c(0, Inf, 8, Inf, Inf), what="int")
 
