@@ -42,7 +42,7 @@ bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
 bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
 
 bin.em.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "em",
- n.perm = 10000, n.cluster=cores, intcovar=sex.phen, addcovar=g)
+ n.perm = 1000, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 lod <- summary(bin.em.perms.1)[1]
 
