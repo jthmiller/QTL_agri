@@ -11,10 +11,9 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
+load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
+################################################################################
 
-################################################################################
-load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
-################################################################################
 ##vanilla
 ##pop
 perm_count <- as.numeric(commandArgs(TRUE)[3])
@@ -32,22 +31,7 @@ sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
 ################################################################################
-cross <- argmax.geno(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
 
-sone <- scanone(cross,pheno.col=4, model="binary", method="em", intcovar=sex.phen)
-sone.perms <- scanone(cross,pheno.col=4, model="binary", method="em", intcovar=sex.phen, n.perm=10000)
-
-cov <- rownames(summary(sone, perms=sone.perms, alpha=0.1))
-so <- summary(sone)[cov,]
-top_2 <- order(so$lod,decreasing =T)[1:2]
-mar <- find.pseudomarker(cross, so$chr[top_2], so$pos[top_2])
-
-g <- lapply(mar,function(X){ pull.argmaxgeno(cross)[,X] } )
-names(g) <- mar
-g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
-g <- data.frame(do.call(cbind,g))
-
-summary(scanone(cross, pheno.col=4, model="binary", method="em", addcovar=g))
 ################################################################################
 
 bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
@@ -69,6 +53,7 @@ summary(bin.em.perms.pens)
 print(bin.em.perms.pens)
 print(paste('done with', perm_count, 'scan 2 permutations'))
 print(summary(bin.em.perms.1))
+
 ################################################################################
 save.image(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
 ################################################################################
