@@ -41,7 +41,12 @@ names(g) <- mar
 g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
 g <- data.frame(do.call(cbind,g))
 
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+################################################################################
+
 summary(scanone(cross, pheno.col=4, model="binary", method="em", addcovar=g))
+
 ################################################################################
 
 bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
