@@ -7,8 +7,6 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
-
-
 load(file.path(mpath,paste0(pop,1,'_scan_perms_bin_em.rsave')))
 perms <- get(paste0('bin.em.perms.2.',1))
 
@@ -18,7 +16,19 @@ load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
 perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
 }
 
+################################################################################
+load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+################################################################################
 
+summary(bin.em.2,perms=perms,alphas=0.1, pvalues=T)
+summary(bin.em.2,perms=perms,alphas=0.1, pvalues=F)
+
+summary(bin.em.2,perms=perms,alphas=0.1, pvalues=F, what='int')
+summary(bin.em.2,perms=perms,alphas=0.05, pvalues=F, what='int')
+
+summary(bin.em.2,perms=perms,alphas=0.1, pvalues=T)
+
+############################################################
 ##pens
 ##    main    heavy    light
 ##3.971724 6.831380 3.617315

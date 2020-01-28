@@ -22,7 +22,7 @@ load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 
 cross <- fill.geno(cross, method="argmax", error.prob=0.002, map.function="kosambi", min.prob=0.95)
 
-cross <- argmax.geno(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
+cross2 <- argmax.geno(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
 
 cross <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
 
