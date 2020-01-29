@@ -38,10 +38,9 @@ sbatch -J "ELRM_dwns" ../permutations/04a_downsample.sh 'ELR.missing' 22
 ################################################################################
 ##SCANTWO PERMUTATIONS
 ## 04b_bin_em_perms.sh --vanilla pop perm_count cores
-bashsc="$HOME/QTL_agri/MAP/bash"
-
 ## 04b_bin_em_perms.sh --vanilla pop perm_count cores arraynum
 # sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 12 1
+bashsc="$HOME/QTL_agri/MAP/bash"
 
 sbatch -J "NBH_PBE" --mem=12G -p high --array=1-100  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '4'
 sbatch -J "ELR_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR' '1' '4'
