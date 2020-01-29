@@ -30,15 +30,15 @@ attr(cross$geno[["X"]], 'class') <- 'X'
 
 ################################################################################
 if(pop == 'ELR'){
- cross <- subset(cross, chr=c(1:4,'X',6:17,19:24))
+ cross <- subset(cross, chr=c(1:4,6:17,19:24))
 } else {
- cross <- subset(cross, chr=c(1,3,4,'X',6:24))
+ cross <- subset(cross, chr=c(1,3:4,6:24))
 }
 ################################################################################
 
 bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
  incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
- assumeCondIndep=T, n.cluster=cores, addcovar=g, n.perm=perm_count,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g, n.perm=perm_count, perm.Xsp=F,
  verbose=2)
 
 bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
