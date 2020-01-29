@@ -60,9 +60,9 @@ sbatch -J "ELRM_S2BE" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missi
 # sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 12 1
 bashsc="$HOME/QTL_agri/MAP/bash"
 
-sbatch -J "NBH_PBE" --mem=3G -p high --array=1-10  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '2' '1'
-sbatch -J "ELR_PBE" --mem=3G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR' '2' '1'
-sbatch -J "ELRM_PBE" --mem=3G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR.missing' '2' '1'
+sbatch -J "NBH_PBE" --mem=3G -p high --array=3-4  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1'
+sbatch -J "ELR_PBE" --mem=3G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR' '1' '1'
+sbatch -J "ELRM_PBE" --mem=3G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR.missing' '1' '1'
 
 ###sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
 ###sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22
