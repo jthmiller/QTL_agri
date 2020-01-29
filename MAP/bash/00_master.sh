@@ -40,9 +40,16 @@ sbatch -J "ELRM_dwns" ../permutations/04a_downsample.sh 'ELR.missing' 22
 ## 04b_bin_em_perms.sh --vanilla pop perm_count cores
 bashsc="$HOME/QTL_agri/MAP/bash"
 
-sbatch -J "NBH_PBE" --mem=12G -p high --array=1-100  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 4
-sbatch -J "ELR_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 4
-sbatch -J "ELRM_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 4
+## 04b_bin_em_perms.sh --vanilla pop perm_count cores arraynum
+# sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 12 1
+
+sbatch -J "NBH_PBE" --mem=12G -p high --array=1-100  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '4' '1'
+sbatch -J "ELR_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR' '1' '4'
+sbatch -J "ELRM_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR.missing' '1' '4'
+
+sbatch -J "NBH_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
+sbatch -J "ELR_PBE" -p med --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12
+sbatch -J "ELRM_PBE" -p med --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' 1 12
 
 #sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
 #sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22

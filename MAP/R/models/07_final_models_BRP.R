@@ -14,6 +14,8 @@ cross <- read.cross.jm(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr"))
 format = "csvr", geno = c(1:3), estimate.map = FALSE)
 ################################################################################
 
+cross <- switchAlleles(cross,markernames(cross,chr=2))
+
 ################################################################################
 ### Pull names from plinkfile
 path <- file.path(mpath, paste(pop, ".ped", sep = ""))
@@ -27,8 +29,13 @@ cross$pheno$bin <- ifelse(cross$pheno$Pheno > 2, 1 , 0)
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
 ################################################################################
 
-pars <- c('BRP_BRP1M','BRP_BRP8F','BRP_BRP1F','BRP_BRP8M')
-toss.missing <- c("BRP_2535","BRP_2410","BRP_2687","BRP_2710")
+#pars <- c('BRP_BRP1M','BRP_BRP8F','BRP_BRP1F','BRP_BRP8M')
+pars <- c("NEW_NEW911M","NEW_NEW911F")
+#toss.missing <- c("BRP_2535","BRP_2410","BRP_2687","BRP_2710")
+toss_missing <- c('NEW_11365','NEW_11398','NEW_11403','NEW_11388','NEW_11228',' NEW_11298','NEW_11407','NEW_11370')
+################################################################################
+
+
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(pars,toss.missing))
 
 gt <- geno.table(cross)
@@ -44,9 +51,6 @@ mar <- rownames(summary(scan.bin.mr)[chr,])
 crossbk <- cross
 ##################################################################################
 ## PLOT
-cross <- switchAlleles(cross,mar[1])
-
-
 cross <- fill.geno(cross, method="argmax", error.prob=0.002, map.function="kosambi", min.prob=0.95)
 cross <- argmax.geno(cross,  off.end=1, error.prob=0.002, map.function="kosambi")
 cross <- calc.genoprob(cross, off.end=1, error.prob=0.002, map.function="kosambi")
@@ -82,7 +86,7 @@ summary(bin.em)
 
 ############################################################
 
-intxs.bin(loc_a=mar[1],loc_b=mar[2], popchr = 'popchr',locbN = 'locbN', main = 'main')
+intxs.bin(loc_a=mar[2],loc_b=mar[1], popchr = 'popchr',locbN = 'locbN', main = 'main')
 
 ############################################################
 
