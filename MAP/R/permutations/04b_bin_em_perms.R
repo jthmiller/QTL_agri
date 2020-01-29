@@ -26,14 +26,19 @@ print(paste(cores,'cores'))
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+attr(cross$geno[["X"]], 'class') <- 'X'
 
 ################################################################################
-cross <- subset(cross,chr=c(1,3,4,X,6:24))
+if(pop == 'ELR'){
+ cross <- subset(cross, chr=c(1:4,'X',6:17,19:24))
+} else {
+ cross <- subset(cross, chr=c(1,3,4,'X',6:24))
+}
 ################################################################################
 
 bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
- incl.markers=F, clean.output=T, clean.nmar=200, clean.distance=200, maxit=1000,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g, n.perm=perm_count,
+ incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g, n.perm=perm_count,
  verbose=2)
 
 bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)

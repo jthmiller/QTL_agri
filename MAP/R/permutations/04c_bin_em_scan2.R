@@ -34,9 +34,9 @@ cross <- argmax.geno(cross, step=1, off.end=1, error.prob=0.002, map.function="k
 sone <- scanone(cross,pheno.col=4, model="binary", method="em")
 
 if(pop == 'ELR'){
- sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster = cores, perm.Xsp=T)
-} else {
  sone.perms <- scanone(subset(cross, chr=c(1:4,'X',6:17,19:24)), pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster = cores, perm.Xsp=T)
+} else {
+ sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster = cores, perm.Xsp=T)
 }
 
 cov <- rownames(summary(sone, perms=sone.perms, alpha=0.1))
