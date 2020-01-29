@@ -10,18 +10,15 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
-##vanilla
-##pop
+################################################################################
+
 perm_count <- as.numeric(commandArgs(TRUE)[3])
-cores <- as.numeric(commandArgs(TRUE)[4])
 arraynum <- as.numeric(commandArgs(TRUE)[5])
+load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
+cores <- as.numeric(commandArgs(TRUE)[4])
 
 print(commandArgs(TRUE))
 print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
-
-################################################################################
-load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
-################################################################################
 
 ################################################################################
 
