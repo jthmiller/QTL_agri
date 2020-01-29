@@ -39,6 +39,8 @@ if(pop == 'ELR'){
  sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster = cores, perm.Xsp=T)
 }
 
+summary(sone.perms)
+
 cov <- rownames(summary(sone, perms=sone.perms, alpha=0.1))
 so <- summary(sone)[cov,]
 top_2 <- order(so$lod,decreasing =T)[1]
