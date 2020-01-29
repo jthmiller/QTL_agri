@@ -16,6 +16,7 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 arraynum <- as.numeric(commandArgs(TRUE)[5])
 cores <- as.numeric(commandArgs(TRUE)[4])
+batch <- round(nind(cross)/2)
 
 print(commandArgs(TRUE))
 print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
@@ -39,7 +40,7 @@ if(pop == 'ELR'){
 bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
  incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
  assumeCondIndep=T, n.cluster=cores, addcovar=g, n.perm=perm_count, perm.Xsp=F,
- verbose=2)
+ verbose=2, batchsize=batch)
 
 bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
 
