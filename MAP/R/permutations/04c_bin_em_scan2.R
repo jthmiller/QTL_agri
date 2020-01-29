@@ -50,6 +50,7 @@ g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
 g <- data.frame(do.call(cbind,g))
 
 sone <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g)
+summary(sone)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
