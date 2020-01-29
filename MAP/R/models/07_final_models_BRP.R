@@ -1,12 +1,12 @@
 #!/bin/R
 pop <- 'BRP'
+pop <- 'NEW'
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
-
 
 ################################################################################
 ## read in the QTL cross
@@ -31,13 +31,26 @@ pars <- c('BRP_BRP1M','BRP_BRP8F','BRP_BRP1F','BRP_BRP8M')
 toss.missing <- c("BRP_2535","BRP_2410","BRP_2687","BRP_2710")
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(pars,toss.missing))
 
+gt <- geno.table(cross)
+bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
+cross <- pull.markers(cross,bfixA)
+
 ##################################################################################
 scan.bin.mr <- scanone(cross, method = "mr", model = "binary", pheno.col = 4)
 ##################################################################################
 
+chr <- tail(order(summary(scan.bin.mr)$lod),2)
+mar <- rownames(summary(scan.bin.mr)[chr,])
+crossbk <- cross
+##################################################################################
+## PLOT
+cross <- switchAlleles(cross,mar[1])
+
+
 cross <- fill.geno(cross, method="argmax", error.prob=0.002, map.function="kosambi", min.prob=0.95)
 cross <- argmax.geno(cross,  off.end=1, error.prob=0.002, map.function="kosambi")
 cross <- calc.genoprob(cross, off.end=1, error.prob=0.002, map.function="kosambi")
+
 markers <- colnames(pull.argmaxgeno(cross))
 bin.em <- scanone(cross, pheno.col=4, model='binary', method = "em")
 
@@ -65,10 +78,12 @@ prop_sens <- mapply( function(prop,total){ return(table(prop) / total) }, gt_sen
 names(prop_sens) <- markers
 
 
-
+summary(bin.em)
 
 ############################################################
-intxs.bin(loc_a='2:28299370',loc_b='18:19127198', popchr = 'popchr',locbN = 'locbN', main = 'main')
+
+intxs.bin(loc_a=mar[1],loc_b=mar[2], popchr = 'popchr',locbN = 'locbN', main = 'main')
+
 ############################################################
 
 
