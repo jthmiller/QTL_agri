@@ -28,7 +28,7 @@ sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
 ################################################################################
-
+cross <- subset(cross,chr=c(1,3,4,X,6:24))
 ################################################################################
 
 bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",

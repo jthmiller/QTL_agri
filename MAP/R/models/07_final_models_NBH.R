@@ -23,7 +23,7 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 summary(bin.em.2,perms=perms,alphas=0.1, pvalues=T)
 summary(bin.em.2,perms=perms,alphas=0.1, pvalues=F)
 
-summary(bin.em.2,perms=perms,alphas=0.1, pvalues=F, what='int')
+summary(bin.em.2,perms=perms,alphas=0.2, pvalues=F, what='int')
 summary(bin.em.2,perms=perms,alphas=0.05, pvalues=F, what='int')
 
 summary(bin.em.2,perms=perms,alphas=0.1, pvalues=T)

@@ -31,9 +31,9 @@ sbatch -J "ELR_Mis_qtl" ../models/04_QTL.sh 'ELR.missing'
 ##sbatch -J "NEW" models/04_QTL.sh 'NEW'
 ##
 
-sbatch -J "NBH_dwns" ../permutations/04a_downsample.sh 'NBH' 22
-sbatch -J "ELR_dwns" ../permutations/04a_downsample.sh 'ELR' 22
-sbatch -J "ELRM_dwns" ../permutations/04a_downsample.sh 'ELR.missing' 22
+sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 2
+sbatch -J "ELR_dwns" $bashsc/04a_downsample.sh 'ELR' 2
+sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 2
 
 ################################################################################
 ##SCANTWO PERMUTATIONS
@@ -42,13 +42,13 @@ sbatch -J "ELRM_dwns" ../permutations/04a_downsample.sh 'ELR.missing' 22
 # sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 12 1
 bashsc="$HOME/QTL_agri/MAP/bash"
 
-sbatch -J "NBH_PBE" --mem=12G -p high --array=1-100  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '4'
-sbatch -J "ELR_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR' '1' '4'
-sbatch -J "ELRM_PBE" --mem=12G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR.missing' '1' '4'
+sbatch -J "NBH_PBE" --mem=3G -p high --array=1-100  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1'
+sbatch -J "ELR_PBE" --mem=3G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR' '1' '1'
+sbatch -J "ELRM_PBE" --mem=3G -p high --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh '--vanilla' 'ELR.missing' '1' '1'
 
-#sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
-#sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22
-#sbatch -J "ELRM_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR.missing' 22 22
+###sbatch -J "NBH_P.N.I" $bashsc/04b_norm_imp_perms.sh 'NBH' 22 22
+###sbatch -J "ELR_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR' 22 22
+###sbatch -J "ELRM_P.N.I" $bashsc/04b_norm_imp_perms.sh 'ELR.missing' 22 22
 
 ################################################################################
 ##SCANTWO
@@ -67,6 +67,17 @@ sbatch -J "ELRM_S2BE" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missi
 #sbatch -J "ELRM_S2BH" -p med -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh 'ELR.missing' 22
 
 ################################################################################
+
+### STEPWISE QTL
+bashsc="$HOME/QTL_agri/MAP/bash"
+
+sbatch -J "NBH_SWNI" --depend=afterany: $bashsc/04c_norm_imp_step.sh 'NBH' 22 22
+sbatch -J "ELR_SWNI" --depend=afterany: $bashsc/04c_norm_imp_step.sh 'ELR' 22 22
+sbatch -J "ELRM_SWNI" --depend=afterany: $bashsc/04c_norm_imp_step.sh 'ELR.missing' 22 22
+
+sbatch -J "NBH_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'NBH' 22 22
+sbatch -J "ELR_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR' 22 22
+sbatch -J "ELRM_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
 
 ################################################################################
 
@@ -100,7 +111,7 @@ sbatch -J "power_calc" $bashsc/06_power.sh 'NBH'
 
 
 
-
+################################################################################
 ## test
 sbatch -J "NBH_PBE" --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '12'
 sbatch -J "ELR_PBE" --array=1-5 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '12'
@@ -110,28 +121,11 @@ sbatch -J "NBH_PBK" $bashsc/04b_bin_hk_perms.sh 'NBH' 22 22
 sbatch -J "ELR_PBK" $bashsc/04b_bin_hk_perms.sh 'ELR' 22 22
 sbatch -J "ELRM_PBK" $bashsc/04b_bin_hk_perms.sh 'ELR.missing' 22 22
 
-
 ################################################################################
-### STEPWISE QTL
-bashsc="$HOME/QTL_agri/MAP/bash"
-
-sbatch -J "NBH_SWNI" --depend=afterany: $bashsc/04c_norm_imp_step.sh 'NBH' 22 22
-sbatch -J "ELR_SWNI" --depend=afterany: $bashsc/04c_norm_imp_step.sh 'ELR' 22 22
-sbatch -J "ELRM_SWNI" --depend=afterany: $bashsc/04c_norm_imp_step.sh 'ELR.missing' 22 22
-
-sbatch -J "NBH_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'NBH' 22 22
-sbatch -J "ELR_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR' 22 22
-sbatch -J "ELRM_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
 
 sbatch -J "NBH_SWBK" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'NBH' 22 22
 sbatch -J "ELR_SWBK" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR' 22 22
 sbatch -J "ELRM_SWBK" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR.missing' 22 22
-
-
-
-sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 2
-sbatch -J "ELR_dwns" $bashsc/04a_downsample.sh 'ELR' 2
-sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 2
 
 sbatch -J "NBH_PBE" --depend=afterok:17542819 --array=6-100 -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 1 12
 sbatch -J "ELR_PBE" -p med --array=1-100 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' 1 12

@@ -28,7 +28,7 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 
 nbh_int <- summary(bin.em.2, thresholds=c(0, Inf, 7.5, Inf, Inf), what="int")
 
-nbh_int <- summary(bin.em.2, thresholds=c(0, Inf, 7.5, Inf, Inf), what="int")
+nbh_int <- summary(bin.em.2, thresholds=c(0, Inf, 3, Inf, Inf), what="int")
 
          pos1  pos2 lod.full lod.fv1 lod.int lod.add lod.av1
 c1 :c22  20.2  5.44    10.58  8.2239    7.75    2.83   0.470
