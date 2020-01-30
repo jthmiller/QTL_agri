@@ -49,13 +49,3 @@ summary(full.bin.em.step)
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_step_bin_em.rsave')))
 ################################################################################
-
-bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
- incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
- assumeCondIndep=T, n.cluster=cores, addcovar=g, n.perm=perm_count, perm.Xsp=F,
- verbose=2, batchsize=batch)
-
-bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
-
-bin.em.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "em",
- n.perm = 10, n.cluster=cores, addcovar=g)

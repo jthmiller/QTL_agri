@@ -48,10 +48,11 @@ sbatch -J "ELRM_S2BE" -p high -t 12:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missi
 ################################################################################
 ##SCANTWO PERMUTATIONS
 ##--depend=afterok:"${var1}_80"
+## 04b_bin_em_perms.sh --vanilla pop perm_count cores
 bashsc="$HOME/QTL_agri/MAP/bash"
-var1=$(sbatch -J "NBH_PBE" --mem=5G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' | cut -f4 -d' ')
-var2=$(sbatch -J "ELR_PBE" --mem=5G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' | cut -f4 -d' ')
-var3=$(sbatch -J "ELRM_PBE" --mem=5G -p low --array=1-100%25 -t 10:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' | cut -f4 -d' ')
+var1=$(sbatch -J "NBH_PBE" --mem=6G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '2' '3' | cut -f4 -d' ')
+var2=$(sbatch -J "ELR_PBE" --mem=6G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '2' '3' | cut -f4 -d' ')
+var3=$(sbatch -J "ELRM_PBE" --mem=6G -p low --array=1-100%25 -t 10:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '2' '3' | cut -f4 -d' ')
 ################################################################################
 ### STEPWISE QTL
 bashsc="$HOME/QTL_agri/MAP/bash"
