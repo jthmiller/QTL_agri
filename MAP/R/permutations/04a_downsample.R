@@ -40,7 +40,6 @@ cross
 fl <- file.path(mpath,paste0(pop,'_downsampled'))
 write.cross(cross,filestem=fl,format="csv")
 ################################################################################
-print('beyond imp')
 
 cross$pheno <- as.data.frame(cross$pheno)
 
