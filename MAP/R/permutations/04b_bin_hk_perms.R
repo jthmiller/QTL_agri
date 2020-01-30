@@ -20,7 +20,7 @@ batch <- round(nind(cross)/2)
 
 print(commandArgs(TRUE))
 print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
-
+set.seed(arraynum)
 ################################################################################
 
 print(paste(cores,'cores'))

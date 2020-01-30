@@ -1,10 +1,8 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
-
 library('qtl')
 ##library('parallel')
 library('snow')
-
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
@@ -20,6 +18,7 @@ batch <- round(nind(cross)/2)
 
 print(commandArgs(TRUE))
 print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
+set.seed(arraynum)
 
 ################################################################################
 
