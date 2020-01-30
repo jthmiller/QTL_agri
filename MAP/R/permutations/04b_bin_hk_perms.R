@@ -11,7 +11,7 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
-load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 arraynum <- as.numeric(commandArgs(TRUE)[5])

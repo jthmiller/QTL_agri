@@ -15,11 +15,15 @@ perms.2 <- get(paste0('bin.em.perms.2.',1))
 for (i in 2:94){
  arraynum <- i
  load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
- perms.2 <- c(perms.2,get(paste0('bin.em.perms.2.',i)))
- #perms_1 <- c(perms,get(paste0('bin.em.perms.2.',i)))
-}
 
-pens <- calc.penalties(perms.2, alpha=0.1)
+ nm <- paste0('bin.em.perms.2.',i)
+ perms.2 <- c(perms.2,get(nm))
+ rm(nm)
+
+ #nm <- paste0('bin.em.perms.1.',i)
+ #perms.1 <- c(perms.1,get(nm))
+ #rm(nm)
+}
 
 save.image(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
 

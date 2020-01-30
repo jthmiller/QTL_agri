@@ -43,7 +43,7 @@ qtl
 cross <- subset(cross,chr=c(1:4,6:24))
 
 full.bin.em.step <- stepwiseqtl(cross, model='binary', method = "hk", pheno.col = 4,
- penalties=pens, incl.markers=F, qtl=qtl, additive.only = F,  scan.pairs = T, max.qtl=8)
+ penalties=pens, incl.markers=T, qtl=qtl, additive.only = T,  scan.pairs = F, max.qtl=8)
 
 summary(full.bin.em.step)
 ################################################################################
