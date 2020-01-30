@@ -91,19 +91,19 @@ sbatch -J "ELRM_S2BH" --mem=6G -p high -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh '
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 var1=$(sbatch \
- --mem=5G -p low --array=101-200 -t 1:00:00 \
+ --mem=5G -p low --array=1-200 -t 1:00:00 \
  -J "NBH_PBH" \
  $bashsc/04b_bin_hk_perms.sh "--vanilla" 'NBH' '1' '1' \
  | cut -f4 -d' ')
 
 var2=$(sbatch \
- --mem=5G -p low --array=1-100 -t 1:00:00 \
+ --mem=5G -p low --array=1-200 -t 1:00:00 \
  -J "ELR_PBH" \
  $bashsc/04b_bin_hk_perms.sh "--vanilla" 'ELR' '1' '1' \
  | cut -f4 -d' ')
 
 var3=$(sbatch \
-  --mem=5G -p low --array=101-200 -t 1:00:00 \
+  --mem=5G -p low --array=1-200 -t 1:00:00 \
   -J "ELRM_PBH" \
   $bashsc/04b_bin_hk_perms.sh "--vanilla" 'ELR.missing' '1' '1' \
  | cut -f4 -d' ')

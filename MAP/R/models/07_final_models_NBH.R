@@ -22,6 +22,59 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 #sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
 #cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
 
+################################################################################
+no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
+
+add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
+lod <- summary(add.perms)[2]
+add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
+qtl <- summary(add,lod)
+
+add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+
+
+
+add_Q5 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1+Q2+Q3+Q4)
+
+add_Q3Q1_int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q1*Q3)
+
+add_Q3Q1_int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q2*Q3)
+
+plot_test('int_Q3.png',width=1000)
+ plot(add_Q3, add_Q3Q1_int, add_Q3Q1_int)
+dev.off()
+
+plot_test('add_Q3.png',width=1000)
+ plot(no_qtl, add_Q3)
+dev.off()
+################################################################################
+
+################################################################################
+no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
+
+AHR.qtl <- makeqtl(cross, chr=1, pos=0, what="prob")
+
+add_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1+Q2)
+
+int_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2)
+
+plot_test('only_AHR_qtl.png',width=1000)
+ plot(no_qtl, add_Q2_AHR, int_Q2_AHR)
+dev.off()
+################################################################################
+
+
 add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
 lod <- summary(add.perms)[2]
 add <- scanone(cross, pheno.col=4, model='binary', method = "hk")

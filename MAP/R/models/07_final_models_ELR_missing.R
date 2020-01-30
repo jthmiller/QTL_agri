@@ -22,24 +22,59 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 #sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
 #cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
 
+################################################################################
+no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
 
-mar <- "AHR2a_del"
-g <- lapply(mar,function(X){ pull.geno(cross)[,X] } )
-names(g) <- mar
-g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
-g <- data.frame(do.call(cbind,g))
+add_Q3 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q3)
 
-add.qtl1 <- makeqtl(cross, chr=1, pos=0, what="prob")
+add_Q3Q1_int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q1*Q3)
+
+add_Q3Q1_int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q2*Q3)
+
+plot_test('int_Q3.png',width=1000)
+ plot(add_Q3, add_Q3Q1_int, add_Q3Q1_int)
+dev.off()
+
+plot_test('add_Q3.png',width=1000)
+ plot(no_qtl, add_Q3)
+dev.off()
+################################################################################
+
+################################################################################
+no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
+
+AHR.qtl <- makeqtl(cross, chr=1, pos=0, what="prob")
+
+add_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1+Q2)
+
+int_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="binary",
+            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2)
+
+plot_test('only_AHR_qtl.png',width=1000)
+ plot(no_qtl, add_Q2_AHR, int_Q2_AHR)
+dev.off()
+################################################################################
 
 
-try <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+int_AHR <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q2)
 
-
-
+plot_test('only_AHR_qtl.png',width=1000)
+ plot(no_qtl, add_AHR, int_AHR)
+dev.off()
 
 ###########################################################################
+### TEST WHETHER ADDED AHR GENOTYPE AS QTL CHANGES GENOME WIDE LOD
 add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
 lod <- summary(add.perms)[2]
 add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
@@ -58,16 +93,17 @@ qtls2_AHR <- addtoqtl(cross, qtls2, chr=1, pos=0)
 
 int.em <- addint(cross, qtl=qtls2_AHR, formula=y~Q1*Q2+Q3, method='hk')
 
-AHR_int <- addqtl(cross, pheno.col=4, qtl = qtls2_AHR, method="hk", model="binary",
-            incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
-            formula = y~Q1*Q2+Q3*Q4)
-
 AHR_noint <- addqtl(cross, pheno.col=4, qtl = qtls2_AHR, method="hk", model="binary",
             incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q2+Q3)
 
-plot_test('elr_missing_AHR.int_no.int.png')
-plot(AHR_int,AHR_noint, ylab="LOD score")
+AHR_int <- addqtl(cross, pheno.col=4, qtl = qtls2_AHR, method="hk", model="binary",
+            incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q3*Q4)
+
+
+plot_test('elr_missing_AHR.int_no.int.png', width=2000)
+plot(add_AHR, int_AHR, AHR_noint, AHR_int, ylab="LOD score")
 dev.off()
 ###########################################################################
 
