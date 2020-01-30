@@ -62,10 +62,11 @@ save.image(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 ################################################################################
 
 ################################################################################
+batch <- round(nind(cross)/2)
 
 bin.hk.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
- incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
- assumeCondIndep=T, n.cluster=cores, addcovar=g)
+ incl.markers=T, clean.output=T, clean.nmar=25, clean.distance=25, maxit=1000,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g, batchsize=batch)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
