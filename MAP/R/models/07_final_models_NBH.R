@@ -17,6 +17,19 @@ perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
 perms_1 <- c(perms,get(paste0('bin.em.perms.2.',i)))
 }
 
+pens <- calc.penalties(perms, alpha=0.05)
+
+save.image(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
+
+
+
+
+
+
+
+
+
+
 ################################################################################
 load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 ################################################################################

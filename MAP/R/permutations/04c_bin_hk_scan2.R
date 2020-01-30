@@ -24,20 +24,49 @@ print(paste(cores,'cores'))
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+attr(cross$geno[["X"]], 'class') <- 'X'
 
 ################################################################################
-cov <- ifelse(pop == 'ELR',18,2)
-so <- summary(scanone(cross,pheno.col=4, model="binary", method="hk", intcovar=sex.phen))[cov,]
-mar <- find.marker(cross, so$chr, so$lod)
-g <- pull.geno(fill.geno(cross))[,mar]
-g <- cbind(as.numeric(g==1), as.numeric(g==2))
-summary(scanone(cross,pheno.col=4, model="binary", method="hk",addcovar=g))
-################################################################################
 
-bin.hk.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
- incl.markers=F,clean.output=T, clean.nmar=200, clean.distance=200,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
+(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
+print('markers per CM')
+
+length(colnames(pull.genoprob(cross)))/3
+print('markers')
+
+sone <- scanone(cross,pheno.col=4, model="binary", method="hk")
+
+if(pop == 'ELR'){
+ sone.perms <- scanone(subset(cross, chr=c(1:4,'X',6:17,19:24)), pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster = cores, perm.Xsp=T)
+} else {
+ sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster = cores, perm.Xsp=T)
+}
+
+summary(sone.perms)
+
+cov <- rownames(summary(sone, perms=sone.perms, alpha=0.1))
+so <- summary(sone)[cov,]
+top_2 <- order(so$lod,decreasing =T)[1]
+mar <- find.pseudomarker(cross, so$chr[top_2], so$pos[top_2])
+
+g <- lapply(mar,function(X){ pull.argmaxgeno(cross)[,X] } )
+names(g) <- mar
+g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
+g <- data.frame(do.call(cbind,g))
+
+sone <- scanone(cross,pheno.col=4, model="binary", method="hk", addcovar=g)
+summary(sone)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 ################################################################################
+
+################################################################################
+
+bin.hk.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
+ incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g)
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
+##

@@ -1,10 +1,5 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
-perm_count <- as.numeric(commandArgs(TRUE)[3])
-cores <- as.numeric(commandArgs(TRUE)[4])
-
-print(commandArgs(TRUE))
-print(paste(pop,perm_count))
 
 library('qtl')
 ##library('parallel')
@@ -16,28 +11,36 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
+load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 
-print(paste(cores,'cores'))
-erp <- 0.0025
+perm_count <- as.numeric(commandArgs(TRUE)[3])
+arraynum <- as.numeric(commandArgs(TRUE)[5])
+cores <- as.numeric(commandArgs(TRUE)[4])
+batch <- round(nind(cross)/2)
+
+print(commandArgs(TRUE))
+print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
 
 ################################################################################
 
-################################################################################
-load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
-################################################################################
-################################################################################
 print(paste(cores,'cores'))
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+attr(cross$geno[["X"]], 'class') <- 'X'
+
+(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
+print('markers per CM')
+
+length(colnames(pull.genoprob(cross)))/3
+print('markers')
 
 ################################################################################
-cov <- ifelse(pop == 'ELR',18,2)
-so <- summary(scanone(cross,pheno.col=4, model="binary", method="hk", intcovar=sex.phen))[cov,]
-mar <- find.marker(cross, so$chr, so$lod)
-g <- pull.geno(fill.geno(cross))[,mar]
-g <- cbind(as.numeric(g==1), as.numeric(g==2))
-summary(scanone(cross,pheno.col=4, model="binary", method="hk",addcovar=g))
+if(pop == 'ELR'){
+ cross <- subset(cross, chr=c(1:4,6:17,19:24))
+} else {
+ cross <- subset(cross, chr=c(1,3:4,6:24))
+}
 ################################################################################
 
 bin.hk.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
