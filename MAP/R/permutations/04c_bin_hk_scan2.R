@@ -36,9 +36,9 @@ print('markers')
 sone <- scanone(cross,pheno.col=4, model="binary", method="hk")
 
 if(pop == 'ELR'){
- sone.perms <- scanone(subset(cross, chr=c(1:4,'X',6:17,19:24)), pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster = cores, perm.Xsp=T)
+ sone.perms <- scanone(subset(cross, chr=c(1:4,'X',6:17,19:24)), pheno.col=4, model="binary", method="hk", n.perm=10, n.cluster = cores, perm.Xsp=T)
 } else {
- sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster = cores, perm.Xsp=T)
+ sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="hk", n.perm=10, n.cluster = cores, perm.Xsp=T)
 }
 
 summary(sone.perms)
@@ -64,7 +64,7 @@ save.image(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 batch <- round(nind(cross)/2)
 
 bin.hk.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
- incl.markers=T, clean.output=T, clean.nmar=25, clean.distance=25, maxit=1000,
+ incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=1000,
  assumeCondIndep=T, n.cluster=cores, addcovar=g, batchsize=batch)
 
 ################################################################################

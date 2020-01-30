@@ -40,8 +40,6 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 qtl <- makeqtl(cross, chr=so[top_2,'chr'], pos=so[top_2,'pos'], what="prob")
 qtl
 
-cross <- subset(cross,chr=c(1:4,6:24))
-
 full.bin.em.step <- stepwiseqtl(cross, model='binary', method = "hk", pheno.col = 4,
  penalties=pens, incl.markers=T, qtl=qtl, additive.only = T,  scan.pairs = F, max.qtl=8)
 
