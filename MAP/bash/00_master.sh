@@ -46,6 +46,8 @@ sbatch -J "NBH_S2BE" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'NBH' 22
 sbatch -J "ELR_S2BE"  -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR' 22
 sbatch -J "ELRM_S2BE" -p high -t 12:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missing' 22
 ################################################################################
+
+################################################################################
 ##SCANTWO BIN EM PERMUTATIONS
 ##--depend=afterok:"${var1}_80"
 ## 04b_bin_hk_perms.sh --vanilla pop perm_count cores
@@ -70,15 +72,14 @@ var3=$(sbatch \
  | cut -f4 -d' ')
 ################################################################################
 
-
-
-
 ################################################################################
 ##SCANTWO BIN HK
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_S2BH" --mem=6G -p high -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh 'NBH' 2
 sbatch -J "ELR_S2BH" --mem=6G -p high -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh 'ELR' 2
 sbatch -J "ELRM_S2BH" --mem=6G -p high -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh 'ELR.missing' 2
+################################################################################
+
 ################################################################################
 ##SCANTWO BIN HK PERMUTATIONS
 ##--depend=afterok:"${var1}_80"
