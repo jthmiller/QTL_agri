@@ -1,6 +1,5 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
-cores <- as.numeric(commandArgs(TRUE)[3])
 
 print(commandArgs(TRUE))
 print(paste(pop))
@@ -17,10 +16,10 @@ fl <- file.path(mpath,fl)
 ################################################################################
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
-
+cores <- as.numeric(commandArgs(TRUE)[3])
+print(paste(cores,'cores'))
 ################################################################################
 
-print(paste(cores,'cores'))
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
