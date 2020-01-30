@@ -18,8 +18,6 @@ fl <- file.path(mpath,fl)
 load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 
-cores <- cores - 1
-
 ################################################################################
 
 print(paste(cores,'cores'))
@@ -29,7 +27,12 @@ names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 attr(cross$geno[["X"]], 'class') <- 'X'
 
 ################################################################################
-cross <- argmax.geno(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
+
+(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
+print('markers per CM')
+
+length(colnames(pull.genoprob(cross)))/3
+print('markers')
 
 sone <- scanone(cross,pheno.col=4, model="binary", method="em")
 
