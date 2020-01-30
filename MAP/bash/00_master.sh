@@ -34,10 +34,10 @@ sbatch -J "ELR_wc" mapping/03_write_map_cross.sh 'ELR'
 ################################################################################
 ## Downsample loci
 bashsc="$HOME/QTL_agri/MAP/bash"
-
 sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 1
 sbatch -J "ELR_dwns" $bashsc/04a_downsample.sh 'ELR' 1
 sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 1
+################################################################################
 
 ################################################################################
 ##SCANTWO BIN EM
@@ -46,9 +46,9 @@ sbatch -J "NBH_S2BE" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'NBH' 22
 sbatch -J "ELR_S2BE"  -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR' 22
 sbatch -J "ELRM_S2BE" -p high -t 12:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missing' 22
 ################################################################################
-##SCANTWO PERMUTATIONS
+##SCANTWO BIN EM PERMUTATIONS
 ##--depend=afterok:"${var1}_80"
-## 04b_bin_em_perms.sh --vanilla pop perm_count cores
+## 04b_bin_hk_perms.sh --vanilla pop perm_count cores
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 var1=$(sbatch \
@@ -57,14 +57,6 @@ var1=$(sbatch \
  $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' \
  | cut -f4 -d' ')
 
-#var2=$(sbatch \
-# --depend=afterok:"${var1}_80" \
-# --mem=5G -p high --array=1-100%25 -t 10:00:00 \
-# -J "ELR_PBE" \
-# $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' \
-# | cut -f4 -d' ')
-#
-##ELR on low
 var2=$(sbatch \
  --mem=5G -p low --array=1-100 -t 1:00:00 \
  -J "ELR_PBE" \
@@ -72,16 +64,52 @@ var2=$(sbatch \
  | cut -f4 -d' ')
 
 var3=$(sbatch \
-  --mem=5G -p low --array=1-100 -t 1:00:00 \
+  --mem=5G -p low --array=101-200 -t 1:00:00 \
   -J "ELRM_PBE" \
   $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' \
  | cut -f4 -d' ')
 ################################################################################
-### STEPWISE QTL
+
+
+
+
+################################################################################
+##SCANTWO BIN HK
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'NBH' 22 22
-sbatch -J "ELR_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR' 22 22
-sbatch -J "ELRM_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
+sbatch -J "NBH_S2BH" -p high -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh 'NBH' 22
+sbatch -J "ELR_S2BH"  -p high -t 48:00:00 $bashsc/04c_bin_hk_scan2.sh 'ELR' 22
+sbatch -J "ELRM_S2BH" -p high -t 12:00:00 $bashsc/04c_bin_hk_scan2.sh 'ELR.missing' 22
+################################################################################
+##SCANTWO BIN HK PERMUTATIONS
+##--depend=afterok:"${var1}_80"
+## 04b_bin_hk_perms.sh --vanilla pop perm_count cores
+bashsc="$HOME/QTL_agri/MAP/bash"
+
+var1=$(sbatch \
+ --mem=5G -p low --array=101-200 -t 1:00:00 \
+ -J "NBH_PBE" \
+ $bashsc/04b_bin_hk_perms.sh "--vanilla" 'NBH' '1' '1' \
+ | cut -f4 -d' ')
+
+var2=$(sbatch \
+ --mem=5G -p low --array=1-100 -t 1:00:00 \
+ -J "ELR_PBE" \
+ $bashsc/04b_bin_hk_perms.sh "--vanilla" 'ELR' '1' '1' \
+ | cut -f4 -d' ')
+
+var3=$(sbatch \
+  --mem=5G -p low --array=101-200 -t 1:00:00 \
+  -J "ELRM_PBE" \
+  $bashsc/04b_bin_hk_perms.sh "--vanilla" 'ELR.missing' '1' '1' \
+ | cut -f4 -d' ')
+################################################################################
+
+################################################################################
+### BIN HK STEPWISE QTL
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_SWBH" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'NBH' 22 22
+sbatch -J "ELR_SWBH" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR' 22 22
+sbatch -J "ELRM_SWBH" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR.missing' 22 22
 ################################################################################
 
 
