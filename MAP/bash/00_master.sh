@@ -31,9 +31,13 @@ sbatch -J "ELR_Mis_qtl" ../models/04_QTL.sh 'ELR.missing'
 ##sbatch -J "NEW" models/04_QTL.sh 'NEW'
 ##
 
-sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 2
-sbatch -J "ELR_dwns" $bashsc/04a_downsample.sh 'ELR' 2
-sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 2
+
+## Downsample loci
+bashsc="$HOME/QTL_agri/MAP/bash"
+
+sbatch -J "NBH_dwns"  $bashsc/04a_downsample.sh 'NBH' 1
+sbatch -J "ELR_dwns" $bashsc/04a_downsample.sh 'ELR' 1
+sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 1
 
 
 ##SCANTWO
