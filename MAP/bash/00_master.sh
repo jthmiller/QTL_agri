@@ -52,19 +52,19 @@ sbatch -J "ELRM_S2BE" -p high -t 12:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missi
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 var1=$(sbatch \
- --mem=5G -p low --array=101-200 -t 1:00:00 \
+ --mem=5G -p low --array=1-200 -t 1:00:00 \
  -J "NBH_PBE" \
  $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' \
  | cut -f4 -d' ')
 
 var2=$(sbatch \
- --mem=5G -p low --array=1-100 -t 1:00:00 \
+ --mem=5G -p low --array=1-200 -t 1:00:00 \
  -J "ELR_PBE" \
  $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' \
  | cut -f4 -d' ')
 
 var3=$(sbatch \
-  --mem=5G -p low --array=101-200 -t 1:00:00 \
+  --mem=5G -p low --array=1-200 -t 1:00:00 \
   -J "ELRM_PBE" \
   $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' \
  | cut -f4 -d' ')
