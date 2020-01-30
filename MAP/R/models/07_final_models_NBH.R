@@ -11,10 +11,10 @@ load(file.path(mpath,paste0(pop,1,'_scan_perms_bin_em.rsave')))
 perms <- get(paste0('bin.em.perms.2.',1))
 
 for (i in 2:100){
-arraynum <- i
-load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
-perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
-perms_1 <- c(perms,get(paste0('bin.em.perms.2.',i)))
+ arraynum <- i
+ load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
+ perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
+ perms_1 <- c(perms,get(paste0('bin.em.perms.2.',i)))
 }
 
 pens <- calc.penalties(perms, alpha=0.05)

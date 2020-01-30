@@ -44,22 +44,21 @@ sbatch -J "ELRM_dwns" $bashsc/04a_downsample.sh 'ELR.missing' 1
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_S2BE" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'NBH' 22
 sbatch -J "ELR_S2BE"  -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR' 22
-sbatch -J "ELRM_S2BE" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missing' 22
-
+sbatch -J "ELRM_S2BE" -p high -t 12:00:00 $bashsc/04c_bin_em_scan2.sh 'ELR.missing' 22
 ################################################################################
 ##SCANTWO PERMUTATIONS
 ##--depend=afterok:"${var1}_80"
 bashsc="$HOME/QTL_agri/MAP/bash"
-var1=$(sbatch -J "NBH_PBE" --mem=6G -p high --array=1-1%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' | cut -f4 -d' ')
-var2=$(sbatch -J "ELR_PBE" --mem=6G -p high --array=1-100%20 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' | cut -f4 -d' ')
-var3=$(sbatch -J "ELRM_PBE" --mem=6G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' | cut -f4 -d' ')
-
+var1=$(sbatch -J "NBH_PBE" --mem=5G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' | cut -f4 -d' ')
+var2=$(sbatch -J "ELR_PBE" --mem=5G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' | cut -f4 -d' ')
+var3=$(sbatch -J "ELRM_PBE" --mem=5G -p low --array=1-100%25 -t 10:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' | cut -f4 -d' ')
+################################################################################
 ### STEPWISE QTL
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'NBH' 22 22
 sbatch -J "ELR_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR' 22 22
 sbatch -J "ELRM_SWBE" --depend=afterany: $bashsc/04c_bin_em_step.sh 'ELR.missing' 22 22
-
+################################################################################
 
 
 
