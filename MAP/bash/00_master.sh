@@ -72,9 +72,9 @@ var1=$(sbatch -J "NBH_PBE" --mem=3G -p high --array=1-100%25  -t 48:00:00 $bashs
 var2=$(sbatch -J "ELR_PBE" --depend=afterok:"${var1}_80" --mem=3G -p high --array=1-100%25  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' | cut -f4 -d' ')
 var3=$(sbatch -J "ELRM_PBE" --depend=afterok:"${var2}_80" --mem=3G -p high --array=1-100%25  -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' | cut -f4 -d' ')
 
-var1=$(sbatch -J "NBH_PBE" --mem=3G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' | cut -f4 -d' ')
+var1=$(sbatch -J "NBH_PBE" --mem=6G -p high --array=1-1%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' | cut -f4 -d' ')
 var2=$(sbatch -J "ELR_PBE" --mem=6G -p high --array=1-100%20 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR' '1' '1' | cut -f4 -d' ')
-var3=$(sbatch -J "ELRM_PBE" --mem=3G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' | cut -f4 -d' ')
+var3=$(sbatch -J "ELRM_PBE" --mem=6G -p high --array=1-100%25 -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'ELR.missing' '1' '1' | cut -f4 -d' ')
 
 
 ################################################################################

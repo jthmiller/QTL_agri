@@ -44,10 +44,14 @@ print('beyond imp')
 
 cross$pheno <- as.data.frame(cross$pheno)
 
-cross <- sim.geno(cross, stepwidth="fixed", step=dens, off.end=5, error.prob=erp ,map.function="kosambi", n.draws=100)
-cross <- calc.genoprob(cross, stepwidth="fixed", step=dens, error.prob=erp, off.end=5)
+cross <- sim.geno(cross, stepwidth="fixed", step=dens,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=100)
+cross <- calc.genoprob(cross, stepwidth="fixed", step=dens, error.prob=erp, off.end=1, map.function="kosambi")
+cross <- argmax.geno(cross, stepwidth="fixed", step=dens, error.prob=erp, off.end=1, map.function="kosambi")
 
 cross <- reduce2grid(cross)
+
+(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
+print('markers per CM')
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_downsampled.rsave')))
