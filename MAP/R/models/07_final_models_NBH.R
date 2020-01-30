@@ -16,13 +16,37 @@ load(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
 ## bin.em.2
 load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 ################################################################################
+#sone.o <- scanone(cross,pheno.col=4, model="binary", method="em")
+#sone.a <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1])
+#sone.i <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
+#sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
+#cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
+
+add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
+lod <- summary(add.perms)[2]
+add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
+qtl <- summary(add,lod)
+
+add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+
+int.em <- addint(cross, qtl=add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
+
+bin.add.em.qtls2 <- refineqtl(cross, pheno.col=4, model='binary',
+   qtl=add.qtl1, method='hk', incl.markers=F,
+   formula=y~Q1+Q2+Q3+Q4+Q1:Q3)
 
 
-pens <- calc.penalties(perms.2, alpha=0.1)
+
+
+
+pens <- calc.penalties(perms.2, alpha=0.05)
 
 summary(bin.em.2, perms=perms.2, alphas=0.05, pvalues=F)
 
+summary(bin.em.2, perms=perms.2, alphas=0.3, pvalues=F, what='int')
 
+summary(bin.em.2, thresholds=c(0, Inf, 4, Inf, Inf), what="int")
 
 
 summary(bin.em.2,perms=perms.2,alphas=0.1, pvalues=T)

@@ -3,19 +3,6 @@
 
 
 
-for (i in 1:100){
-
-arraynum <- i
-load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
-perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
-}
-
-## bin (1296 permutations)
-##     full  fv1  int   add  av1  one
-## 5%  14.1 10.5 9.10 11.41 7.24 5.02
-## 10% 13.6 10.4 7.89  9.51 5.63 4.75
-
-
 load(file.path(mpath,'scantwo.scans.elr.short.rsave'))
 elr_gg <- gg
 elr_gg_step2 <- gg_step2

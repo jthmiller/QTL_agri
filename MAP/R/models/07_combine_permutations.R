@@ -12,9 +12,11 @@ load(file.path(mpath,paste0(pop,1,'_scan_perms_bin_em.rsave')))
 perms.2 <- get(paste0('bin.em.perms.2.',1))
 #perms.1 <- get(paste0('bin.em.perms.1.',1))
 
-for (i in 2:94){
+for (i in 2:100){
  arraynum <- i
  load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
+
+ print(paste('done with array',i))
 
  nm <- paste0('bin.em.perms.2.',i)
  perms.2 <- c(perms.2,get(nm))
@@ -24,6 +26,8 @@ for (i in 2:94){
  #perms.1 <- c(perms.1,get(nm))
  #rm(nm)
 }
+
+summary(perms.2)
 
 save.image(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
 

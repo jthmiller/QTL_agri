@@ -7,24 +7,40 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
-load(file.path(mpath,paste0(pop,1,'_scan_perms_bin_em.rsave')))
-perms <- get(paste0('bin.em.perms.2.',1))
-
-for (i in 2:100){
- arraynum <- i
- load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
- perms <- c(perms,get(paste0('bin.em.perms.2.',i)))
- perms_1 <- c(perms,get(paste0('bin.em.perms.2.',i)))
-}
-
-pens <- calc.penalties(perms, alpha=0.05)
-
-save.image(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
-
-
 ################################################################################
-load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+## perms.1
+## perms.2
+## pens
+load(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
 ################################################################################
+## bin.em.2
+load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
+################################################################################
+#sone.o <- scanone(cross,pheno.col=4, model="binary", method="em")
+#sone.a <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1])
+#sone.i <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
+#sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
+#cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
+
+add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
+lod <- summary(add.perms)[2]
+add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
+qtl <- summary(add,lod)
+
+add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+
+int.em <- addint(cross, qtl=add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
+
+bin.add.em.qtls2 <- refineqtl(cross, pheno.col=4, model='binary',
+   qtl=add.qtl1, method='hk', incl.markers=F,
+   formula=y~Q1+Q2+Q3+Q4+Q1:Q3)
+
+
+
+
+
+
 
 
 summary(bin.em.2, thresholds=c(0, Inf, 6, Inf, Inf), what="int")

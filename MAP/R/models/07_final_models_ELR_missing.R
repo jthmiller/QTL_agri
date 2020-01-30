@@ -1,11 +1,81 @@
 #!/bin/R
-
+pop <- 'ELR.missing'
 library('qtl')
+library('snow')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-pop <- 'ELR.missing'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
+
+################################################################################
+## perms.1
+## perms.2
+## pens
+load(file.path(mpath,paste0(pop,'_all_perms_bin_em.rsave')))
+################################################################################
+## bin.em.2
+load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
+################################################################################
+#sone.o <- scanone(cross,pheno.col=4, model="binary", method="em")
+#sone.a <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1])
+#sone.i <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
+#sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
+#cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
+
+
+mar <- "AHR2a_del"
+g <- lapply(mar,function(X){ pull.geno(cross)[,X] } )
+names(g) <- mar
+g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
+g <- data.frame(do.call(cbind,g))
+
+add.qtl1 <- makeqtl(cross, chr=1, pos=0, what="prob")
+
+
+try <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+            incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2)
+
+
+
+
+###########################################################################
+add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
+lod <- summary(add.perms)[2]
+add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
+qtl <- summary(add,lod)
+
+add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
+
+int.em <- addint(cross, qtl=add.qtl1, formula=y~Q1+Q2, method='hk')
+
+qtls2 <- refineqtl(cross, pheno.col=4, model='binary',
+   qtl=add.qtl1, method='hk', incl.markers=F,
+   formula=y~Q1*Q2)
+
+qtls2_AHR <- addtoqtl(cross, qtls2, chr=1, pos=0)
+
+int.em <- addint(cross, qtl=qtls2_AHR, formula=y~Q1*Q2+Q3, method='hk')
+
+AHR_int <- addqtl(cross, pheno.col=4, qtl = qtls2_AHR, method="hk", model="binary",
+            incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q3*Q4)
+
+AHR_noint <- addqtl(cross, pheno.col=4, qtl = qtls2_AHR, method="hk", model="binary",
+            incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1*Q2+Q3)
+
+plot_test('elr_missing_AHR.int_no.int.png')
+plot(AHR_int,AHR_noint, ylab="LOD score")
+dev.off()
+###########################################################################
+
+
+
+
+
+
 
 ############################################################
 load(file.path(mpath,paste0(pop,'_perms_norm_imp.rsave')))
