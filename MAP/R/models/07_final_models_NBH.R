@@ -33,7 +33,7 @@ qtl <- summary(add,lod)
 add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
 
-int.em <- addint(cross, qtl=add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
+int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
 
 add_Q5 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
