@@ -73,17 +73,12 @@ int_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="bina
             incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q2)
 
-
-
-
-
-
 int_AHR <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q2)
 
 plot_test('only_AHR_qtl.png',width=1000)
- plot(no_qtl, add_AHR, int_AHR)
+ plot(no_qtl, int_Q2_AHR, int_AHR)
 dev.off()
 
 ###########################################################################
@@ -119,6 +114,10 @@ AHR_int <- addqtl(cross, pheno.col=4, qtl = qtls2_AHR, method="hk", model="binar
 ###########################################################################
 add_additive <- addqtl(cross, pheno.col=4, qtl = qtls2, method="hk", model="binary",
             incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
+            formula = y~Q1+Q2+Q3)
+
+add_add_int <- addqtl(cross, pheno.col=4, qtl = qtls2, method="hk", model="binary",
+            incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q2+Q3)
 
 AHR_int_Q1 <- addqtl(cross, pheno.col=4, qtl = qtls2, method="hk", model="binary",
@@ -129,8 +128,18 @@ AHR_int_Q2 <- addqtl(cross, pheno.col=4, qtl = qtls2, method="hk", model="binary
             incl.markers=TRUE, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q2+Q3*Q2)
 
+
+plot_test('elr_missing_add_int', width=2000)
+plot(add_additive, add_add_int, ylab="LOD score", incl.markers=T)
+dev.off()
+
+
+AHR_int_Q1[which(AHR_int_Q1$lod < 0),'lod'] <- NA
+AHR_int_Q2[which(AHR_int_Q2$lod < 0),'lod'] <- NA
+
+
 plot_test('elr_missing_AHR.int_no.int.png', width=2000)
-plot(add_additive, AHR_int_Q1, AHR_int_Q2, ylab="LOD score", incl.markers=F)
+plot(add_additive, AHR_int_Q1, AHR_int_Q2, ylab="LOD score", incl.markers=T)
 dev.off()
 ###########################################################################
 
