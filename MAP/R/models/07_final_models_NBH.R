@@ -26,28 +26,35 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
 
 add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
-lod <- summary(add.perms)[2]
+lod <- summary(add.perms)[1]
 add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
 qtl <- summary(add,lod)
 
 add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
 
-int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
+int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3, method='hk')
 
-add_Q5 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+add_Q4 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
-            formula = y~Q1+Q2+Q3+Q4+Q5)
+            formula = y~Q1+Q2+Q3+Q4)
 
 add_Q5_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
-            formula = y~Q1*Q3+Q2+Q4+Q5)
+            formula = y~Q1*Q3+Q2+Q4)
+
+int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
+
+################################################################################
+
 
 plot_test('nbh_add_Q5_add_Q5_wInts.png',width=1000)
  plot(no_qtl, add_Q5, add_Q5_wInts)
 dev.off()
 
-
+plot_test('nbh_add_Q5_add_Q5_wInts.png',width=1000)
+ plot(no_qtl, add_Q5, add_Q5_wInts)
+dev.off()
 
 add_Q3Q1_int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=F, verbose=FALSE, tol=1e-4, maxit=1000,
