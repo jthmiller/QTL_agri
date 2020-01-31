@@ -3,7 +3,7 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 
 library('qtl')
 ##library('parallel')
-library('snow')
+##library('snow')
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
@@ -42,14 +42,12 @@ if(pop == 'ELR'){
 ################################################################################
 
 bin.hk.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="hk",
- incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
- assumeCondIndep=T, n.cluster=cores, addcovar=g, n.perm=perm_count, perm.Xsp=F,
+ incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=1000,
+ assumeCondIndep=T, addcovar=g, n.perm=perm_count, perm.Xsp=F,
  verbose=2, batchsize=batch)
 
-bin.hk.perms.pens <- calc.penalties(bin.hk.perms.2, alpha=0.1)
-
-bin.hk.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "hk",
- n.perm = 10, n.cluster=cores, addcovar=g)
+#bin.hk.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "hk",
+# n.perm = 10, n.cluster=cores, addcovar=g)
 
 lod <- summary(bin.hk.perms.1)[1]
 
