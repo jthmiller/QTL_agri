@@ -26,24 +26,27 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
 
 add.perms <- scanone(cross, pheno.col=4, model='binary', method = "hk", n.perm = 1000, n.cluster=6)
+
 lod <- summary(add.perms)[1]
+
 add <- scanone(cross, pheno.col=4, model='binary', method = "hk")
+
 qtl <- summary(add,lod)
 
 add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=F)
 
-int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3, method='hk')
+add.qtl1 <- refineqtl(cross, qtl=add.qtl1, pheno.col=4, model='binary', method = "hk", incl.markers=T)
 
-add_Q4 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
-            incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
-            formula = y~Q1+Q2+Q3+Q4)
+int.em <- addint(cross, pheno.col=4, qtl = add.qtl1, method='hk', model='binary', formula=y~Q1+Q2+Q3)
+
+add_Q4 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary", formula = y~Q1+Q2+Q3+Q4,
+            incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000)
 
 add_Q5_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
             incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
             formula = y~Q1*Q3+Q2+Q4)
 
-int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk')
+int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3+Q4, model='binary', method='hk')
 
 ################################################################################
 

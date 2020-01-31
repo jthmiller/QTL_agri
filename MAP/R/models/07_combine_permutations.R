@@ -10,9 +10,9 @@ fl <- file.path(mpath,fl)
 
 load(file.path(mpath,paste0(pop,1,'_scan_perms_bin_em.rsave')))
 perms.2 <- get(paste0('bin.em.perms.2.',1))
-#perms.1 <- get(paste0('bin.em.perms.1.',1))
+perms.1 <- get(paste0('bin.em.perms.1.',1))
 
-for (i in 2:100){
+for (i in 8:200){
  arraynum <- i
  load(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
 
@@ -22,9 +22,9 @@ for (i in 2:100){
  perms.2 <- c(perms.2,get(nm))
  rm(nm)
 
- #nm <- paste0('bin.em.perms.1.',i)
- #perms.1 <- c(perms.1,get(nm))
- #rm(nm)
+ nm <- paste0('bin.em.perms.1.',i)
+ perms.1 <- c(perms.1,get(nm))
+ rm(nm)
 }
 
 summary(perms.2)
