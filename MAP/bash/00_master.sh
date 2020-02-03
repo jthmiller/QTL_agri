@@ -118,6 +118,7 @@ sbatch -J "ELRM_SWBH" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'ELR.missing
 ################################################################################
 
 
+sbatch -J "NBH_scans" $bashsc/05_scans_NBH.sh 12
 
 
 
