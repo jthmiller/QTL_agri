@@ -1077,7 +1077,7 @@ cnv.ahrs <- function(cross2, AHRdf, EXP) {
   mapo$pmap <- lapply(mapo$pmap, function(X) {
     return(as.numeric(gsub("[0-9]+:", "", names(X))))
   })
-  for (i in 1:24) {
+  for (i in chrnames(mapo)) {
     names(mapo$pmap[[i]]) <- names(mapo$gmap[[i]])
   }
   AHR.list <- split(AHRdf, AHRdf$chrom)
@@ -1090,7 +1090,7 @@ cnv.ahrs <- function(cross2, AHRdf, EXP) {
   AHR.list <- mapply(cbind, AHR.list, pos1 = pos1, SIMPLIFY = FALSE)
   AHR.list <- mapply(cbind, AHR.list, pos = pos2, SIMPLIFY = FALSE)
   ah.gens <- ldply(AHR.list, data.frame, .id = NULL)
-  ah.gens$chrom <- factor(ah.gens$chrom, levels = as.character(1:24))
+  ah.gens$chrom <- factor(ah.gens$chrom, levels = chrnames(mapo))
   colnames(ah.gens)[1] <- "chr"
   # ah.gens$lod <- rep_len(c(-1:-10), length(ah.gens[,1]))
   ah.gens$lod <- 0

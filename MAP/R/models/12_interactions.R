@@ -37,7 +37,7 @@ c20:c23  31.8 12.00    12.67  8.6475    9.48    3.20  -0.831
 
 summary(bin.em.2, perms=perms, what="int", alpha=0.05)
 
-summary(bin.em.2, thresholds=c(0, Inf, 8, Inf, Inf), what="int")
+summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")
 
 from norm imp 0.05%
 c(10.00, 7.65, 6.77, 6.75, 3.09)
@@ -48,7 +48,7 @@ summary(bin.em.2, thresholds=c(10.00, 7.65, 7, 6.75, 4), what="int")
 summary(bin.em.2, thresholds=c(10.00, 7.65, 6.77, 6.75, 3.09), what="full")
 
 
-summary(bin.em.2, thresholds=c(10.00, 8, 7, 6.75, 4), what="full")
+summary(bin.em.2, thresholds=c(10.00, 8, 7, 6.75, 4), what="best")
 
 
 ################################################################################

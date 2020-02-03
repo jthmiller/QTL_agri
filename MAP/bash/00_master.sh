@@ -130,6 +130,8 @@ sbatch -J "NBH_scans" $bashsc/05_scans_NBH.sh 12
 
 
 
+
+
 sbatch -J "NBH_S2NI"  -p high -t 48:00:00 $bashsc/04c_norm_imp_scan2.sh 'NBH' 22
 sbatch -J "ELR_S2NI"  -p high -t 48:00:00 $bashsc/04c_norm_imp_scan2.sh 'ELR' 22
 sbatch -J "ELRM_S2NI" -p high -t 48:00:00 $bashsc/04c_norm_imp_scan2.sh 'ELR.missing' 22

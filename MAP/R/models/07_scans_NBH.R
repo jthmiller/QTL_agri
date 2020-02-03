@@ -124,11 +124,12 @@ int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
 
 fit_3_imp <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
                     formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T, covar=data.frame(cross$pheno$sex),
-                    run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+                    run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
 
-scan_3_imp <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-                      covar=data.frame(cross$pheno$sex), formula=y~Q1+Q2+Q3,
-                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
+scan_3_imp <- scanqtl(cross, pheno.col=4,method="imp", model="binary",
+                      chr=as.numeric(qtl[['chr']]), pos=as.numeric(qtl[['pos']]),
+                      covar=data.frame(cross$pheno$sex), formula=y~Q1*Q3+Q2,
+                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=10000,
                       forceXcovar=FALSE)
 ################################################################################
 
@@ -159,3 +160,47 @@ scan_3_imp <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3
                       covar=data.frame(cross$pheno$sex), formula=y~Q1+Q2+Q3,
                       incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
                       forceXcovar=FALSE)
+
+scan_3_imp_wo_sex <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
+                      formula=y~Q1+Q2+Q3,
+                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
+                      forceXcovar=FALSE)
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=4, mname1="2@89.0", mname2="18@47.1", var.flag="pooled")
+dev.off()
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=4, mname2="2@89.0", mname1="18@47.1", var.flag="group")
+dev.off()
+
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=1, mname2="2@89.0", mname1="18@47.1", var.flag="pooled")
+dev.off()
+
+geno.crosstab(cross, mname2=find.marker(cross,2,89.0), mname1=find.marker(cross,18,47.1), eliminate.zeros=F)
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=1, mname2="2@89.0", mname1="18@47.1", var.flag="group", ylim=c(0,5))
+dev.off()
+
+find.psuedo
+2 102.67
+
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=1, mname2="c2.loc102", mname1="18@47.1", var.flag="group")
+dev.off()
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=4, mname2="c2.loc102", var.flag="group")
+dev.off()
+
+plot_test('qtl2_18')
+effectplot(cross, pheno.col=1, mname2="2@89.0", var.flag="group")
+dev.off()
+
+geno.crosstab(cross, mname2="2@89.0", mname1="18@47.1", eliminate.zeros=F)
+
+save.image('~/saveR.rsave')

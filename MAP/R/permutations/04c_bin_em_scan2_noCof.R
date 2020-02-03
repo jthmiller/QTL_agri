@@ -22,51 +22,19 @@ load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 
 print(paste(cores,'cores'))
 erp <- 0.0025
-sex.phen <- pull.pheno(cross, "sex")
-names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
-attr(cross$geno[["X"]], 'class') <- 'X'
 
-################################################################################
+cross <- subset(cross, chr = c(1:4,6:24))
 
-(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
-print('markers per CM')
-
-length(colnames(pull.genoprob(cross)))/3
-print('markers')
-
-sone <- scanone(cross,pheno.col=4, model="binary", method="em")
-
-if(pop == 'ELR'){
- sone.perms <- scanone(subset(cross, chr=c(1:4,'X',6:17,19:24)), pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster = cores, perm.Xsp=T)
-} else {
- sone.perms <- scanone(subset(cross, chr=c(1,3,4,'X',6:24)), pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster = cores, perm.Xsp=T)
-}
-
-summary(sone.perms)
-
-cov <- rownames(summary(sone, perms=sone.perms, alpha=0.1))
-so <- summary(sone)[cov,]
-top_2 <- order(so$lod,decreasing =T)[1]
-mar <- find.pseudomarker(cross, so$chr[top_2], so$pos[top_2])
-
-g <- lapply(mar,function(X){ pull.argmaxgeno(cross)[,X] } )
-names(g) <- mar
-g <- lapply(g, function(X,Y){ cbind(as.numeric(X==1), as.numeric(X==2))} )
-g <- data.frame(do.call(cbind,g))
-
-sone <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g)
-summary(sone)
-
-################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 ################################################################################
 
 ################################################################################
 
 bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
- incl.markers=F, clean.output=T, clean.nmar=25, clean.distance=25, maxit=2000,
- assumeCondIndep=T, n.cluster=cores, addcovar=g)
+ incl.markers=T, clean.output=T, clean.nmar=100, clean.distance=100, maxit=2000,
+ assumeCondIndep=T, n.cluster=cores)
+
+bin.em.nofac <- bin.em.2
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 ################################################################################

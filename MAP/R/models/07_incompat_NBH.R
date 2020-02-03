@@ -24,6 +24,31 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 #sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
 #cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
 
+AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
+colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
+AHR.bed$chrom <- as.numeric(gsub("chr", "", AHR.bed$chrom))
+AHR.bed$str <- as.numeric(AHR.bed$str)
+AHR.bed$stp <- as.numeric(AHR.bed$stp)
+AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
+AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
+AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
+
+nbh_gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
+
+
+plot_test('qtl1_18')
+effectplot(cross, pheno.col=4, mname1="1@10", mname2="18@47.1", var.flag="pooled")
+dev.off()
+
+fill.geno(cross, method="argmax", error.prob=0.0025)
+
+
+plot_test('argmax', width=1500, height=1000)
+plotGeno(fill.geno(cross, method="maxmarginal", error.prob=0.0025),chr=18)
+dev.off()
+
+"no_dbl_XO", "maxmarginal"
+
 rf <- subset(cross, chr = c(1:4,6:24))
 rf <- est.rf(rf, maxit=100000, tol=1e-6)
 
@@ -54,6 +79,15 @@ for (i in unique(bin.em.2$map$chr)){
 
 mat.names <- matrix(mars, nrow = 1991, ncol = 1991)
 mat.names <- gsub(":.*","",mat.names)
+
+
+cor(x = lod_phen, y = lod.df, na.rm = T)
+
+plot_test('rf', width=1250,height=1250)
+ plot(lod_phen[!is.na(lod.df)],lod.df[!is.na(lod.df)], col = 'grey', pch=19, xlim=c(0,26))
+dev.off()
+
+
 
 chr1 <- gsub(":.*","",colnames(rf.df)) %in% c(1)
 chr18 <- gsub(":.*","",colnames(rf.df)) %in% c(18)
@@ -130,37 +164,58 @@ for (i in chrnames(rf)){
 
 h <- quantile(pull.rf(rf), 0.999,na.rm=T)
 l <- quantile(pull.rf(rf), 0.001,na.rm=T)
+h9 <- quantile(pull.rf(rf), 0.95,na.rm=T)
+l9 <- quantile(pull.rf(rf), 0.05,na.rm=T)
 
-plot_test('nbh_1_2_8_18', width=1250,height=750)
-par(mfrow = c(5,1))
-
-plot(pull.rf(rf), "1:191503", ylim=c(0.3,0.75))
-abline(h=h, col='red')
-abline(h=0.5, col='black')
-abline(h=l, col='red')
+plot_test('nbh_1_2_8_18', width=1250,height=1000)
+par(mfrow = c(6,1))
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[17], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
+plot(pull.rf(rf), rownames(summary(no_qtl_mr))[12], ylim=c(0.3,0.75))
+abline(h=h, col='red')
+abline(h=h9, col='grey')
+abline(h=0.5, col='black')
+abline(h=l9, col='grey')
+abline(h=l, col='red')
+
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[2], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[7], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[23], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
 
-dev.off()
 
+plot(pull.rf(rf), find.marker(rf,1,0), ylim=c(0.3,0.75))
+abline(h=h, col='red')
+abline(h=h9, col='grey')
+abline(h=0.5, col='black')
+abline(h=l9, col='grey')
+abline(h=l, col='red')
+dev.off()
 ########################################################################################
 ########################################################################################
 

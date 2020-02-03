@@ -1,5 +1,5 @@
 #!/bin/R
-pop <- 'NBH'
+pop <- 'ELR'
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
@@ -28,7 +28,7 @@ rf <- subset(cross, chr = c(1:4,6:24))
 rf <- est.rf(rf, maxit=100000, tol=1e-6)
 
 s1 <- scanone(rf,pheno.col=4, model="binary", method="em")
-s1l <- matrix(s1$lod, nrow = 1991, ncol = 1991)
+s1l <- matrix(s1$lod, nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
 
 
 mars <- find.marker(rf, bin.em.2$map$chr, bin.em.2$map$pos)
@@ -52,14 +52,17 @@ for (i in unique(bin.em.2$map$chr)){
  lod.df[ind,ind] <- NA
 }
 
-mat.names <- matrix(mars, nrow = 1991, ncol = 1991)
+mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
 mat.names <- gsub(":.*","",mat.names)
 
+#########################
 chr1 <- gsub(":.*","",colnames(rf.df)) %in% c(1)
 chr18 <- gsub(":.*","",colnames(rf.df)) %in% c(18)
 chr2 <- gsub(":.*","",colnames(rf.df)) %in% c(2)
+#########################
 
-col <- matrix('grey', nrow = 1991, ncol = 1991)
+
+col <- matrix('grey', nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
 
 col[,chr1] <- 'black'
 col[,chr1] <- 'black'
@@ -121,7 +124,7 @@ dev.off()
 ############################################
 ############################################
 no_qtl_mr <- scanone(cross, pheno.col=4, method="mr", model="binary")
-qtl <- summary(no_qtl_mr, 5)
+qtl <- summary(no_qtl_mr, 4)
 
 for (i in chrnames(rf)){
  ind <- which(markernames(rf) %in% markernames(rf,i))
@@ -131,38 +134,63 @@ for (i in chrnames(rf)){
 h <- quantile(pull.rf(rf), 0.999,na.rm=T)
 l <- quantile(pull.rf(rf), 0.001,na.rm=T)
 
-plot_test('nbh_1_2_8_18', width=1250,height=750)
-par(mfrow = c(5,1))
+h9 <- quantile(pull.rf(rf), 0.95,na.rm=T)
+l9 <- quantile(pull.rf(rf), 0.05,na.rm=T)
 
-plot(pull.rf(rf), "1:191503", ylim=c(0.3,0.75))
-abline(h=h, col='red')
-abline(h=0.5, col='black')
-abline(h=l, col='red')
+plot_test('elr_1_2_8_13_18', width=1250,height=1000)
+par(mfrow = c(6,1))
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[17], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
+plot(pull.rf(rf), rownames(summary(no_qtl_mr))[12], ylim=c(0.3,0.75))
+abline(h=h, col='red')
+abline(h=h9, col='grey')
+abline(h=0.5, col='black')
+abline(h=l9, col='grey')
+abline(h=l, col='red')
+
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[2], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[7], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[23], ylim=c(0.3,0.75))
 abline(h=h, col='red')
+abline(h=h9, col='grey')
 abline(h=0.5, col='black')
+abline(h=l9, col='grey')
 abline(h=l, col='red')
+
+
+plot(pull.rf(rf), find.marker(rf,1,0), ylim=c(0.3,0.75))
+abline(h=h, col='red')
+abline(h=h9, col='grey')
+abline(h=0.5, col='black')
+abline(h=l9, col='grey')
+abline(h=l, col='red')
+
 
 dev.off()
 
-########################################################################################
-########################################################################################
+################################################################################
+################################################################################
 
 h <- quantile(pull.rf(rf, what='lod'), 0.99,na.rm=T)
 l <- quantile(pull.rf(rf, what='lod'), 0.01,na.rm=T)
@@ -218,14 +246,14 @@ dev.off()
 ## correlate recombination frequency and lod w phenotype
 
 
-mat.names <- matrix(mars, nrow = 1991, ncol = 1991)
+mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
 mat.names <- gsub(":.*","",mat.names)
 
 
 ind1 <- gsub(":.*","",colnames(rf.df)) %in% c(2)
 ind2 <- gsub(":.*","",colnames(rf.df)) %in% c(18)
 
-col <- matrix('black', nrow = 1991, ncol = 1991)
+col <- matrix('black', nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
 col[,ind1] <- 'grey'
 col[,ind2] <- 'grey'
 col[ind1,ind2] <- 'red'
