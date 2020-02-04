@@ -30,8 +30,10 @@ rf <- est.rf(rf, maxit=100000, tol=1e-6)
 s1 <- scanone(rf,pheno.col=4, model="binary", method="em")
 s1l <- matrix(s1$lod, nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
 
-
 mars <- find.marker(rf, bin.em.2$map$chr, bin.em.2$map$pos)
+mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
+mat.names <- gsub(":.*","",mat.names)
+
 rf.df <- pull.rf(rf)
 rf.df <- rf.df[mars,mars]
 
@@ -52,10 +54,8 @@ for (i in unique(bin.em.2$map$chr)){
  lod.df[ind,ind] <- NA
 }
 
-mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
-mat.names <- gsub(":.*","",mat.names)
 
-#########################
+###########################################################################
 chr1 <- gsub(":.*","",colnames(rf.df)) %in% c(1)
 chr18 <- gsub(":.*","",colnames(rf.df)) %in% c(18)
 chr2 <- gsub(":.*","",colnames(rf.df)) %in% c(2)
@@ -79,49 +79,14 @@ plot_test('rf', width=1250,height=1250)
  text(lod_phen[col == 'black'] ,rf.df[col == 'black'], mat.names[col == 'black'], col = col[col == 'black'])
  text(lod_phen[col == 'red'],rf.df[col == 'red'], mat.names[col == 'red'], col = col[col == 'red'])
 dev.off()
-
-
-1, 18
-2, 8
-
-
-y <- sort(lod.df)[!is.na(lod.df)]
-x <- 1:length(lod.df[!is.na(lod.df)])
-dat <- data.frame(cbind(x,y))
-
-model <- lm(formula = y ~ x,data=dat)
-
-newdat <- data.frame(y)
-newdat <- predict(model, data.frame(x))
-
-
-plot_test('rf', width=250,height=250)
-plot(newdat,y, xlim=c(0,3),ylim=c(0,3))
-abline(lm(newdat ~ y))
-dev.off()
+####################################################################################################
 
 
 
-
-
-
-
-
-
-
-
-colnames(lod_phen) <- markernames(rf)
-rownames(lod_phen) <- markernames(rf)
-
-
-
-
-plot_test('rf', width=1250, height=1250)
-plotRF(rf,zmax=8, col.scheme="redblue")
-dev.off()
 
 
 ############################################
+#plot
 ############################################
 no_qtl_mr <- scanone(cross, pheno.col=4, method="mr", model="binary")
 qtl <- summary(no_qtl_mr, 4)
@@ -131,11 +96,14 @@ for (i in chrnames(rf)){
  rf$rf[ind,ind] <- NA
 }
 
-h <- quantile(pull.rf(rf), 0.999,na.rm=T)
-l <- quantile(pull.rf(rf), 0.001,na.rm=T)
+quantile(pull.rf(rf), 0.999,na.rm=T)
 
-h9 <- quantile(pull.rf(rf), 0.95,na.rm=T)
-l9 <- quantile(pull.rf(rf), 0.05,na.rm=T)
+rf.df[lower.tri(rf.df, diag = T)] <- NA
+
+h <- quantile(rf.df, 0.999,na.rm=T)
+l <- quantile(rf.df, 0.001,na.rm=T)
+h9 <- quantile(rf.df, 0.95,na.rm=T)
+l9 <- quantile(rf.df, 0.05,na.rm=T)
 
 plot_test('elr_1_2_8_13_18', width=1250,height=1000)
 par(mfrow = c(6,1))
@@ -154,14 +122,12 @@ abline(h=0.5, col='black')
 abline(h=l9, col='grey')
 abline(h=l, col='red')
 
-
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[2], ylim=c(0.3,0.75))
 abline(h=h, col='red')
 abline(h=h9, col='grey')
 abline(h=0.5, col='black')
 abline(h=l9, col='grey')
 abline(h=l, col='red')
-
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[7], ylim=c(0.3,0.75))
 abline(h=h, col='red')
@@ -170,7 +136,6 @@ abline(h=0.5, col='black')
 abline(h=l9, col='grey')
 abline(h=l, col='red')
 
-
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[23], ylim=c(0.3,0.75))
 abline(h=h, col='red')
 abline(h=h9, col='grey')
@@ -178,14 +143,12 @@ abline(h=0.5, col='black')
 abline(h=l9, col='grey')
 abline(h=l, col='red')
 
-
 plot(pull.rf(rf), find.marker(rf,1,0), ylim=c(0.3,0.75))
 abline(h=h, col='red')
 abline(h=h9, col='grey')
 abline(h=0.5, col='black')
 abline(h=l9, col='grey')
 abline(h=l, col='red')
-
 
 dev.off()
 
@@ -271,6 +234,22 @@ dev.off()
 
 
 
+
+
+y <- sort(lod.df)[!is.na(lod.df)]
+x <- 1:length(lod.df[!is.na(lod.df)])
+dat <- data.frame(cbind(x,y))
+
+model <- lm(formula = y ~ x,data=dat)
+
+newdat <- data.frame(y)
+newdat <- predict(model, data.frame(x))
+
+
+plot_test('rf', width=250,height=250)
+plot(newdat,y, xlim=c(0,3),ylim=c(0,3))
+abline(lm(newdat ~ y))
+dev.off()
 
 
 

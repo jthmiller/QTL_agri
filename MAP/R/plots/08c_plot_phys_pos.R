@@ -14,13 +14,14 @@ library('RColorBrewer')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
+load(file.path(mpath,'08_phys_plots_pos.rsave'))
 #############################################
 ### Color for stat comparisons
 statcol <- popcol
 names(statcol) <- c('BI.NBH','BP.F','NYC.SH','ER.KC')
 ################################################
 
-for (ch in c(1,2,8,13,18,24)){
+for (ch in c(1:24)){
  pdf(paste0("/home/jmiller1/public_html/pfst_location_",ch,".pdf"), width = 14)
  plot_stat(pfst,ch=ch,poplot=statcol,colnm='mid')
 dev.off()

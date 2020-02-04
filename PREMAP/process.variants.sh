@@ -22,6 +22,10 @@ do
 	$plink --bfile $indpops/$X --out $indpops/$X $flagset --pheno $pheno --all-pheno --keep-cluster-names $X $geno $maf --recode --biallelic-only strict --snps-only just-acgt --nonfounders
 done
 
+
+
+
+
 ### REFILTER ELR. It contains the parent 'BLI' code (in addition to ELR fam)
 $plink --vcf $vcfdir/SOMM.vcf.gz --out $indpops/$X  $init_flagset --make-bed --pheno $pheno --all-pheno --update-ids $infiles/SOMM.txt
 $plink --bfile $indpops/$X --out $indpops/$X $flagset --make-bed --pheno $pheno --all-pheno --keep-cluster-names ELR BLI --make-founders

@@ -65,16 +65,16 @@ reorder_BRP <- replace.map(reorder_BRP, pull.map(NBH_BRP))
 
 ################################################################################
 ################################################################################
-cross.new <- sim.geno(reorder_NEW, n.draws = 500, step = 5, off.end = 10, error.prob = 0.1,
+cross.new <- sim.geno(reorder_NEW, n.draws = 100, step = 1, off.end = 1, error.prob = 0.1,
   map.function = "kosambi", stepwidth = "fixed")
 
-cross.brp <- sim.geno(reorder_BRP, n.draws = 500, step = 5, off.end = 10, error.prob = 0.1,
+cross.brp <- sim.geno(reorder_BRP, n.draws = 100, step = 1, off.end = 1, error.prob = 0.1,
   map.function = "kosambi", stepwidth = "fixed")
 
-cross.nbh <- sim.geno(cross_NBH, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
+cross.nbh <- sim.geno(cross_NBH, n.draws = 100, step = 1, off.end = 1, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
 
-cross.elr <- sim.geno(cross_ELR, n.draws = 500, step = 5, off.end = 10, error.prob = 0.025,
+cross.elr <- sim.geno(cross_ELR, n.draws = 100, step = 1, off.end = 1, error.prob = 0.025,
   map.function = "kosambi", stepwidth = "fixed")
 ################################################################################
 ################################################################################
