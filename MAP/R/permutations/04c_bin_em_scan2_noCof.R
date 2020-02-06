@@ -33,8 +33,6 @@ bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
  incl.markers=T, clean.output=T, clean.nmar=100, clean.distance=100, maxit=2000,
  assumeCondIndep=T, n.cluster=cores)
 
-bin.em.nofac <- bin.em.2
-
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 ################################################################################

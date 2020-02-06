@@ -14,6 +14,9 @@ maf='--mac 5'
 
 module load vcftools
 
+## vcftools filters
+$maf $maxf
+
 for X in NBH BRP NEW
 do
 	#vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout | vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf $maxf --remove-filtered-all --recode | gzip -c > $vcfdir/$X.vcf.gz

@@ -31,9 +31,6 @@ qtl <- summary(norm.add.imp,lod)
 qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
 qtl
 
-full.norm.imp.step <- stepwiseqtl(cross, model='normal', method = "imp", pheno.col = 5,
- penalties=norm.imp.perms.pens, incl.markers=T, qtl=qtl, additive.only = F,  scan.pairs = T,
- max.qtl=8)
 
 summary(full.norm.imp.step)
 ################################################################################

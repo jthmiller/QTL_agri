@@ -15,6 +15,7 @@ load(file.path(mpath,paste0(pop,'_all_perms_bin_hk.rsave')))
 ################################################################################
 ## bin.em.2
 load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
+load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 
 load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 ################################################################################
@@ -387,7 +388,7 @@ dev.off()
 
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = find.marker(rf,1,10), mname2 = find.marker(rf, 18, 46.54))
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = find.marker(rf,1,10), mname2 = find.marker(rf, 18, 46.54))
-
+geno.crosstab(rf,mname1 = find.marker(rf,1,10), mname2 = find.marker(rf, 18, 46.54))
 
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = find.marker(rf,1,10), mname2 = find.marker(rf, 2, 102.7))
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = find.marker(rf,1,10), mname2 = find.marker(rf, 2, 102.7))
@@ -397,6 +398,10 @@ geno.crosstab(rf,mname1 = find.marker(rf,1,10), mname2 = find.marker(rf, 2, 102.
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = find.marker(rf,1,8), mname2 = find.marker(rf, 18, 48))
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = find.marker(rf,1,8), mname2 = find.marker(rf, 18, 48))
 geno.crosstab(rf,mname1 = find.marker(rf,1,8), mname2 = find.marker(rf, 18, 48))
+
+geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = find.marker(rf,2,102), mname2 = find.marker(rf, 18, 48))
+geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = find.marker(rf,2,102), mname2 = find.marker(rf, 18, 48))
+geno.crosstab(rf,mname1 = find.marker(rf,2,102), mname2 = find.marker(rf, 18, 48))
 
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = find.marker(rf,10,45), mname2 = find.marker(rf, 18, 57))
 geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = find.marker(rf,10,45), mname2 = find.marker(rf, 18, 57))

@@ -1,5 +1,6 @@
 #load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 library('qtl')
+library(circlize)
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
@@ -7,8 +8,6 @@ fl <- file.path(mpath,fl)
 
 ##load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
-
-library(circlize)
 
 ###############
 rf <- subset(cross, chr = c(1:4,6:24))
@@ -51,8 +50,6 @@ rn = rownames(mat.names)
 ###############
 
 ###############
-
-###############
 s1 <- scanone(rf,pheno.col=4, model="binary", method="em")
 s1l <- matrix(s1$lod, nrow = 1991, ncol = 1991)
 s1l[lower.tri(s1l, diag = T)] <- NA
@@ -81,14 +78,17 @@ mat.dwn <- which(mat > 0 & mat < 100, arr.ind=T)
 mar_b <- colnames(mat)[mat.dwn[,'col']]
 mar_a <- rownames(mat.dwn)
 lod_ab <- unlist(lod.df)
-lod_ab <- mapply(function(x,y){ lod_ab[x,y, drop = T] },mar_a,mar_b)
-lod_p <- mapply(function(x,y){ lod_phen[x,y, drop = T] },mar_a,mar_b)
-rfs <- mapply(function(x,y){ rf.df[x,y, drop = T] },mar_a,mar_b)
+lod_ab <- mapply(function(x,y){ lod_ab[x,y, drop = T] }, mar_a, mar_b)
+lod_p <- mapply(function(x,y){ lod_phen[x,y, drop = T] }, mar_a, mar_b)
+rfs <- mapply(function(x,y){ rf.df[x,y, drop = T] }, mar_a, mar_b)
 
-chr_a <- map[mar_a,c('chr','pos')]
-chr_b <- map[mar_b,c('chr','pos')]
-links <- cbind(chr_a,chr_b,lod_ab,lod_p,rfs)
+chr_a <- map[mar_a, c('chr','pos')]
+chr_b <- map[mar_b, c('chr','pos')]
 
+links <- data.frame(cbind(chr_a,chr_b,lod_ab,lod_p,rfs),stringsAsFactors=F)
+
+###########################################################################
+##save.image(file.path(mpath,paste0(pop,'_circos_wo_Coef.rsave')))
 save.image(file.path(mpath,paste0(pop,'_circos_wCoef.rsave')))
 
 ################################################################################
@@ -108,6 +108,42 @@ for(i in 1:length(links[,1])){
  circos.link(links[i,1], links[i,2],links[i,3], links[i,4], h = 0.4)
  }
 }
+
+################################################################################
+
+
+make_lodrf_tables <- function(X,Y,Z){
+ df <- Y[which(Y[,1] == X | Y[,3] == X),]
+ ch <- unique(c(df[,1],df[,3]))
+
+ xmax <- lapply(ch, function(chx){
+   z <- which.max(df[which(df[,1] == chx | df[,3] == chx),][,Z])
+   df[which(df[,1] == chx | df[,3] == chx),][z,]
+  })
+ xmax <- data.frame(do.call(rbind,xmax))
+ ##ind <- order(xmin[,Z])
+ ##print(head(xmin))
+ xmax <- xmax[order(xmax[,Z],decreasing = T),]
+
+
+ xmin <- lapply(ch, function(chx){
+   z <- which.min(df[which(df[,1] == chx | df[,3] == chx),][,Z])
+   df[which(df[,1] == chx | df[,3] == chx),][z,]
+  })
+ xmin <- data.frame(do.call(rbind,xmin))
+ ##ind <- order(xmin[,Z])
+ ##print(order(xmin[,Z]))
+ xmin <- xmin[order(xmin[,Z]),]
+
+ list(xmin=xmin,xmax=xmax)
+
+}
+chroms <- unique(c(as.character(links[,1]),as.character(links[,3])))
+ab_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_ab')
+p_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_p')
+rf_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'rfs')
+names(ab_tables) <- names(p_tables) <- names(rf_tables) <- chroms
+
 
 ################################################################################
 pop <- paste0(pop,'_wCoef')
@@ -144,7 +180,7 @@ dev.off()
 
 ################################################################################
 
-plot_test(paste0(pop,'cors_lod'), width= 1500, height=1000)
+plot_test(paste0(pop,'cors_lod'), width= 3000, height=1000)
  par(mfrow=c(1,2))
  plot(links$lod_p, links$lod_ab, pch=19, cex=0.5, col = NA)
  text(links$lod_p, links$lod_ab, links[,1])
@@ -152,7 +188,7 @@ plot_test(paste0(pop,'cors_lod'), width= 1500, height=1000)
  text(links$lod_p, links$lod_ab, links[,3])
 dev.off()
 
-plot_test(paste0(pop,'cors_rf'), width= 1500, height=1000)
+plot_test(paste0(pop,'cors_rf'), width= 3000, height=1000)
  par(mfrow=c(1,2))
  plot(links$lod_p, links$rfs, pch=19, cex=0.5, col = NA)
  text(links$lod_p, links$rfs, links[,1])
@@ -161,3 +197,13 @@ plot_test(paste0(pop,'cors_rf'), width= 1500, height=1000)
 dev.off()
 
 #col_fun = colorRamp2(c(0, 4), c("white", "red"), transparency = 0.5)
+
+################################################################################
+
+mhrf <- quantile(links$rfs, 0.99,na.rm=T)
+mlrf <- quantile(links$rfs, 0.01,na.rm=T)
+hp <- quantile(links$lod_p, 0.99,na.rm=T)
+
+inc_13_18 <- links[which(links$lod_p > 6 & links$rfs > 0.6),]
+
+inc_13_18[order(inc_13_18[,'rfs']),]

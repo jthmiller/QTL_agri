@@ -6,7 +6,7 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
-
+## with coefload(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 library(circlize)
 
 ###############
@@ -88,7 +88,9 @@ chr_a <- map[mar_a,c('chr','pos')]
 chr_b <- map[mar_b,c('chr','pos')]
 links <- cbind(chr_a,chr_b,lod_ab,lod_p,rfs)
 
-save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
+################################################################################
+
+save.image(file.path(mpath,paste0(pop,'woCoef_circos.rsave')))
 
 ################################################################################
 
@@ -109,6 +111,7 @@ for(i in 1:length(links[,1])){
 }
 
 ################################################################################
+### PLOTs ######################################################################
 
 hp <- quantile(links$lod_p, 0.99,na.rm=T)
 hab <- quantile(links$lod_ab, 0.99,na.rm=T)
@@ -148,7 +151,22 @@ pc(hi_p)
 dev.off()
 
 ################################################################################
+hrf <- quantile(links$rfs, 0.98,na.rm=T)
+lrf <- quantile(links$rfs, 0.02,na.rm=T)
 
+hp <- quantile(links$lod_p, 0.999,na.rm=T)
+hab <- quantile(links$lod_ab, 0.995,na.rm=T)
+
+rf_p <- links[which(links$lod_p > hp & links$rfs < lrf | links$lod_p > hp & links$rfs > hrf ),]
+rf_p <- rf_p[order(rf_p$rfs),]
+
+ab_p <- links[which(links$lod_p > hp & links$lod_ab > hab ),]
+ab_p <- ab_p[order(ab_p$lod_ab),]
+
+
+
+
+################################################################################
 plot_test(paste0(pop,'cors_lod'), width= 1500, height=1000)
  par(mfrow=c(1,2))
  plot(links$lod_p, links$lod_ab, pch=19, cex=0.5, col = NA)
