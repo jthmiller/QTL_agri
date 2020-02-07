@@ -73,7 +73,7 @@ write.cross(cross,chr=i,filestem=filename,format="csv")
 
 ################################################################################
 
-loglik <- err <- c(0.001, 0.0025)
+loglik <- err <- c(0.0001,0.001, 0.0025)
 for(z in seq(along=err)) {
   cat(z, "of", length(err), "\n")
   tempmap <- est.map(cross, error.prob=err[z])

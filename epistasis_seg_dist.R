@@ -323,7 +323,7 @@ dev.off()
 
 
 
-sb1 <- scanone(rf,pheno.col=4,method="em",model="bin")
+sb1 <- scanone(cross,pheno.col=4,method="em",model="bin")
 sn1 <- scanone(rf,pheno.col=4,method="em",model="normal")
 
 sb1 <- scanone(rf,pheno.col=4,method="em",model="bin", intcovar=g, addcovar=g)

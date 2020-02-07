@@ -104,7 +104,7 @@ head(-log10(sort(csq.pval[,"24:6682975"])), 100)
 
 
 ################################################################################
-sb1 <- scanone(rf,pheno.col=4,method="imp",model="bin")
+sb2 <- scanone(rf,pheno.col=4,method="imp",model="bin")
 sn1 <- scanone(rf,pheno.col=4,method="imp",model="normal")
 
 col <- gsub(":.*","",markernames(rf))
