@@ -69,9 +69,11 @@ if(cor(pos,map, use="complete.obs") < 0){
 
 cross <- shiftmap(cross, offset=0)
 
+write.cross(cross,chr=i,filestem=filename,format="csv")
+
 ################################################################################
 
-loglik <- err <- c(0.001, 0.0025, 0.005, 0.01, 0.015, 0.02)
+loglik <- err <- c(0.001, 0.0025)
 for(z in seq(along=err)) {
   cat(z, "of", length(err), "\n")
   tempmap <- est.map(cross, error.prob=err[z])
@@ -81,6 +83,8 @@ for(z in seq(along=err)) {
 lod <- (loglik - max(loglik))/log(10)
 
 erpob <- err[which.max(lod)]
+
+print(paste('error lod =',erprob))
 
 cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=100000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
