@@ -144,6 +144,23 @@ cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.related,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
 ################################################################################
 
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
+rownames(sex) <- sex$ID
+sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
+cross$pheno$sex <- sex.vec
+
+sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
+##sm <- scanone(cross, pheno.col=1, model="normal",method="mr")
+
+plot_test('elr_mar_regression', width = 1500, height = 750)
+par(mfrow=c(2,1))
+ plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,8), cex = 0.25)
+ plot(1:length(gt[bfixA,1]), -log10(gt[bfixA,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,5), cex = 0.25)
+dev.off()
+
+
+################################################################################
+
 LOD <- 14
 RF <- 0.15
 

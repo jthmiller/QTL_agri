@@ -13,7 +13,7 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R
 
 ## sbatch 02_map.sh 'BRP'
-## sbatch -J "NBH_map" mapping/02_map.sh 'NBH'
+## sbatch -J "NBH_map" $bashsc/02_map.sh 'NBH'
 ## sbatch -J "ELR_map" mapping/02_map.sh 'ELR'
 ## sbatch -J "NEW" mapping/02_map.sh 'NEW'
 ## sbatch -J "ELR_M" mapping/02_map_missing.sh 'ELR'

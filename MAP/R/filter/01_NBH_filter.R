@@ -100,6 +100,19 @@ cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 ################################################################################
 
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
+rownames(sex) <- sex$ID
+sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
+cross$pheno$sex <- sex.vec
+
+sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
+
+plot_test('nbh_mar_regression', width = 1500, height = 750)
+par(mfrow=c(2,1))
+ plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ plot(1:length(gt[bfixA,1]), gt[bfixA,'P.value'], pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+dev.off()
+
 ###### Retain markers that are linked ########
 LOD <- 17
 RF <- 0.15

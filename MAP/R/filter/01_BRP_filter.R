@@ -96,7 +96,7 @@ toss.missing <- c("BRP_2535","BRP_2410","BRP_2687","BRP_2710")
 ################################################################################
 #### Pvalue and Missing ##############################################
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,pars)))
-bfixA <- rownames(gt[which(gt$P.value > 0.0001),])
+bfixA <- rownames(gt[which(gt$P.value > 0.00001),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 5),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.000001 & gt$missing < 5),])
 ################################################################################
@@ -104,6 +104,21 @@ bfixA <- rownames(gt[which(gt$P.value > 0.0001),])
 ###### FILTER #######################################################
 cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,pars))
+################################################################################
+
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
+rownames(sex) <- sex$ID
+sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
+cross$pheno$sex <- sex.vec
+
+sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
+
+plot_test('brp_mar_regression', width = 1500, height = 750)
+par(mfrow=c(2,1))
+ plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,12), cex = 0.25)
+ plot(1:length(gt[bfixA,1]), -log10(gt[bfixA,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,15), cex = 0.25)
+dev.off()
+
 ################################################################################
 
 png(paste0('~/public_html/BRP_pvals.png'))
