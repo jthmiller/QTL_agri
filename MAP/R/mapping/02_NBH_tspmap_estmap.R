@@ -32,6 +32,7 @@ update.lik <- function(z){
 }
 
 loglik <- foreach(z = seq(along=err), .inorder = T, .export = c("loglik"), .packages = c("qtl")) %dopar% update.lik(z)
+
 loglik <- unlist(loglik)
 
 lod <- (loglik - max(loglik))/log(10)
