@@ -13,7 +13,7 @@ filename <- file.path(mpath,mapfile)
 
 #libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 #suppressMessages(sapply(libs2load, require, character.only = TRUE))
-
+library(qtl)
 library(doParallel)
 cl <- makeCluster(5)
 registerDoParallel(cl)
