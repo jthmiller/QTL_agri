@@ -23,6 +23,47 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 #sone.i <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
 #sone.io <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
 #cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
+################################################################################
+
+##### IMP ######################################################################
+##### To fit imp, must use em to scan for first QTL  (not offered rQTL)
+cross <- sim.geno(cross, stepwidth="fixed", step=1,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=100)
+no_qtl_im <- scanone(cross, pheno.col=4, method="imp", model="binary")
+imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 1000, n.cluster=6)
+
+lod <- summary(imp_perms)[1]
+qtl <- summary(no_qtl_im, lod)
+
+Q3 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
+
+Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',incl.markers=F)
+
+int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
+                  covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
+
+fit_3_imp <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
+                    formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T, covar=data.frame(cross$pheno$sex),
+                    run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+
+scan_3_imp <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
+                      covar=data.frame(cross$pheno$sex), formula=y~Q1+Q2+Q3,
+                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
+                      forceXcovar=FALSE)
+################################################################################
+
+
+cross <- calc.genoprob(cross, stepwidth="fixed", step=0, error.prob=erp, off.end=1, map.function="kosambi")
+imp_ehk <- scanone(cross, pheno.col=4, method="ehk", model="normal", n.perm = 100000, n.cluster=4)
+lod <- summary(imp_ehk)[1]
+qtl <- summary(cross, lod)
+
+Q3 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
+
+Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',incl.markers=F)
+
+
+################################################################################
+################################################################################
 
 rf <- subset(cross, chr = c(1:4,6:24))
 rf <- est.rf(rf, maxit=100000, tol=1e-6)
@@ -279,7 +320,7 @@ bin.em.2$lod,
 ################################################################################
 cross <- subset(cross, chr=c(1:4,6:24))
 
-no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
+no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000000)
 
 add.perms <- scanone(cross, pheno.col=4, method="hk", model="binary", n.perm = 1000, n.cluster=6, perm.Xsp=T)
 
@@ -402,18 +443,14 @@ fit_3_em_int <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q
 
 ##### IMP ########
 ##### To fit imp, must use em to scan for first QTL  (not offered rQTL)
+cross <- sim.geno(cross, stepwidth="fixed", step=1,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=100)
 no_qtl_im <- scanone(cross, pheno.col=4, method="imp", model="binary")
-
-imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 10000, n.cluster=6)
-
+imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 1000, n.cluster=6)
 lod <- summary(imp_perms)[1]
-
 qtl <- summary(no_qtl_im, lod)
-
 Q3 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
 
-Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',
-                incl.markers=F)
+Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',incl.markers=F)
 
 int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
                   covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)

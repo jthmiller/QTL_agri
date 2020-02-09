@@ -9,6 +9,12 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 library(circlize)
 
 ###############
+rf <- subset(cross, chr = c(1:4,6:24))
+rf <- est.rf(rf, maxit=100000, tol=1e-6)
+mars <- find.marker(rf, bin.em.2$map$chr, bin.em.2$map$pos)
+###############
+
+###############
 AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
 colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
 AHR.bed$chrom <- as.numeric(gsub("chr", "", AHR.bed$chrom))
@@ -19,13 +25,8 @@ AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
 AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
-nbh_gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
-###############
+ahr_genes <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
 
-###############
-rf <- subset(cross, chr = c(1:4,6:24))
-rf <- est.rf(rf, maxit=100000, tol=1e-6)
-mars <- find.marker(rf, bin.em.2$map$chr, bin.em.2$map$pos)
 ###############
 ### test seg dist
 
@@ -62,49 +63,68 @@ csq <- function(mara, marb) {
 csq.pval <- apply(rf.gts, 2, function(X){
  apply(rf.gts, 2, csq, marb = X)
 })
-########################################
-
 colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
 
+csq.bk <- csq.pval
+########################################
+
+
+## Set within chromosomes to zero #####
 for (i in unique(bin.em.2$map$chr)){
  mars <- markernames(rf, i)
  csq.pval[mars,mars] <- NA
 }
+########################################
 
-csq.pval[lower.tri(csq.pval)] = NA
+maxdist <- lapply(as.character(unique(bin.em.2$map$chr)), function(i) {
+  mars <- markernames(rf, i)
+  a <- which(csq.pval[mars,] == min(csq.pval[mars,], na.rm = T), arr.ind=T)
+  b <- markernames(rf)[a[,'col']]
+  a <- rownames(a)
+  cbind(a, b, -log10(csq.pval[cbind(a,b)]))
+})
+maxdist <- do.call(rbind,maxdist)
+maxdist <- maxdist[order(as.numeric(maxdist[,3])),]
+maxdist <- data.frame(maxdist, stringsAsFactors = F)
+rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 
-##########################################################################################
-#########################################################################################################
-#########################################################################################################
+
+
+which(csq.pval == min(csq.pval, na.rm = T), arr.ind=T)
+
+
+-log10(csq.pval[968,655])
+##### IF lower triangle is set to zero, more difficult
+## if(i == 24){
+##  df <- csq.pval[,mars]
+##  a <- which( == min(csq.pval[,mars], na.rm = T), arr.ind=T)
+##  b <- markernames(rf)[as.numeric(a[,'col'])]
+##  cbind(a, b, -log10(csq.pval[,mars][cbind(a[,'col'],a[,'row'])]))
+## }else{
+##  a <- which(csq.pval[mars,] == min(csq.pval[mars,], na.rm = T), arr.ind=T)
+##  b <- markernames(rf)[as.numeric(a[,'col'])]
+##  cbind(a, b, -log10(csq.pval[,mars][cbind(a[,'row'],a[,'col'])]))
+## }
+##})
+##maxdist <- do.call(rbind,maxdist)
+##maxdist <- maxdist[order(as.numeric(maxdist[,4])),]
+##
+##
+##csq.pval[lower.tri(csq.pval)] = NA
+
+################################################################################
+################################################################################
+################################################################################
 
 ##save.image(file.path(mpath,paste0(pop,'_csq_pval.rsave')))
 load(file.path(mpath,paste0(pop,'_csq_pval.rsave')))
 
-##########################################################################################
-##########################################################################################
-##########################################################################################
-
-
-maxdist <- sapply(unique(bin.em.2$map$chr), function(i) {
- mars <- markernames(rf, i)
- a <- which(csq.pval[mars,] == min(csq.pval[mars,], na.rm = T), arr.ind=T)
- b <- markernames(rf)[as.numeric(a[,'col'])]
- cbind(a, b, -log10(csq.pval[cbind(a[,'row'],a[,'col'])]))
-})
-maxdist <- do.call(rbind,maxdist)
-maxdist <- maxdist[order(as.numeric(maxdist[,4])),]
-
-
-quantile(-log10(csq.pval),0.999, na.rm = T)
-
-mar <- find.marker(rf,1,10)
-mar <- '19:42466531'
-head(-log10(sort(csq.pval[,"24:6682975"])), 100)
-
-
+################################################################################
+################################################################################
+################################################################################
 
 ################################################################################
-sb2 <- scanone(rf,pheno.col=4,method="imp",model="bin")
+sb1 <- scanone(rf,pheno.col=4,method="em",model="bin")
 sn1 <- scanone(rf,pheno.col=4,method="imp",model="normal")
 
 col <- gsub(":.*","",markernames(rf))
@@ -114,8 +134,9 @@ gt.table <- geno.table(rf)
 a <- find.marker(rf,2,88)
 a <- '24:6682975'
 
-plot_test('pvals', width = 1500, height = 1000)
-par(mfrow= c(2,1))
+
+plot_2seg <- function(a){
+ par(mfrow= c(2,1))
 
  plot(1:length(csq.pval[a,]), -log10(csq.pval[a,]), pch = 19, col = NA, ylim = c(0,7))
 
@@ -128,12 +149,41 @@ par(mfrow= c(2,1))
  plot(1:length(sn1$lod), sn1$lod, pch = 19, col = 'lightgrey', ylim = c(0,18), cex = 0.5)
 
  points(1:length(sb1$lod), sb1$lod, pch = 19, col = factor(sb1$chr))
+}
 
+
+plot_test('pvals', width = 1500, height = 1000)
+plot_2seg('21:10207')
 dev.off()
+
+
+plot_test('pvals', width = 1500, height = 1000)
+plot_2seg(find.marker(rf,18,54))
+dev.off()
+
+
+
+csq.pval.LNA <- csq.pval
+csq.pval.LNA[lower.tri(csq.pval.LNA)] = NA
 
 plot_test('pval_hist', width = 1500)
-hist(-log10(csq.pval), breaks = 50)
+hist(-log10(csq.pval.LNA), breaks = 50)
 dev.off()
+
+################################################################################
+################################################################################
+################################################################################
+
+
+quantile(-log10(csq.pval),0.999, na.rm = T)
+
+mar <- find.marker(rf,1,10)
+mar <- '19:42466531'
+head(-log10(sort(csq.pval[,"24:6682975"])), 100)
+
+
+
+
 
 
 which(sn1$lod == Inf)
@@ -149,7 +199,7 @@ effectplot(rf, pheno.col=4, mname1 = find.marker(rf, 13, 63) ,mname2 = find.mark
 dev.off()
 
 
-X <- find.marker(rf,1, 10)
+X <- find.marker(rf,12, 58.7)
 Y <- find.marker(rf,1, 10)
 
 crstb <- function(X,Y) {
@@ -157,9 +207,7 @@ print(geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = X, mname2 = Y))
 print(geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = X, mname2 = Y))
 print(geno.crosstab(rf, mname1 = X, mname2 = Y))
 }
-
-
-crstb(X = '24:7289510', Y = '2:35090193')
+crstb(X = '4:20392025', Y = "12:29910002")
 
 crstb(X = "19:42466531" , Y = '1:33916475')
 

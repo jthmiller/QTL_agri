@@ -53,7 +53,7 @@ rn = rownames(mat.names)
 
 ###############
 s1 <- scanone(rf,pheno.col=4, model="binary", method="em")
-s1l <- matrix(s1$lod, nrow = 1991, ncol = 1991)
+s1l <- matrix(s1$lod, nrow = dim(s1), ncol = dim(s1))
 s1l[lower.tri(s1l, diag = T)] <- NA
 ###############
 
@@ -76,6 +76,71 @@ for (i in unique(bin.em.2$map$chr)){
 }
 ###########################################################################
 
+###########################################################################
+###############
+### test seg dist
+
+probs <- c(0.0625,0.125,0.25)
+gts <- c('AA','AB','BB')
+
+homs <- c('AA','BB')
+hets <- 'AB'
+
+#homs <- c('1','3')
+#hets <- '2'
+
+tr.table <- matrix(NA, ncol=3, nrow=3)
+rownames(tr.table) <- colnames(tr.table) <- gts
+
+tr.table[homs,homs] <- 0.0625
+tr.table[hets,homs] <- 0.125
+tr.table[homs,hets] <- 0.125
+tr.table[hets,hets] <- 0.25
+
+gtf <- c('AA','AB','BB')
+gt_gt <- cbind(rep(gtf,3),c(rep('AA',3),rep('AB',3),rep('BB',3)))
+gt_names <- paste0(gt_gt[,1],gt_gt[,2])
+gt_probs <- setNames(tr.table[gt_gt], gt_names)
+
+rf.gts <- pull.geno(rf)
+
+csq <- function(mara, marb) {
+ test <- factor(paste0(factor(mara, labels = gtf), factor(marb, labels = gtf)), levels = gt_names)
+ chisq.test(table(test), p = gt_probs)$p.value
+}
+
+#### long ################################
+csq.pval <- apply(rf.gts, 2, function(X){
+ apply(rf.gts, 2, csq, marb = X)
+})
+colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
+
+csq.bk <- csq.pval
+########################################
+
+## Set within chromosomes to zero #####
+for (i in unique(bin.em.2$map$chr)){
+ mars <- markernames(rf, i)
+ csq.pval[mars,mars] <- NA
+}
+########################################
+
+maxdist <- lapply(as.character(unique(bin.em.2$map$chr)), function(i) {
+  mars <- markernames(rf, i)
+  a <- which(csq.pval[mars,] == min(csq.pval[mars,], na.rm = T), arr.ind=T)
+  b <- markernames(rf)[a[,'col']]
+  a <- rownames(a)
+  cbind(a, b, -log10(csq.pval[cbind(a,b)]))[1,]
+})
+maxdist <- do.call(rbind,maxdist)
+maxdist <- maxdist[order(as.numeric(maxdist[,3])),]
+maxdist <- data.frame(maxdist, stringsAsFactors = F)
+rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
+###########################################################################
+###########################################################################
+
+###########################################################################
+###########################################################################
 mat.dwn <- which(mat > 0 & mat < 100, arr.ind=T)
 mar_b <- colnames(mat)[mat.dwn[,'col']]
 mar_a <- rownames(mat.dwn)
@@ -83,15 +148,24 @@ lod_ab <- unlist(lod.df)
 lod_ab <- mapply(function(x,y){ lod_ab[x,y, drop = T] },mar_a,mar_b)
 lod_p <- mapply(function(x,y){ lod_phen[x,y, drop = T] },mar_a,mar_b)
 rfs <- mapply(function(x,y){ rf.df[x,y, drop = T] },mar_a,mar_b)
+lod_seg.dist <- mapply(function(x,y){ -log10(csq.pval[x,y, drop = T]) },mar_a,mar_b)
 
 chr_a <- map[mar_a,c('chr','pos')]
 chr_b <- map[mar_b,c('chr','pos')]
-links <- cbind(chr_a,chr_b,lod_ab,lod_p,rfs)
+links <- cbind(chr_a,chr_b,lod_ab,lod_p,rfs,lod_seg.dist)
+###########################################################################
+
+crstb <- function(X,Y) {
+ print(geno.crosstab(subset(rf,ind=rf$pheno$bin == 0),mname1 = X, mname2 = Y))
+ print(geno.crosstab(subset(rf,ind=rf$pheno$bin == 1),mname1 = X, mname2 = Y))
+ print(geno.crosstab(rf, mname1 = X, mname2 = Y))
+}
+crstb(X = '1:6612852', Y = "19:42466531")
 
 ################################################################################
 
-save.image(file.path(mpath,paste0(pop,'woCoef_circos.rsave')))
-
+#save.image(file.path(mpath,paste0(pop,'woCoef_circos.rsave')))
+load(file.path(mpath,paste0(pop,'_circos_wo_Coef.rsave')))
 ################################################################################
 
 pc <- function(links){
@@ -113,11 +187,37 @@ for(i in 1:length(links[,1])){
 ################################################################################
 ### PLOTs ######################################################################
 
+h.segdist <- quantile(links$lod_seg.dist, 0.99995,na.rm=T)
+l.segdist <- quantile(links$lod_seg.dist, 0.001,na.rm=T)
+
+
 hp <- quantile(links$lod_p, 0.99,na.rm=T)
 hab <- quantile(links$lod_ab, 0.99,na.rm=T)
 
 hrf <- quantile(links$rfs, 0.98,na.rm=T)
 lrf <- quantile(links$rfs, 0.01,na.rm=T)
+
+
+high_2seg <- links[which(links$lod_seg.dist > h.segdist),]
+plot_test(paste0(pop,'circ_hi_2segdist'))
+pc(high_2seg)
+dev.off()
+
+hdis <- quantile(links$lod_seg.dist, 0.999,na.rm=T)
+hab <- quantile(links$lod_ab, 0.9999,na.rm=T)
+
+low_p <- links[which(links$lod_seg.dist > hdis & links$lod_ab > hab),]
+plot_test(paste0(pop,'high_dis_hi_ab'))
+pc(low_p)
+dev.off()
+
+hdis <- quantile(links$lod_seg.dist, 0.999,na.rm=T)
+hab <- quantile(links$lod_p, 0.99, na.rm=T)
+
+low_p <- links[which(links$lod_seg.dist > hdis & links$lod_p > hab),]
+plot_test(paste0(pop,'high_dis_hilo_rf'))
+pc(low_p)
+dev.off()
 
 
 lp <- quantile(links$lod_p, 0.85,na.rm=T)

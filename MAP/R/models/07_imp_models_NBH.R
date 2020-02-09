@@ -1,5 +1,5 @@
 #!/bin/R
-pop <- 'ELR'
+pop <- 'NBH'
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
@@ -18,22 +18,84 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 
 load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 ################################################################################
-#sone.o <- scanone(cross,pheno.col=4, model="binary", method="em")
-#sone.a <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1])
-#sone.i <- scanone(cross,pheno.col=4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
-#sone.io <- scanone(cross,pheno.col = 4, model="binary", method="em", addcovar=g[,1],intcovar=g[,1])
-#cbind(summary(sone.o),summary(sone.a)$lod,summary(sone.i)$lod,summary(sone.io)$lod)
+
+no_qtl_im <- scanone(cross, pheno.col=1, method="ehk", model="normal")
+imp_perms <- scanone(cross, pheno.col=1, method="ehk", model="normal", n.perm = 10000, n.cluster=6)
+
+
+
+##### IMP ######################################################################
+##### To fit imp, must use em to scan for first QTL  (not offered rQTL)
+cross <- sim.geno(cross, stepwidth="fixed", step=1,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=100)
+no_qtl_im <- scanone(cross, pheno.col=4, method="imp", model="binary")
+imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 1000, n.cluster=6)
+
+lod <- summary(imp_perms)[2]
+qtl <- summary(no_qtl_im, lod)
+
+Q3 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
+
+Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary', incl.markers=T)
+
+### From stepwise qtl scan
+
+Q3 <- addtoqtl(cross, qtl=Q3, chr=add.ch, pos=add.pos)
+
+int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
+                  covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3+Q4+Q5, maxit=10000)
+
+? add int?
+
+
+fit_3_imp <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
+                    formula=y~Q1+Q2+Q3+Q4+Q5, dropone=TRUE, get.ests=T, covar=data.frame(cross$pheno$sex),
+                    run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+
+save.image(file.path(mpath,paste0(pop,'_manual_imp.rsave')))
+
+
+
+
+
+no_qtl_im <- scanone(cross, pheno.col=4, method="ehk", model="normal")
+imp_perms <- scanone(cross, pheno.col=4, method="ehk", model="normal", n.perm = 1000, n.cluster=6)
+
+
+
+
+
+
+
+int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
+                  covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
+
+fit_3_imp <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
+                    formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T, covar=data.frame(cross$pheno$sex),
+                    run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+
+scan_3_imp <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
+                      covar=data.frame(cross$pheno$sex), formula=y~Q1+Q2+Q3,
+                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
+                      forceXcovar=FALSE)
+################################################################################
+################################################################################
+2@103.0          6  185.200867 52.009888 38.9113691 124.718463 0.000000e+00
+3@17.0           6   27.285307 21.044661  5.7327413  18.374544 0.000000e+00
+13@28.0          6   31.630736 23.006152  6.6457316  21.300855 0.000000e+00
+18@41.0          6   43.708858 27.614558  9.1833885  29.434536 0.000000e+00
+2@103.0:18@41.0  4   23.860577 19.348697  5.0131932  24.102381 0.000000e+00
+3@17.0:13@28.0   4   20.881997 17.745186  4.3873827  21.093615 1.110223e-16
+
+################################################################################
 
 rf <- subset(cross, chr = c(1:4,6:24))
 rf <- est.rf(rf, maxit=100000, tol=1e-6)
 
 s1 <- scanone(rf,pheno.col=4, model="binary", method="em")
-s1l <- matrix(s1$lod, nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
+s1l <- matrix(s1$lod, nrow = 1991, ncol = 1991)
+
 
 mars <- find.marker(rf, bin.em.2$map$chr, bin.em.2$map$pos)
-mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
-mat.names <- gsub(":.*","",mat.names)
-
 rf.df <- pull.rf(rf)
 rf.df <- rf.df[mars,mars]
 
@@ -54,15 +116,14 @@ for (i in unique(bin.em.2$map$chr)){
  lod.df[ind,ind] <- NA
 }
 
+mat.names <- matrix(mars, nrow = 1991, ncol = 1991)
+mat.names <- gsub(":.*","",mat.names)
 
-###########################################################################
 chr1 <- gsub(":.*","",colnames(rf.df)) %in% c(1)
 chr18 <- gsub(":.*","",colnames(rf.df)) %in% c(18)
 chr2 <- gsub(":.*","",colnames(rf.df)) %in% c(2)
-#########################
 
-
-col <- matrix('grey', nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
+col <- matrix('grey', nrow = 1991, ncol = 1991)
 
 col[,chr1] <- 'black'
 col[,chr1] <- 'black'
@@ -79,81 +140,93 @@ plot_test('rf', width=1250,height=1250)
  text(lod_phen[col == 'black'] ,rf.df[col == 'black'], mat.names[col == 'black'], col = col[col == 'black'])
  text(lod_phen[col == 'red'],rf.df[col == 'red'], mat.names[col == 'red'], col = col[col == 'red'])
 dev.off()
-####################################################################################################
+
+
+1, 18
+2, 8
+
+
+y <- sort(lod.df)[!is.na(lod.df)]
+x <- 1:length(lod.df[!is.na(lod.df)])
+dat <- data.frame(cbind(x,y))
+
+model <- lm(formula = y ~ x,data=dat)
+
+newdat <- data.frame(y)
+newdat <- predict(model, data.frame(x))
+
+
+plot_test('rf', width=250,height=250)
+plot(newdat,y, xlim=c(0,3),ylim=c(0,3))
+abline(lm(newdat ~ y))
+dev.off()
 
 
 
+
+
+
+
+
+
+
+
+colnames(lod_phen) <- markernames(rf)
+rownames(lod_phen) <- markernames(rf)
+
+
+
+
+plot_test('rf', width=1250, height=1250)
+plotRF(rf,zmax=8, col.scheme="redblue")
+dev.off()
 
 
 ############################################
-#plot
 ############################################
 no_qtl_mr <- scanone(cross, pheno.col=4, method="mr", model="binary")
-qtl <- summary(no_qtl_mr, 4)
+qtl <- summary(no_qtl_mr, 5)
 
 for (i in chrnames(rf)){
  ind <- which(markernames(rf) %in% markernames(rf,i))
  rf$rf[ind,ind] <- NA
 }
 
-quantile(pull.rf(rf), 0.999,na.rm=T)
+h <- quantile(pull.rf(rf), 0.999,na.rm=T)
+l <- quantile(pull.rf(rf), 0.001,na.rm=T)
 
-rf.df[lower.tri(rf.df, diag = T)] <- NA
+plot_test('nbh_1_2_8_18', width=1250,height=750)
+par(mfrow = c(5,1))
 
-h <- quantile(rf.df, 0.999,na.rm=T)
-l <- quantile(rf.df, 0.001,na.rm=T)
-h9 <- quantile(rf.df, 0.95,na.rm=T)
-l9 <- quantile(rf.df, 0.05,na.rm=T)
-
-plot_test('elr_1_2_8_13_18', width=1250,height=1000)
-par(mfrow = c(6,1))
+plot(pull.rf(rf), "1:191503", ylim=c(0.3,0.75))
+abline(h=h, col='red')
+abline(h=0.5, col='black')
+abline(h=l, col='red')
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[17], ylim=c(0.3,0.75))
 abline(h=h, col='red')
-abline(h=h9, col='grey')
 abline(h=0.5, col='black')
-abline(h=l9, col='grey')
-abline(h=l, col='red')
-
-plot(pull.rf(rf), rownames(summary(no_qtl_mr))[12], ylim=c(0.3,0.75))
-abline(h=h, col='red')
-abline(h=h9, col='grey')
-abline(h=0.5, col='black')
-abline(h=l9, col='grey')
 abline(h=l, col='red')
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[2], ylim=c(0.3,0.75))
 abline(h=h, col='red')
-abline(h=h9, col='grey')
 abline(h=0.5, col='black')
-abline(h=l9, col='grey')
 abline(h=l, col='red')
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[7], ylim=c(0.3,0.75))
 abline(h=h, col='red')
-abline(h=h9, col='grey')
 abline(h=0.5, col='black')
-abline(h=l9, col='grey')
 abline(h=l, col='red')
 
 plot(pull.rf(rf), rownames(summary(no_qtl_mr))[23], ylim=c(0.3,0.75))
 abline(h=h, col='red')
-abline(h=h9, col='grey')
 abline(h=0.5, col='black')
-abline(h=l9, col='grey')
-abline(h=l, col='red')
-
-plot(pull.rf(rf), find.marker(rf,1,0), ylim=c(0.3,0.75))
-abline(h=h, col='red')
-abline(h=h9, col='grey')
-abline(h=0.5, col='black')
-abline(h=l9, col='grey')
 abline(h=l, col='red')
 
 dev.off()
 
-################################################################################
-################################################################################
+########################################################################################
+########################################################################################
 
 h <- quantile(pull.rf(rf, what='lod'), 0.99,na.rm=T)
 l <- quantile(pull.rf(rf, what='lod'), 0.01,na.rm=T)
@@ -209,14 +282,14 @@ dev.off()
 ## correlate recombination frequency and lod w phenotype
 
 
-mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
+mat.names <- matrix(mars, nrow = 1991, ncol = 1991)
 mat.names <- gsub(":.*","",mat.names)
 
 
 ind1 <- gsub(":.*","",colnames(rf.df)) %in% c(2)
 ind2 <- gsub(":.*","",colnames(rf.df)) %in% c(18)
 
-col <- matrix('black', nrow = dim(rf.df)[1], ncol = dim(rf.df)[1])
+col <- matrix('black', nrow = 1991, ncol = 1991)
 col[,ind1] <- 'grey'
 col[,ind2] <- 'grey'
 col[ind1,ind2] <- 'red'
@@ -234,22 +307,6 @@ dev.off()
 
 
 
-
-
-y <- sort(lod.df)[!is.na(lod.df)]
-x <- 1:length(lod.df[!is.na(lod.df)])
-dat <- data.frame(cbind(x,y))
-
-model <- lm(formula = y ~ x,data=dat)
-
-newdat <- data.frame(y)
-newdat <- predict(model, data.frame(x))
-
-
-plot_test('rf', width=250,height=250)
-plot(newdat,y, xlim=c(0,3),ylim=c(0,3))
-abline(lm(newdat ~ y))
-dev.off()
 
 
 
@@ -286,21 +343,23 @@ bin.em.2$lod,
 ################################################################################
 cross <- subset(cross, chr=c(1:4,6:24))
 
-no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=1000)
+cross <- calc.genoprob(cross, stepwidth="fixed", step=0, error.prob=erp, off.end=1, map.function="kosambi")
+
+no_qtl <- scanone(cross, pheno.col=4, method="hk", model="binary", verbose=FALSE, tol=1e-4, maxit=100000)
 
 add.perms <- scanone(cross, pheno.col=4, method="hk", model="binary", n.perm = 1000, n.cluster=6, perm.Xsp=T)
 
-lod <- summary(add.perms)[[1]][1]
+lod <- summary(add.perms)[[2]][1]
 
 qtl <- summary(no_qtl,lod)
 
 cross$pheno <- as.data.frame(cross$pheno)
 
-  add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-  add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
+add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 
-add.qtl1 <- refineqtl(cross, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary', incl.markers=F)
-     int.em <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary', covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
+add.qtl1 <- refineqtl(cross, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary', incl.markers=T)
+
+int.em <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary', covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3+Q4, maxit=10000)
 
 add_Q4 <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary", formula = y~Q1+Q2+Q3+Q4,
             incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000)
@@ -409,18 +468,14 @@ fit_3_em_int <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q
 
 ##### IMP ########
 ##### To fit imp, must use em to scan for first QTL  (not offered rQTL)
+cross <- sim.geno(cross, stepwidth="fixed", step=1,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=100)
 no_qtl_im <- scanone(cross, pheno.col=4, method="imp", model="binary")
-
-imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 10000, n.cluster=6)
-
+imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 1000, n.cluster=6)
 lod <- summary(imp_perms)[1]
-
 qtl <- summary(no_qtl_im, lod)
-
 Q3 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
 
-Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',
-                incl.markers=F)
+Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',incl.markers=F)
 
 int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
                   covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)

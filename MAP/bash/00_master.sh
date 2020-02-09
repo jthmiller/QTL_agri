@@ -14,7 +14,7 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 
 bashsc="$HOME/QTL_agri/MAP/bash"
 ## sbatch 02_map.sh 'BRP'
-sbatch -J "NBH_map" --array=19 $bashsc/02_map.sh 'NBH'
+sbatch -J "NBH_map" --array=23 $bashsc/02_map.sh 'NBH'
 ## sbatch -J "ELR_map" 02_map.sh 'ELR'
 ## sbatch -J "NEW" 02_map.sh 'NEW'
 ## sbatch -J "ELR_M" 02_map_missing.sh 'ELR'
