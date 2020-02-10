@@ -126,6 +126,11 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
 
 par.genos <- pull.geno(cross)[cross$pheno$ID=='BLI_BI1124M',]
 
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
+rownames(sex) <- sex$ID
+sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
+cross$pheno$sex <- sex.vec
+
 ################################################################################
 
 flt <- file.path(mpath,paste0(pop,'_ABxAB_markernames.tsv'))
@@ -151,20 +156,13 @@ cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.related,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
 ################################################################################
 
-sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
-rownames(sex) <- sex$ID
-sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
-cross$pheno$sex <- sex.vec
-
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
-##sm <- scanone(cross, pheno.col=1, model="normal",method="mr")
 
 plot_test('elr_mar_regression', width = 1500, height = 750)
 par(mfrow=c(2,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,8), cex = 0.25)
  plot(1:length(gt[bfixA,1]), -log10(gt[bfixA,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,5), cex = 0.25)
 dev.off()
-
 
 ################################################################################
 
@@ -205,7 +203,7 @@ for(Z in 1:24){
 }
 
 ################################################################################
-## write ############
+## write #######################################################################
 ################################################################################
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
@@ -213,36 +211,36 @@ write.cross(cross,filestem=fl,format="csv")
 
 system('sbatch 02_map.sh "ELR"')
 
-png(paste0('~/public_html/',pop,'_RF_physpo.png'),width=1000, height=1000)
+png(paste0('~/public_html/',pop,'_RF_physpo.png'),width=2000, height=2000)
 par(mfrow=c(4,6))
 for(i in 1:24){
- Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))/1000000
  X <- 1:length(Y)
  plot(X,Y, xlab=paste('chr',i), ylab='physical position')
 }
 dev.off()
 
-cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+#cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
-################################################################################
-inds <- which(crossbk$pheno$ID %in% cross$pheno$ID)
-old.gt <- as.matrix(pull.geno(crossbk))
-new.gt <- as.matrix(pull.geno(cross))
-old.gt[old.gt == 2] <- NA
-new.gt[new.gt == 2] <- NA
-marks <- intersect(colnames(old.gt), colnames(new.gt))
-old.gt <- old.gt[inds,marks]
-new.gt <- new.gt[,marks]
-
-switched <- colnames(old.gt)[which(colSums(old.gt == new.gt, na.rm =T) == 0)]
-
-crossbk <- switchAlleles(crossbk, switched)
-BLI_BI1124M <- pull.geno(crossbk)[which(crossbk$pheno$ID == 'BLI_BI1124M'),marks]
-
-new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
-orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
-
-new_gts[new_gts == 2] <- NA
-orig_gts[orig_gts == 2] <- NA
-
-switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]
+#################################################################################
+#inds <- which(crossbk$pheno$ID %in% cross$pheno$ID)
+#old.gt <- as.matrix(pull.geno(crossbk))
+#new.gt <- as.matrix(pull.geno(cross))
+#old.gt[old.gt == 2] <- NA
+#new.gt[new.gt == 2] <- NA
+#marks <- intersect(colnames(old.gt), colnames(new.gt))
+#old.gt <- old.gt[inds,marks]
+#new.gt <- new.gt[,marks]
+#
+#switched <- colnames(old.gt)[which(colSums(old.gt == new.gt, na.rm =T) == 0)]
+#
+#crossbk <- switchAlleles(crossbk, switched)
+#BLI_BI1124M <- pull.geno(crossbk)[which(crossbk$pheno$ID == 'BLI_BI1124M'),marks]
+#
+#new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
+#orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
+#
+#new_gts[new_gts == 2] <- NA
+#orig_gts[orig_gts == 2] <- NA
+#
+#switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]

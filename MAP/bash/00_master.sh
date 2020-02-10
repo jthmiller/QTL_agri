@@ -6,34 +6,30 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH" $bashsc/01_filter.sh 'NBH' '17' '0.075'
+sbatch -J "ELR" $bashsc/01_filter.sh 'ELR' '14' '0.1'
 ## sbatch 01_filter.sh 'BRP'
-## sbatch -J "NBH" $bashsc/01_filter.sh 'NBH'
-## sbatch -J "ELR" $bashsc/01_filter.sh 'ELR'
 ## sbatch -J "NEW" $bashsc/01_filter.sh 'NEW'
 ## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R
 
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" --array=8 $bashsc/02_map.sh 'NBH' '17' '0.075'
-sbatch -J "ELR_map" --array=8 $bashsc/02_map.sh 'ELR' '14' '0.15'
+sbatch -J "NBH_map" --array=1-24 $bashsc/02_map.sh 'NBH'
+sbatch -J "ELR_map" --array=1-24 $bashsc/02_map.sh 'ELR'
 ## sbatch 02_map.sh 'BRP'
 ## sbatch -J "NEW" 02_map.sh 'NEW'
 ## sbatch -J "ELR_M" 02_map_missing.sh 'ELR'
 
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" --array=8 $bashsc/02_map_estmap.sh 'NBH'
+sbatch -J "NBH_map" --array=1-24 $bashsc/02_map_estmap.sh 'NBH'
 
+
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
+sbatch -J "ELR_wc" $bashsc/03_write_map_cross.sh 'ELR'
 ##sbatch -J "NBH" --depend=afterany:17464611 mapping/03_write_map_cross.sh 'NBH'
-sbatch -J "NBH_wc" mapping/03_write_map_cross.sh 'NBH'
-sbatch -J "ELR_wc" mapping/03_write_map_cross.sh 'ELR'
 ##sbatch -J "BRP" mapping/03_write_map_cross.sh 'BRP'
 ##sbatch -J "NEW"  mapping/03_write_map_cross.sh 'NEW'
-
-##sbatch -J "NBH_qtl" ../models/04_QTL.sh 'NBH'
-##sbatch -J "ELR_qtl" ../models/04_QTL.sh 'ELR'
-##sbatch -J "ELR_Mis_qtl" ../models/04_QTL.sh 'ELR.missing'
-##sbatch -J "BRP" models/04_QTL.sh 'BRP'
-##sbatch -J "NEW" models/04_QTL.sh 'NEW'
-################################################################################
 
 ################################################################################
 ## Downsample loci
