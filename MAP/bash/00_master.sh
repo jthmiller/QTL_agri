@@ -7,18 +7,19 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ##install_github("mckaylab/TSPmap")
 
 ## sbatch 01_filter.sh 'BRP'
-## sbatch -J "NBH" filter/01_filter.sh 'NBH'
-## sbatch -J "ELR" filter/01_filter.sh 'ELR'
-## sbatch -J "NEW" filter/01_filter.sh 'NEW'
+## sbatch -J "NBH" $bashsc/01_filter.sh 'NBH'
+## sbatch -J "ELR" $bashsc/01_filter.sh 'ELR'
+## sbatch -J "NEW" $bashsc/01_filter.sh 'NEW'
 ## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R
 
 bashsc="$HOME/QTL_agri/MAP/bash"
-## sbatch 02_map.sh 'BRP'
 sbatch -J "NBH_map" --array=8 $bashsc/02_map.sh 'NBH'
-## sbatch -J "ELR_map" 02_map.sh 'ELR'
+sbatch -J "ELR_map" --array=8 $bashsc/02_map.sh 'ELR'
+## sbatch 02_map.sh 'BRP'
 ## sbatch -J "NEW" 02_map.sh 'NEW'
 ## sbatch -J "ELR_M" 02_map_missing.sh 'ELR'
 
+bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_map" --array=8 $bashsc/02_map_estmap.sh 'NBH'
 
 ##sbatch -J "NBH" --depend=afterany:17464611 mapping/03_write_map_cross.sh 'NBH'

@@ -73,35 +73,36 @@ write.cross(cross,chr=i,filestem=filename,format="csv")
 
 ################################################################################
 
-loglik <- err <- c(0.0001,0.001, 0.0025)
-for(z in seq(along=err)) {
-  cat(z, "of", length(err), "\n")
-  tempmap <- est.map(cross, error.prob=err[z])
-  loglik[z] <- sum(sapply(tempmap, attr, "loglik"))
-}
-
-lod <- (loglik - max(loglik))/log(10)
-
-erpob <- err[which.max(lod)]
-
-print(paste('error lod =',erprob))
-
-cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
-
-cross <- qtl:::replace.map(cross,cross_map)
-
-write.cross(cross,chr=i,filestem=filename,format="csv")
-
-print(paste(pop, 'cross written'))
-################################################################################
-
-Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
-X <- 1:length(Y)
-
-png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=500)
-par(mfrow=c(1,3))
- plotRF(cross,main=NULL)
- plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
- points(X,Y)
- plot(err, lod, xlab="Genotyping error rate", xlim=c(0,0.02), ylab=expression(paste(log[10], " likelihood")))
-dev.off()
+###loglik <- err <- c(0.0001,0.001, 0.0025)
+###for(z in seq(along=err)) {
+###  cat(z, "of", length(err), "\n")
+###  tempmap <- est.map(cross, error.prob=err[z])
+###  loglik[z] <- sum(sapply(tempmap, attr, "loglik"))
+###}
+###
+###lod <- (loglik - max(loglik))/log(10)
+###
+###erpob <- err[which.max(lod)]
+###
+###print(paste('error lod =',erprob))
+###
+###cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+###
+###cross <- qtl:::replace.map(cross,cross_map)
+###
+###write.cross(cross,chr=i,filestem=filename,format="csv")
+###
+###print(paste(pop, 'cross written'))
+###################################################################################
+###
+###Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
+###X <- 1:length(Y)
+###
+###png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=500)
+###par(mfrow=c(1,3))
+### plotRF(cross,main=NULL)
+### plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
+### points(X,Y)
+### plot(err, lod, xlab="Genotyping error rate", xlim=c(0,0.02), ylab=expression(paste(log[10], " likelihood")))
+###dev.off()
+###

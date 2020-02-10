@@ -50,7 +50,7 @@ write.cross(cross,chr=i,filestem=filename,format="csv")
 print(paste(pop, 'cross written'))
 ################################################################################
 
-Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
 X <- 1:length(Y)
 
 png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=500)
