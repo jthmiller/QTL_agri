@@ -3,7 +3,7 @@
 i <- commandArgs(TRUE)[commandArgs(TRUE) %in% c(1:24)]
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
-#source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+##source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 
 fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))

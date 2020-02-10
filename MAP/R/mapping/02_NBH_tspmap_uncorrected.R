@@ -8,7 +8,7 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 
 fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
 
-mapfile <- paste0(pop,'_all_mark_',i,'_tsp')
+mapfile <- paste0(pop,'_all_mark_',i,'_tsp_uncorrected')
 filename <- file.path(mpath,mapfile)
 
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
@@ -42,6 +42,7 @@ dev.off()
 cross <- calc.errorlod(cross, err=0.05)
 cross <- removeDoubleXO(cross, chr=i)
 cross <- calc.errorlod(cross, err=0.05)
+##unique(head(top.errorlod(cross,cutoff=6),20)$marker)
 #cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
 #cross <- calc.errorlod(cross, err=0.05)
 ################################################################################
@@ -86,7 +87,7 @@ erpob <- err[which.max(lod)]
 
 print(paste('error lod =',erprob))
 
-cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=100000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
 

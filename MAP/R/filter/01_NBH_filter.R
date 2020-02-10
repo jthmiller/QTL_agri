@@ -83,6 +83,7 @@ toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
 bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 4),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
+bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 4),])
 
 ################################################################################
 ## Determine what percent of markers are kept after filter
@@ -115,7 +116,7 @@ dev.off()
 
 ###### Retain markers that are linked ########
 LOD <- 17
-RF <- 0.15
+RF <- 0.05
 
  for(Z in 1:24){
 

@@ -56,8 +56,9 @@ png(paste0('~/public_html/ELR_gts_postclean',i,'.png'),height=2500,width=4500)
  plotGeno(cross, chr=i, cex=2)
 dev.off()
 ################################################################################
+##cross <- drop.markers(cross,drop)
 
-cross <-tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
 pos <- as.numeric(gsub(".*:","",markernames(cross)))
 map <- as.numeric(pull.map(cross)[[1]])
@@ -67,6 +68,8 @@ if(cor(pos,map, use="complete.obs") < 0){
 }
 
 cross <- shiftmap(cross, offset=0)
+
+write.cross(cross,chr=i,filestem=filename,format="csv")
 
 ################################################################################
 ### Determine error rate

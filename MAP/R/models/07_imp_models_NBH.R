@@ -7,6 +7,8 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
+
+load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 ## perms.1
 ## perms.2
@@ -15,12 +17,11 @@ load(file.path(mpath,paste0(pop,'_all_perms_bin_hk.rsave')))
 ################################################################################
 ## bin.em.2
 load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
-
 load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
 ################################################################################
 
-no_qtl_im <- scanone(cross, pheno.col=1, method="ehk", model="normal")
-imp_perms <- scanone(cross, pheno.col=1, method="ehk", model="normal", n.perm = 10000, n.cluster=6)
+no_qtl_im <- scanone(cross, pheno.col=4, method="em", model="binary")
+imp_perms <- scanone(cross, pheno.col=4, method="em", model="binary", n.perm = 10000, n.cluster=6)
 
 
 

@@ -14,12 +14,12 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 
 bashsc="$HOME/QTL_agri/MAP/bash"
 ## sbatch 02_map.sh 'BRP'
-sbatch -J "NBH_map" --array=23 $bashsc/02_map.sh 'NBH'
+sbatch -J "NBH_map" --array=8 $bashsc/02_map.sh 'NBH'
 ## sbatch -J "ELR_map" 02_map.sh 'ELR'
 ## sbatch -J "NEW" 02_map.sh 'NEW'
 ## sbatch -J "ELR_M" 02_map_missing.sh 'ELR'
 
-sbatch -J "NBH_map" --array=24 $bashsc/02_map_estmap.sh 'NBH'
+sbatch -J "NBH_map" --array=8 $bashsc/02_map_estmap.sh 'NBH'
 
 ##sbatch -J "NBH" --depend=afterany:17464611 mapping/03_write_map_cross.sh 'NBH'
 sbatch -J "NBH_wc" mapping/03_write_map_cross.sh 'NBH'
