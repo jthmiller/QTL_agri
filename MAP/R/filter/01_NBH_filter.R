@@ -3,7 +3,7 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 LOD <- as.numeric(commandArgs(TRUE)[3])
 RF <- as.numeric(commandArgs(TRUE)[4])
 mis <- as.numeric(commandArgs(TRUE)[5])
-pval <- as.numeric(commandArgs(TRUE)[6]) 
+pval <- as.numeric(commandArgs(TRUE)[6])
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
@@ -90,13 +90,12 @@ toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 ################################################################################
 ##cross <- subset(cross, chr=c(1,2,8,18,24))
 ################################################################################
+
 #### Pvalue and Missing ##############################################
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
 bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
-##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
-##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 4),])
-##gt[rownames(gt[which(gt$P.value < 0.0001 & gt$missing < 4),]),]
 ################################################################################
+
 ## Determine what percent of markers are kept after filter
 table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
 
@@ -126,22 +125,22 @@ swit <- file.path(mpath,swit)
 write.table(bfix_swit12, swit)
 ################################################################################
 
-################################################################################
-
-mfl <- file.path(mpath,paste0(pop,'prefiltered_markernames.tsv'))
-marks <- read.table(mfl, stringsAsFactors=F)
-
-inds <- file.path(mpath,paste0(pop,'prefiltered_indnames.tsv'))
-inds <- read.table(inds, stringsAsFactors=F)
-
-switch <- file.path(mpath,paste0(pop,'prefiltered_switch.tsv'))
-switch <- read.table(switch, stringsAsFactors=F)
-
-cross <- subset(cross, ind=cross$pheno$ID %in% inds$ID)
-cross <- switchAlleles(cross, markers = switch)
-cross <- pull.markers(cross,marks$x)
-
-################################################################################
+#################################################################################
+#
+#mfl <- file.path(mpath,paste0(pop,'prefiltered_markernames.tsv'))
+#marks <- read.table(mfl, stringsAsFactors=F)
+#
+#inds <- file.path(mpath,paste0(pop,'prefiltered_indnames.tsv'))
+#inds <- read.table(inds, stringsAsFactors=F)
+#
+#switch <- file.path(mpath,paste0(pop,'prefiltered_switch.tsv'))
+#switch <- read.table(switch, stringsAsFactors=F)
+#
+#cross <- subset(cross, ind=cross$pheno$ID %in% inds$ID)
+#cross <- switchAlleles(cross, markers = switch)
+#cross <- pull.markers(cross,marks$x)
+#
+#################################################################################
 sapply(1:24,function(i){
 ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
 cross <<- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
@@ -158,7 +157,6 @@ par(mfrow=c(2,1))
  plot(1:length(gt[bfixA,1]), -log10(gt[bfixA,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
 dev.off()
 ################################################################################
-crossfz <- cross
 
 library(qtl)
 library(doParallel)
