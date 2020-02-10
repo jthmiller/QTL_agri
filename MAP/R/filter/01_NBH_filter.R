@@ -2,13 +2,15 @@
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 LOD <- as.numeric(commandArgs(TRUE)[3])
 RF <- as.numeric(commandArgs(TRUE)[4])
+mis <- as.numeric(commandArgs(TRUE)[5])
+pval <- as.numeric(commandArgs(TRUE)[6]) 
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 
 ################################################################################
 ## read in the QTL cross
-cross <- read.cross.jm(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
+cross <- read.cross(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
 format = "csvr", geno = c(1:3), estimate.map = FALSE)
 ################################################################################
 
@@ -86,11 +88,11 @@ dev.off()
 ################################################################################
 toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 ################################################################################
-
+##cross <- subset(cross, chr=c(1,2,8,18,24))
 ################################################################################
 #### Pvalue and Missing ##############################################
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
-bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 4),])
+bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 ##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 4),])
 ##gt[rownames(gt[which(gt$P.value < 0.0001 & gt$missing < 4),]),]
@@ -118,33 +120,52 @@ write.table(markernames(cross), mfl)
 inds <- paste0(pop,'prefiltered_indnames.tsv')
 inds <- file.path(mpath,inds)
 write.table(cross$pheno, inds)
+
+swit <- paste0(pop,'prefiltered_switch.tsv')
+swit <- file.path(mpath,swit)
+write.table(bfix_swit12, swit)
 ################################################################################
 
 ################################################################################
 
 mfl <- file.path(mpath,paste0(pop,'prefiltered_markernames.tsv'))
-marks <- read.table(mfl)
+marks <- read.table(mfl, stringsAsFactors=F)
 
 inds <- file.path(mpath,paste0(pop,'prefiltered_indnames.tsv'))
-inds <- read.table(inds)
+inds <- read.table(inds, stringsAsFactors=F)
 
-cross <- pull.markers(cross,marks$x)
+switch <- file.path(mpath,paste0(pop,'prefiltered_switch.tsv'))
+switch <- read.table(switch, stringsAsFactors=F)
+
 cross <- subset(cross, ind=cross$pheno$ID %in% inds$ID)
+cross <- switchAlleles(cross, markers = switch)
+cross <- pull.markers(cross,marks$x)
 
 ################################################################################
+sapply(1:24,function(i){
+ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
+cross <<- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
+ maxit = 1, tol = 0.1, sex.sp = F)
+})
+################################################################################
+
 ### PLOTS ######################################################################
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
 
 plot_test('nbh_mar_regression', width = 1500, height = 750)
 par(mfrow=c(2,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
- plot(1:length(gt[bfixA,1]), gt[bfixA,'P.value'], pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ plot(1:length(gt[bfixA,1]), -log10(gt[bfixA,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
 dev.off()
 ################################################################################
+crossfz <- cross
 
-###### Retain markers that are linked ########
+library(qtl)
+library(doParallel)
+cl <- makeCluster(22)
+registerDoParallel(cl)
 
- for(Z in 1:24){
+test_link <- function(Z){
 
   all <- subset(cross,chr=Z)
   reorg.2 <- formLinkageGroups(all, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
@@ -154,6 +175,8 @@ dev.off()
   swits <- markernames(reorg.2a, chr=1)
   reorg.2a <- switchAlleles(reorg.2a, markers = swits)
   reorg.2a <- formLinkageGroups(reorg.2a, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+  print(paste('initial switch of', Z))
 
    # switch it back
   swits <- markernames(reorg.2a, chr=1)
@@ -175,10 +198,19 @@ dev.off()
 
   drops <- markernames(all)[!markernames(all) %in% final]
 
-  cross <<- drop.markers(cross, drops)
-  cross <<- switchAlleles(cross, switched)
+  print(paste('done with group', Z))
 
- }
+  list(switched=switched,drops=drops)
+
+}
+
+link <- foreach(Z = seq(along=1:24), .inorder = T, .packages = c("qtl")) %dopar% test_link (Z)
+
+switched <- unlist(lapply(link,'[[',1))
+drops <- unlist(lapply(link,'[[',2))
+
+cross <- drop.markers(cross, drops)
+cross <- switchAlleles(cross, switched)
 
 print('done with linkage groups')
 ################################################################################
@@ -231,7 +263,7 @@ f <- lapply(1:24, function(i){
 m <- unlist(m)
 f <- unlist(f)
 
-cross <- drop.markers(cross,unique(c(m,f)))
+cross <- drop.markers(cross,unique(c(m,f),'18:2903774'))
 
 ################################################################################
 
