@@ -31,6 +31,9 @@ rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
 ################################################################################
+
+crossbk <- cross
+
 ### Switch phase and keep only parent conf markers #############################
 ### ENRICH FOR AAxBB ##########################################################
 
@@ -177,6 +180,60 @@ dev.off()
 
  }
 
+################################################################################
+################################################################################
+
+
+################################################################################
+################################################################################
+#fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
+#cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
+inds <- which(crossbk$pheno$ID %in% cross$pheno$ID)
+old.gt <- as.matrix(pull.geno(crossbk))
+new.gt <- as.matrix(pull.geno(cross))
+rownames(old.gt) <- crossbk$pheno$ID
+rownames(new.gt) <- cross$pheno$ID
+
+old.gt[old.gt == 2] <- NA
+new.gt[new.gt == 2] <- NA
+
+marks <- intersect(colnames(old.gt), colnames(new.gt))
+inds <- intersect(rownames(old.gt), rownames(new.gt))
+
+old.gt <- old.gt[inds, marks]
+new.gt <- new.gt[inds, marks]
+
+switched <- colnames(old.gt)[which(colSums(old.gt == new.gt, na.rm = T) == 0)]
+
+crossbk <- switchAlleles(crossbk, switched)
+
+crossbk <- pull.markers(crossbk, marks)
+
+NBH_NBH1M <- subset(crossbk, ind = crossbk$pheno$ID == 'NBH_NBH1M')
+NBH_NBH1F <- subset(crossbk, ind = crossbk$pheno$ID == 'NBH_NBH1F')
+marks <- intersect(markernames(NBH_NBH1M), markernames(NBH_NBH1F))
+NBH_NBH1M <- as.matrix(pull.geno(NBH_NBH1M))
+NBH_NBH1F <- as.matrix(pull.geno(NBH_NBH1F))
+
+
+m <- lapply(1:24, function(i){
+ mr <- markernames(crossbk,i)[which(markernames(crossbk,i) %in% marks)]
+ names(which(NBH_NBH1M[,mr] == 1))
+})
+
+f <- lapply(1:24, function(i){
+ mr <- markernames(crossbk,i)[which(markernames(crossbk,i) %in% marks)]
+ names(which(NBH_NBH1F[,mr] == 3))
+})
+
+m <- unlist(m)
+f <- unlist(f)
+
+cross <- drop.markers(cross,unique(c(m,f)))
+
+################################################################################
+
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
 
@@ -184,7 +241,7 @@ fl.par <- file.path(paste0(pop,'_parents_filtered'))
 fl.par <- file.path(mpath,fl.par)
 write.cross(cross.par,filestem=fl.par,format="csv")
 
-system('sbatch -J "NBH" 02_map.sh "NBH"')
+##system('sbatch -J "NBH" 02_map.sh "NBH"')
 
 png(paste0('~/public_html/',pop,'_RF_physpo.png'), width=2000, height=2000)
 par(mfrow=c(4,6))
@@ -194,3 +251,5 @@ for(i in 1:24){
  plot(X,Y, xlab=paste('chr',i), ylab='physical position')
 }
 dev.off()
+
+################################################################################

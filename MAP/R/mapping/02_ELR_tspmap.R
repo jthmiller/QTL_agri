@@ -18,6 +18,7 @@ print(i)
 
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 cross <- subset(cross,chr=i)
+
 sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
 rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
@@ -37,11 +38,23 @@ dev.off()
 ## 10932
 ################################################################################
 
-cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
-cross <- calc.errorlod(cross, err=0.05)
+#cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
+cross <- calc.errorlod(cross, err=0.1)
 cross <- removeDoubleXO(cross, chr=i)
-cross <- calc.errorlod(cross, err=0.05)
-cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
+
+
+
+cross <- fill.geno(cross,"no_dbl_XO")
+
+ill.geno(cross, method=c("imp","argmax", "no_dbl_XO", "maxmarginal"), error.prob=0.0001,
+Arguments
+cross method
+error.prob map.function min.prob
+map.function=c("haldane","kosambi","c-f","morgan"), min.prob=0.95)
+
+
+#cross <- calc.errorlod(cross, err=0.05)
+#cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
 cross <- calc.errorlod(cross, err=0.05)
 ################################################################################
 

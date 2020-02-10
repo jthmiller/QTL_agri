@@ -22,7 +22,7 @@ sbatch -J "ELR_map" --array=1-24 $bashsc/02_map.sh 'ELR'
 
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_map" --array=1-24 $bashsc/02_map_estmap.sh 'NBH'
-
+sbatch -J "ELR_map" --array=1-24 $bashsc/02_map_estmap.sh 'ELR'
 
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
