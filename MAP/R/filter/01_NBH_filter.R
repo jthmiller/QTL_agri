@@ -1,6 +1,7 @@
 #!/bin/R
-
-pop <- 'NBH'
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
+LOD <- as.numeric(commandArgs(TRUE)[3])
+RF <- as.numeric(commandArgs(TRUE)[4])
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
@@ -24,6 +25,11 @@ cross$pheno$bin <- ifelse(cross$pheno$Pheno > 2, 1 , 0)
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno))
 ################################################################################
 
+#### SEX #######################################################################
+sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
+rownames(sex) <- sex$ID
+sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
+cross$pheno$sex <- sex.vec
 ################################################################################
 ### Switch phase and keep only parent conf markers #############################
 ### ENRICH FOR AAxBB ##########################################################
@@ -81,10 +87,10 @@ toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 ################################################################################
 #### Pvalue and Missing ##############################################
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
-bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 4),])
-##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
 bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 4),])
-
+##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 5),])
+##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 4),])
+##gt[rownames(gt[which(gt$P.value < 0.0001 & gt$missing < 4),]),]
 ################################################################################
 ## Determine what percent of markers are kept after filter
 table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
@@ -101,11 +107,29 @@ cross <- pull.markers(cross,bfixA)
 cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 ################################################################################
 
-sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
-rownames(sex) <- sex$ID
-sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
-cross$pheno$sex <- sex.vec
+### Faster filter ##############################################################
+mfl <- paste0(pop,'prefiltered_markernames.tsv')
+mfl <- file.path(mpath,mfl)
+write.table(markernames(cross), mfl)
 
+inds <- paste0(pop,'prefiltered_indnames.tsv')
+inds <- file.path(mpath,inds)
+write.table(cross$pheno, inds)
+################################################################################
+
+################################################################################
+
+mfl <- file.path(mpath,paste0(pop,'prefiltered_markernames.tsv'))
+marks <- read.table(mfl)
+
+inds <- file.path(mpath,paste0(pop,'prefiltered_indnames.tsv'))
+inds <- read.table(inds)
+
+cross <- pull.markers(cross,marks$x)
+cross <- subset(cross, ind=cross$pheno$ID %in% inds$ID)
+
+################################################################################
+### PLOTS ######################################################################
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
 
 plot_test('nbh_mar_regression', width = 1500, height = 750)
@@ -113,10 +137,9 @@ par(mfrow=c(2,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
  plot(1:length(gt[bfixA,1]), gt[bfixA,'P.value'], pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
 dev.off()
+################################################################################
 
 ###### Retain markers that are linked ########
-LOD <- 17
-RF <- 0.05
 
  for(Z in 1:24){
 
@@ -163,7 +186,7 @@ write.cross(cross.par,filestem=fl.par,format="csv")
 
 system('sbatch -J "NBH" 02_map.sh "NBH"')
 
-png(paste0('~/public_html/',pop,'_RF_physpo.png'))
+png(paste0('~/public_html/',pop,'_RF_physpo.png'), width=2000, height=2000)
 par(mfrow=c(4,6))
 for(i in 1:24){
  Y <- c(0, as.numeric(gsub(".*:","",markernames(cross,i))))

@@ -103,6 +103,13 @@
 ## hist(gt.pmiss$missing[ind], pch=21,breaks=50)
 ## dev.off()
 ################################################################################
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
+LOD <- as.numeric(commandArgs(TRUE)[3])
+RF <- as.numeric(commandArgs(TRUE)[4])
+
+#LOD <- 14
+#RF <- 0.15
+
 pop <- 'ELR'
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
@@ -161,9 +168,6 @@ dev.off()
 
 ################################################################################
 
-LOD <- 14
-RF <- 0.15
-
 for(Z in 1:24){
 
  all <- subset(cross,chr=Z)
@@ -218,10 +222,7 @@ for(i in 1:24){
 }
 dev.off()
 
-
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
-
 
 ################################################################################
 inds <- which(crossbk$pheno$ID %in% cross$pheno$ID)
@@ -238,13 +239,10 @@ switched <- colnames(old.gt)[which(colSums(old.gt == new.gt, na.rm =T) == 0)]
 crossbk <- switchAlleles(crossbk, switched)
 BLI_BI1124M <- pull.geno(crossbk)[which(crossbk$pheno$ID == 'BLI_BI1124M'),marks]
 
+new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
+orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
 
+new_gts[new_gts == 2] <- NA
+orig_gts[orig_gts == 2] <- NA
 
-
- new_gts <- as.matrix(reorg.2a$geno[['1']]$data[,added])
- orig_gts <- as.matrix(all$geno[[as.character(Z)]]$data[,added])
-
- new_gts[new_gts == 2] <- NA
- orig_gts[orig_gts == 2] <- NA
-
- switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]
+switched <- colnames(new_gts)[which(colSums(new_gts == orig_gts, na.rm =T) == 0)]
