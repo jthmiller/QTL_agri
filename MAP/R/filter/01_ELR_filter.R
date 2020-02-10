@@ -110,7 +110,6 @@ RF <- as.numeric(commandArgs(TRUE)[4])
 #LOD <- 14
 #RF <- 0.15
 
-pop <- 'ELR'
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 
@@ -143,7 +142,7 @@ bfix_swit <- read.table(swt)$x
 ## Pval and missing
 gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
 gt.pmiss <- read.table(gtpm)
-bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.001 & gt.pmiss$missing < 6),])
+bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.001 & gt.pmiss$missing < 5),])
 
 ## Bad data individuals
 toss.related <- c("ELR_10978","ELR_10977","ELR_10982","ELR_10974","ELR_10980","ELR_10973","ELR_10971","ELR_10979","ELR_10987")
