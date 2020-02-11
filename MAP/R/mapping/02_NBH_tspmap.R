@@ -51,6 +51,8 @@ cross <- fill.geno(cross, method="no_dbl_XO")
 cross <- calc.errorlod(cross, err=0.05,version="new",map.function="kosambi")
 toperr <- top.errorlod(cross, cutoff=5)
 
+print(top.errorlod(cross, cutoff=5))
+
 if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
  for(i in 1:nrow(toperr)) {
   chr <- toperr$chr[i]
@@ -61,7 +63,6 @@ if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
  cross <- removeDoubleXO(cross, chr=i)
  cross <- fill.geno(cross, method="no_dbl_XO")
 }
-
 
 ### REMOVE SHORT DOUBLE CROSSOVERS
 xos <- locateXO(cross, full.info=T)
