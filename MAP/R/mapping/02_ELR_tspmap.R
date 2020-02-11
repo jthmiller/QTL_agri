@@ -37,10 +37,33 @@ png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500
 dev.off()
 
 ################################################################################
+################################################################################
+map <- pull.map(cross)
+newpos <- lapply(map,function(X) { rescale(as.numeric(X),to = c(1,150)) } )
+chr <- as.character(i)
+cross$geno[[chr]]$map <- as.numeric(unlist(newpos))
+
 
 ### REMOVE SINGLE CROSSOVERS
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
+
+## REMOVE GTs that lead to high errorlof
+cross <- calc.errorlod(cross, err=0.05,version="new",map.function="kosambi")
+toperr <- top.errorlod(cross, cutoff=5)
+
+print(top.errorlod(cross, cutoff=5))
+
+if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+ for(i in 1:nrow(toperr)) {
+  chr <- toperr$chr[i]
+  id <- toperr$id[i]
+  mar <- toperr$marker[i]
+  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+ }
+ cross <- removeDoubleXO(cross, chr=i)
+ cross <- fill.geno(cross, method="no_dbl_XO")
+}
 
 ### REMOVE SHORT DOUBLE CROSSOVERS
 xos <- locateXO(cross, full.info=T)
@@ -70,22 +93,7 @@ cross$geno[[ch]]$data <- mat
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
 
-## REMOVE GTs that lead to high errorlof
-cross <- calc.errorlod(cross, err=0.05)
-toperr <- top.errorlod(cross, cutoff=4)
-
-for(i in 1:nrow(toperr)) {
- chr <- toperr$chr[i]
- id <- toperr$id[i]
- mar <- toperr$marker[i]
- cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
-}
-
-cross <- removeDoubleXO(cross, chr=i)
-cross <- fill.geno(cross, method="no_dbl_XO")
-
-
-################################################################################
+###############################################################################
 png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- order(colSums(pull.geno(cross) == 2, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
