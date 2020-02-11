@@ -67,10 +67,9 @@ indx <- sapply(xos,function(X){
 ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
 a <- rep(ind, times = unlist(lapply(indx,length)))
 b <- as.numeric(unlist(indx))
-ab <- cbind(a,b)
 
-prob.marks <- names(which(table(b) > (nind(cross)/2)))
-prob.marks <- markernames(cross)[as.numeric(prob.marks)]
+prob.marks <- as.numeric(names(which(table(b) > (nind(cross)/2))))
+prob.marks <- markernames(cross)[prob.marks]
 cross <- drop.markers(cross,prob.marks)
 #################################################################################
 
@@ -96,21 +95,20 @@ ab <- cbind(a,b)
 ch <- as.character(i)
 mat <- cross$geno[[ch]]$data
 mat[cbind(a,b)] <- NA
-
 cross$geno[[ch]]$data <- mat
 
 ## CLEANUP
-cross <- removeDoubleXO(cross, chr=i)
+cross <- removeDoubleXO(cross, chr=chr)
 cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
 #################################################################################
 
 ## REMOVE INDIVIDUAL GTs THAT LEAD TO HIGH ERRORLOD
 cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
-toperr <- top.errorlod(cross, cutoff=5)
 
 print('done with errorlod calculation')
 
 if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+ toperr <- top.errorlod(cross, cutoff=5)
  for(z in 1:nrow(toperr)) {
   chr <- toperr$chr[z]
   id <- toperr$id[z]
