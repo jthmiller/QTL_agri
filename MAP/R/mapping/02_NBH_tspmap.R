@@ -32,20 +32,22 @@ cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "ko
 cross <- subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
 
 png(paste0('~/public_html/NBH_gts_preclean',i,'.png'),height=2500,width=4500)
- geno.image(cross, chr=i, cex=2)
+ cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))
+ geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
 ################################################################################
 
+### REMOVE SINGLE CROSSOVERS
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
-cross <- calc.errorlod(cross, err=0.05)
 
+### REMOVE SHORT DOUBLE CROSSOVERS
 xos <- locateXO(cross, full.info=T)
 xos <- xos[which(unlist(lapply(xos, is.matrix)))]
 indx <- sapply(xos,function(X){
- if(any( X[,'nTypedBetween'] < 4 | is.na(X[,'nTypedBetween']))){
-  a <- which(X[,'nTypedBetween'] < 4 | is.na(X[,'nTypedBetween']))
+ if(any( X[,'nTypedBetween'] < 3 | is.na(X[,'nTypedBetween']))){
+  a <- which(X[,'nTypedBetween'] < 3 | is.na(X[,'nTypedBetween']))
   l <- as.list(X[a,'ileft'])
   r <- as.list(X[a,'iright'])
 
@@ -64,10 +66,21 @@ mat[cbind(a,b)] <- NA
 
 cross$geno[[ch]]$data <- mat
 
+## CLEANUP
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
+
+## REMOVE GTs that lead to high errorlof
 cross <- calc.errorlod(cross, err=0.05)
-cross <- fill.geno(cross, error.prob=0.001, method="argmax")
+toperr <- top.errorlod(cross, cutoff=4)
+
+for(i in 1:nrow(toperr)) {
+ chr <- toperr$chr[i]
+ id <- toperr$id[i]
+ mar <- toperr$marker[i]
+ cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+}
+
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
 
@@ -90,9 +103,12 @@ cross <- fill.geno(cross, method="no_dbl_XO")
 ################################################################################
 
 ################################################################################
+
 png(paste0('~/public_html/NBH_gts_postclean',i,'.png'),height=2500,width=4500)
- geno.image(cross, chr=i, cex=2)
+ cross$pheno$gtps <- order(colSums(pull.geno(cross) == 2, na.rm = T))
+ geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
+
 ################################################################################
 
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
