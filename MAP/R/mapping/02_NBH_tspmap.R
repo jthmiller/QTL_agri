@@ -31,16 +31,37 @@ cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "ko
 
 cross <- subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
 
-png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
+png(paste0('~/public_00html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
 ################################################################################
+map <- pull.map(cross)
+newpos <- lapply(map,function(X) { rescale(as.numeric(X),to = c(1,150)) } )
+chr <- as.character(i)
+cross$geno[[chr]]$map <- as.numeric(unlist(newpos))
+
 
 ### REMOVE SINGLE CROSSOVERS
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
+
+## REMOVE GTs that lead to high errorlof
+cross <- calc.errorlod(cross, err=0.05,version="new",map.function="kosambi")
+toperr <- top.errorlod(cross, cutoff=5)
+
+if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+ for(i in 1:nrow(toperr)) {
+  chr <- toperr$chr[i]
+  id <- toperr$id[i]
+  mar <- toperr$marker[i]
+  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+ }
+ cross <- removeDoubleXO(cross, chr=i)
+ cross <- fill.geno(cross, method="no_dbl_XO")
+}
+
 
 ### REMOVE SHORT DOUBLE CROSSOVERS
 xos <- locateXO(cross, full.info=T)
@@ -70,21 +91,6 @@ cross$geno[[ch]]$data <- mat
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
 
-## REMOVE GTs that lead to high errorlof
-cross <- calc.errorlod(cross, err=0.01)
-toperr <- top.errorlod(cross, cutoff=5)
-
-if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
- for(i in 1:nrow(toperr)) {
-  chr <- toperr$chr[i]
-  id <- toperr$id[i]
-  mar <- toperr$marker[i]
-  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
- }
-
- cross <- removeDoubleXO(cross, chr=i)
- cross <- fill.geno(cross, method="no_dbl_XO")
-}
 #cross <- calc.errorlod(cross, err=0.05)
 #cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
 #cross <- cleanGeno_jm_2(cross, chr=i, maxdist=25, maxmark=4, verbose=TRUE)
@@ -126,37 +132,3 @@ cross <- shiftmap(cross, offset=0)
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
 ################################################################################
-
-###loglik <- err <- c(0.0001,0.001, 0.0025)
-###for(z in seq(along=err)) {
-###  cat(z, "of", length(err), "\n")
-###  tempmap <- est.map(cross, error.prob=err[z])
-###  loglik[z] <- sum(sapply(tempmap, attr, "loglik"))
-###}
-###
-###lod <- (loglik - max(loglik))/log(10)
-###
-###erpob <- err[which.max(lod)]
-###
-###print(paste('error lod =',erprob))
-###
-###cross_map <-  est.map(cross, error.prob=erpob,map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
-###
-###cross <- qtl:::replace.map(cross,cross_map)
-###
-###write.cross(cross,chr=i,filestem=filename,format="csv")
-###
-###print(paste(pop, 'cross written'))
-###################################################################################
-###
-###Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))
-###X <- 1:length(Y)
-###
-###png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=500)
-###par(mfrow=c(1,3))
-### plotRF(cross,main=NULL)
-### plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
-### points(X,Y)
-### plot(err, lod, xlab="Genotyping error rate", xlim=c(0,0.02), ylab=expression(paste(log[10], " likelihood")))
-###dev.off()
-###
