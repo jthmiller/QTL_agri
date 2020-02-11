@@ -32,7 +32,7 @@ cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "ko
 
 cross <- subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
 
-png(paste0('~/public_00html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
+png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
@@ -113,7 +113,7 @@ cross <- fill.geno(cross, method="no_dbl_XO")
 
 ################################################################################
 
-png(paste0('~/public_html/NBH_gts_postclean',i,'.png'),height=2500,width=4500)
+png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- order(colSums(pull.geno(cross) == 2, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
