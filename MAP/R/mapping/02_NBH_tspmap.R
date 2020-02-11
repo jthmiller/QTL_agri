@@ -32,21 +32,50 @@ cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "ko
 cross <- subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
 
 png(paste0('~/public_html/NBH_gts_preclean',i,'.png'),height=2500,width=4500)
- plotGeno(cross, chr=i, cex=2)
+ geno.image(cross, chr=i, cex=2)
 dev.off()
 
 ################################################################################
 
+cross <- removeDoubleXO(cross, chr=i)
+cross <- fill.geno(cross, method="no_dbl_XO")
 cross <- calc.errorlod(cross, err=0.05)
-cross <- removeDoubleXO(cross, chr=i)
-cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
-cross <- fill.geno(cross, min.prob = 0.95 ,method="maxmarginal")
+
+xos <- locateXO(cross, full.info=T)
+xos <- xos[which(unlist(lapply(xos, is.matrix)))]
+indx <- sapply(xos,function(X){
+ if(any( X[,'nTypedBetween'] < 4 | is.na(X[,'nTypedBetween']))){
+  a <- which(X[,'nTypedBetween'] < 4 | is.na(X[,'nTypedBetween']))
+  l <- as.list(X[a,'ileft'])
+  r <- as.list(X[a,'iright'])
+
+  a <- mapply(function(Z,Y) { seq(Z,Y) }, Z = l, Y = r )
+  as.numeric(unlist(a))
+ }
+})
+ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
+a <- rep(ind, times = unlist(lapply(indx,length)))
+b <- as.numeric(unlist(indx))
+ab <- cbind(a,b)
+
+mat <- cross$geno[[ch]]$data
+mat[cbind(a,b)] <- NA
+
+cross$geno[[ch]]$data <- mat
 
 cross <- removeDoubleXO(cross, chr=i)
-cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.01, map.function=c("kosambi"),stepwidth=c("fixed"))
-cross <- fill.geno(cross, min.prob = 0.99 ,method="maxmarginal")
+cross <- fill.geno(cross, method="no_dbl_XO")
+cross <- calc.errorlod(cross, err=0.05)
 
-#cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
+#cross <- calc.errorlod(cross, err=0.05)
+#cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
+#cross <- cleanGeno_jm_2(cross, chr=i, maxdist=25, maxmark=4, verbose=TRUE)
+#cross <- fill.geno(cross, min.prob = 0.95 ,method="maxmarginal")
+#cross <- fill.geno(cross, error.prob=0.001, method="argmax")
+#cross <- removeDoubleXO(cross, chr=i)
+#cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.01, map.function=c("kosambi"),stepwidth=c("fixed"))
+#cross <- fill.geno(cross, min.prob = 0.99 ,method="maxmarginal")
+#crossz <- cleanGeno_jm_2(cross, chr=i, maxdist=25, maxmark=4, verbose=TRUE)
 #cross <- calc.errorlod(cross, err=0.05)
 ################################################################################
 
@@ -58,7 +87,7 @@ cross <- fill.geno(cross, min.prob = 0.99 ,method="maxmarginal")
 
 ################################################################################
 png(paste0('~/public_html/NBH_gts_postclean',i,'.png'),height=2500,width=4500)
- plotGeno(cross, chr=i, cex=2)
+ geno.image(cross, chr=i, cex=2)
 dev.off()
 ################################################################################
 
