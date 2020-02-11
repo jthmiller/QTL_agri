@@ -43,11 +43,14 @@ newpos <- lapply(map,function(X) { setNames(rescale(as.numeric(X),to = c(1,150))
 attr(newpos,'class') <- 'map'
 class(newpos[[chr]]) <- 'A'
 attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
+names(newpos) <- chr
+
 
 cross <- replace.map(cross,newpos)
+print(summary(pull.map(cross)))
 
 ### REMOVE SINGLE CROSSOVERS
-cross <- removeDoubleXO(cross, chr=i)
+cross <- removeDoubleXO(cross, chr=chr)
 cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
 
 ## REMOVE GTs that lead to high errorlod
@@ -66,6 +69,8 @@ if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
  cross <- removeDoubleXO(cross, chr=i)
  cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
 }
+
+print('done with errorlod calculation')
 
 ### REMOVE SHORT DOUBLE CROSSOVERS
 xos <- locateXO(cross, full.info=T)
