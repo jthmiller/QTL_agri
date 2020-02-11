@@ -44,8 +44,6 @@ attr(newpos,'class') <- 'map'
 class(newpos[[chr]]) <- 'A'
 attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
 names(newpos) <- chr
-
-
 cross <- replace.map(cross,newpos)
 print(summary(pull.map(cross)))
 
@@ -53,26 +51,7 @@ print(summary(pull.map(cross)))
 cross <- removeDoubleXO(cross, chr=chr)
 cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
 
-## REMOVE GTs that lead to high errorlod
-cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
-toperr <- top.errorlod(cross, cutoff=5)
-
-print(top.errorlod(cross, cutoff=5))
-
-if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
- for(z in 1:nrow(toperr)) {
-  chr <- toperr$chr[z]
-  id <- toperr$id[z]
-  mar <- toperr$marker[z]
-  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
- }
- cross <- removeDoubleXO(cross, chr=chr)
- cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
-}
-
-print('done with errorlod calculation')
-
-### REMOVE SHORT DOUBLE CROSSOVERS
+### REMOVE PROBLEM MARKERS LEADING TO A CROSSOVER IN > 50% of individuals
 xos <- locateXO(cross, full.info=T)
 xos <- xos[which(unlist(lapply(xos, is.matrix)))]
 indx <- sapply(xos,function(X){
@@ -90,6 +69,30 @@ a <- rep(ind, times = unlist(lapply(indx,length)))
 b <- as.numeric(unlist(indx))
 ab <- cbind(a,b)
 
+prob.marks <- names(which(table(b) > (nind(cross)/2)))
+prob.marks <- markernames(cross)[as.numeric(prob.marks)]
+cross <- drop.markers(cross,prob.marks)
+#################################################################################
+
+### SET VERY SHORT (< 3 markers) CROSSOVERS TO NA
+xos <- locateXO(cross, full.info=T)
+xos <- xos[which(unlist(lapply(xos, is.matrix)))]
+indx <- sapply(xos,function(X){
+ if(any( X[,'nTypedBetween'] < 2 | is.na(X[,'nTypedBetween']))){
+  a <- which(X[,'nTypedBetween'] < 2 | is.na(X[,'nTypedBetween']))
+  l <- as.list(X[a,'ileft'])
+  r <- as.list(X[a,'iright'])
+
+  a <- mapply(function(Z,Y) { seq(Z,Y) }, Z = l, Y = r )
+  as.numeric(unlist(a))
+ }
+})
+ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
+a <- rep(ind, times = unlist(lapply(indx,length)))
+b <- as.numeric(unlist(indx))
+ab <- cbind(a,b)
+
+## SET SHORT XO TO NA
 ch <- as.character(i)
 mat <- cross$geno[[ch]]$data
 mat[cbind(a,b)] <- NA
@@ -99,24 +102,25 @@ cross$geno[[ch]]$data <- mat
 ## CLEANUP
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
+#################################################################################
 
-#cross <- calc.errorlod(cross, err=0.05)
-#cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
-#cross <- cleanGeno_jm_2(cross, chr=i, maxdist=25, maxmark=4, verbose=TRUE)
-#cross <- fill.geno(cross, min.prob = 0.95 ,method="maxmarginal")
-#cross <- fill.geno(cross, error.prob=0.001, method="argmax")
-#cross <- removeDoubleXO(cross, chr=i)
-#cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.01, map.function=c("kosambi"),stepwidth=c("fixed"))
-#cross <- fill.geno(cross, min.prob = 0.99 ,method="maxmarginal")
-#crossz <- cleanGeno_jm_2(cross, chr=i, maxdist=25, maxmark=4, verbose=TRUE)
-#cross <- calc.errorlod(cross, err=0.05)
-################################################################################
+## REMOVE INDIVIDUAL GTs THAT LEAD TO HIGH ERRORLOD
+cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
+toperr <- top.errorlod(cross, cutoff=5)
 
-################################################################################
-##gt <- geno.table(cross)
-##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
-##cross <- pull.markers(cross,bfixA)
-################################################################################
+print('done with errorlod calculation')
+
+if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+ for(z in 1:nrow(toperr)) {
+  chr <- toperr$chr[z]
+  id <- toperr$id[z]
+  mar <- toperr$marker[z]
+  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+ }
+ cross <- removeDoubleXO(cross, chr=chr)
+ cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
+}
+#################################################################################
 
 ################################################################################
 
