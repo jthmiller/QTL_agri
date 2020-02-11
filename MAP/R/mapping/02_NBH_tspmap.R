@@ -50,6 +50,8 @@ print(summary(pull.map(cross)))
 ### REMOVE SINGLE CROSSOVERS
 cross <- removeDoubleXO(cross, chr=chr)
 cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
+cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
+print('done with errorlod calculation 1')
 
 ### REMOVE PROBLEM MARKERS LEADING TO A CROSSOVER IN > 50% of individuals
 xos <- locateXO(cross, full.info=T)
@@ -72,6 +74,9 @@ prob.marks <- as.numeric(names(which(table(b) > (nind(cross)/2))))
 prob.marks <- markernames(cross)[prob.marks]
 cross <- drop.markers(cross,prob.marks)
 #################################################################################
+
+cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
+print('done with errorlod calculation 2')
 
 ### SET VERY SHORT (< 3 markers) CROSSOVERS TO NA
 xos <- locateXO(cross, full.info=T)
@@ -105,20 +110,20 @@ cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
 ## REMOVE INDIVIDUAL GTs THAT LEAD TO HIGH ERRORLOD
 cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
 
-print('done with errorlod calculation')
+print('done with errorlod calculation 3')
 
-if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+toperr <- top.errorlod(cross, cutoff=5)
 
- toperr <- top.errorlod(cross, cutoff=5)
+if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 )
 
  for(z in 1:nrow(toperr)) {
   chr <- toperr$chr[z]
   id <- toperr$id[z]
   mar <- toperr$marker[z]
-  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <<- NA
-  print(z)
+  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+  print(paste(toperr$id[z],toperr$marker[z]))
  }
-}
+
  cross <- removeDoubleXO(cross, chr=chr)
  cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
 #################################################################################
@@ -126,7 +131,7 @@ if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
 ################################################################################
 
 png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=4500)
- cross$pheno$gtps <- order(colSums(pull.geno(cross) == 2, na.rm = T))
+ cross$pheno$gtps <- order(rowSums(pull.geno(cross) == 2, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
