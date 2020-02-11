@@ -118,9 +118,9 @@ if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
   cross$geno[[chr]]$data[cross$pheno$id==id, mar] <<- NA
   print(z)
  }
+}
  cross <- removeDoubleXO(cross, chr=chr)
  cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
-}
 #################################################################################
 
 ################################################################################
