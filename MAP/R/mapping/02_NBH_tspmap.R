@@ -60,13 +60,13 @@ toperr <- top.errorlod(cross, cutoff=5)
 print(top.errorlod(cross, cutoff=5))
 
 if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
- for(i in 1:nrow(toperr)) {
-  chr <- toperr$chr[i]
-  id <- toperr$id[i]
-  mar <- toperr$marker[i]
+ for(z in 1:nrow(toperr)) {
+  chr <- toperr$chr[z]
+  id <- toperr$id[z]
+  mar <- toperr$marker[z]
   cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
  }
- cross <- removeDoubleXO(cross, chr=i)
+ cross <- removeDoubleXO(cross, chr=chr)
  cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
 }
 
