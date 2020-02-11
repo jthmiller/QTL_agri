@@ -94,6 +94,7 @@ cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
 
 ###############################################################################
+
 png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- order(colSums(pull.geno(cross) == 2, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
