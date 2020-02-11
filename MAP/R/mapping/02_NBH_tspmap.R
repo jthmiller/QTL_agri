@@ -35,21 +35,25 @@ png(paste0('~/public_html/NBH_gts_preclean',i,'.png'),height=2500,width=4500)
  plotGeno(cross, chr=i, cex=2)
 dev.off()
 
-##cross <- calc.errorlod(cross, err=0.05)
-
 ################################################################################
-#cross <- cleanGeno_jm(cross, chr=i, maxdist=100, maxmark=8, verbose=TRUE)
+
 cross <- calc.errorlod(cross, err=0.05)
 cross <- removeDoubleXO(cross, chr=i)
-cross <- calc.errorlod(cross, err=0.05)
+cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
+cross <- fill.geno(cross, min.prob = 0.95 ,method="maxmarginal")
+
+cross <- removeDoubleXO(cross, chr=i)
+cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.01, map.function=c("kosambi"),stepwidth=c("fixed"))
+cross <- fill.geno(cross, min.prob = 0.99 ,method="maxmarginal")
+
 #cross <- cleanGeno_jm_2(cross, chr=i, maxdist=50, maxmark=4, verbose=TRUE)
 #cross <- calc.errorlod(cross, err=0.05)
 ################################################################################
 
 ################################################################################
-gt <- geno.table(cross)
-bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
-cross <- pull.markers(cross,bfixA)
+##gt <- geno.table(cross)
+##bfixA <- rownames(gt[which(gt$P.value > 0.0001 & gt$missing < 6),])
+##cross <- pull.markers(cross,bfixA)
 ################################################################################
 
 ################################################################################

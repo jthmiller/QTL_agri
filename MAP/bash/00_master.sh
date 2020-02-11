@@ -6,11 +6,9 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
-0.00001
-
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH" $bashsc/01_filter.sh 'NBH' '17' '0.075' '2' '0.00001'
-sbatch -J "ELR" $bashsc/01_filter.sh 'ELR' '14' '0.1'
+sbatch -J "ELR" $bashsc/01_filter.sh 'ELR' '14' '0.1' '2' '0.00001'
 ## sbatch 01_filter.sh 'BRP'
 ## sbatch -J "NEW" $bashsc/01_filter.sh 'NEW'
 ## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R

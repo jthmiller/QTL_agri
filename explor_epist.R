@@ -25,7 +25,7 @@ AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
 AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
-ahr_genes <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
+ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
 
 ###############
 ### test seg dist

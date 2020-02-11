@@ -327,3 +327,39 @@ sb1 <- scanone(cross,pheno.col=4,method="em",model="bin")
 sn1 <- scanone(rf,pheno.col=4,method="em",model="normal")
 
 sb1 <- scanone(rf,pheno.col=4,method="em",model="bin", intcovar=g, addcovar=g)
+
+
+
+
+'1:3269009','2:37728488','3:29581996','8:6576898','18:17816908','24:33090064'
+
+
+qtl <- c('2:28513083','18:17816908','13:22712588','8:6576898','24:33090064','10:24350254','1:3269009')
+
+qtl <- c('1:3269009','2:13279585','2:37728488','3:29581996','8:6576898','13:20756769','18:17816908','24:33090064')
+
+cbind(cross$pheno,pull.geno(cross)[,qtl])
+
+
+qtl <- c('1:3269009','2:37728488','2:13279585','3:29581996','8:6576898','13:12740805','18:17816908','24:33090064')
+
+
+z <- pull.markers(cross,qtl)
+z$pheno$aip <- pull.geno(z)[,'2:13279585']
+z$pheno$ahr <- pull.geno(z)[,'18:17816908']
+z$pheno$arnt <- pull.geno(z)[,'13:12740805']
+za <- subset(z,ind = z$pheno$Pheno > 3 )
+zb <- subset(z,ind = z$pheno$Pheno < 3)
+
+#zb <- subset(zb,ind = zb$pheno$ID[order(zb$pheno$aip, zb$pheno$ahr)])
+#za <- subset(za,ind = za$pheno$ID[order(za$pheno$aip, za$pheno$ahr)])
+
+
+plot_test('qtl_genos')
+par(mfrow = c(2,1))
+ geno.image(za, chr=c(2,8,13,18,24), reorder=c(6), main="Genotype data", alternate.chrid=FALSE, col = c(NA,'orange','black','blue'))
+ geno.image(zb, chr=c(2,8,13,18,24), reorder=c(6), main="Genotype data", alternate.chrid=FALSE, col = c(NA,'orange','black','blue'))
+dev.off()
+
+
+, col=NULL, ...)
