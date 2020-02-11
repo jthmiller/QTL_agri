@@ -71,19 +71,20 @@ cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
 
 ## REMOVE GTs that lead to high errorlof
-cross <- calc.errorlod(cross, err=0.05)
-toperr <- top.errorlod(cross, cutoff=4)
+cross <- calc.errorlod(cross, err=0.01)
+toperr <- top.errorlod(cross, cutoff=5)
 
-for(i in 1:nrow(toperr)) {
- chr <- toperr$chr[i]
- id <- toperr$id[i]
- mar <- toperr$marker[i]
- cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+ for(i in 1:nrow(toperr)) {
+  chr <- toperr$chr[i]
+  id <- toperr$id[i]
+  mar <- toperr$marker[i]
+  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+ }
+
+ cross <- removeDoubleXO(cross, chr=i)
+ cross <- fill.geno(cross, method="no_dbl_XO")
 }
-
-cross <- removeDoubleXO(cross, chr=i)
-cross <- fill.geno(cross, method="no_dbl_XO")
-
 #cross <- calc.errorlod(cross, err=0.05)
 #cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
 #cross <- cleanGeno_jm_2(cross, chr=i, maxdist=25, maxmark=4, verbose=TRUE)
