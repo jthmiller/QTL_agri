@@ -38,11 +38,12 @@ png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500
 dev.off()
 
 ## SET MAP TO RESONABLE DIST TO CLEAN
+chr <- as.character(i)
 map <- pull.map(cross)
 newpos <- lapply(map,function(X) { setNames(rescale(as.numeric(X),to = c(1,150)),markernames(cross))  } )
 attr(newpos,'class') <- 'map'
-class(newpos[[1]]) <- 'A'
-attr(newpos[[1]], "loglik") <- -44116
+class(newpos[[chr]]) <- 'A'
+attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik") 
 
 cross <- replace.map(cross,newpos)
 
