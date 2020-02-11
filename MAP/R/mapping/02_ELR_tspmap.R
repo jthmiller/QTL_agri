@@ -12,6 +12,7 @@ filename <- file.path(mpath,mapfile)
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
+library(rescale)
 ################################################################################
 
 fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
