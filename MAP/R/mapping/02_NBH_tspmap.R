@@ -67,6 +67,9 @@ cross$geno[[ch]]$data <- mat
 cross <- removeDoubleXO(cross, chr=i)
 cross <- fill.geno(cross, method="no_dbl_XO")
 cross <- calc.errorlod(cross, err=0.05)
+cross <- fill.geno(cross, error.prob=0.001, method="argmax")
+cross <- removeDoubleXO(cross, chr=i)
+cross <- fill.geno(cross, method="no_dbl_XO")
 
 #cross <- calc.errorlod(cross, err=0.05)
 #cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.05, map.function=c("kosambi"),stepwidth=c("fixed"))
