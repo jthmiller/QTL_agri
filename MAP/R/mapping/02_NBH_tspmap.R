@@ -125,6 +125,10 @@ png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=450
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
+png(paste0('~/public_html/',pop,'_gts_phenosort',i,'.png'),height=2500,width=4500)
+ geno.image(cross, chr=i, reorder=1, cex=2)
+dev.off()
+
 ################################################################################
 
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
