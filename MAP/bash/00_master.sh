@@ -18,15 +18,14 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_map" -p low --array=1 $bashsc/02a_map.sh 'NBH'
 sbatch -J "NBH_map" -p low --array=2-24 $bashsc/02a_map.sh 'NBH'
 
-sbatch -J "ELR_map" -p low --array=1 $bashsc/02a_map.sh 'ELR'
-sbatch -J "ELR_map" -p low --array=2-24 $bashsc/02a_map.sh 'ELR'
+sbatch -J "ELR_map" -p low --array=1-24 $bashsc/02a_map.sh 'ELR'
 
 ## sbatch -J "BRP" $bashsc/02_map.sh 'BRP'
 ## sbatch -J "NEW"  $bashsc/02_map.sh 'NEW'
 ## sbatch -J "ELR_M"  $bashsc/02_map_missing.sh 'ELR'
 
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" -p low --array=1-24 $bashsc/02c_map_estmap.sh 'NBH'
+sbatch -J "NBH_map" -p low --array=6 $bashsc/02c_map_estmap.sh 'NBH'
 sbatch -J "ELR_map" -p low --array=1-24 $bashsc/02c_map_estmap.sh 'ELR'
 
 bashsc="$HOME/QTL_agri/MAP/bash"

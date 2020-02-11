@@ -23,7 +23,7 @@ mapfile2 <- paste0(pop,'_all_mark_',i,'_tsp.csv')
 
 cross <- read.cross(file=mapfile2 , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
-loglik <- err <- c(0.0001, 0.001, 0.0025, 0.005, 0.01)
+loglik <- err <- c(0.0001, 0.001, 0.01, 0.08)
 
 update.lik <- function(z){
   cat(z, "of", length(err), "\n")
@@ -41,7 +41,7 @@ erprob <- err[which.max(lod)]
 
 print(paste('error lod =',erprob))
 
-cross_map <-  est.map(cross, error.prob=erprob,map.function="kosambi",maxit=100000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+cross_map <-  est.map(cross, error.prob=erprob,map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
 
