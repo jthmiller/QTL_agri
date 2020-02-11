@@ -108,12 +108,15 @@ cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="ko
 print('done with errorlod calculation')
 
 if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 ) {
+
  toperr <- top.errorlod(cross, cutoff=5)
+
  for(z in 1:nrow(toperr)) {
   chr <- toperr$chr[z]
   id <- toperr$id[z]
   mar <- toperr$marker[z]
-  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <<- NA
+  print(z)
  }
  cross <- removeDoubleXO(cross, chr=chr)
  cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
