@@ -58,6 +58,7 @@ a <- rep(ind, times = unlist(lapply(indx,length)))
 b <- as.numeric(unlist(indx))
 ab <- cbind(a,b)
 
+ch <- as.character(i)
 mat <- cross$geno[[ch]]$data
 mat[cbind(a,b)] <- NA
 
