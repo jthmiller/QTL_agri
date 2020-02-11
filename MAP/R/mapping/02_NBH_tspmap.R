@@ -154,6 +154,10 @@ cross <- shiftmap(cross, offset=0)
 
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
+png(paste0('~/public_html/',pop,'_gts_phenosort_mapped',i,'.png'),height=2500,width=4500)
+ geno.image(cross, chr=i, reorder=1, cex=2)
+dev.off()
+
 ################################################################################
 ## about 8% error rate
 ##cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))/nmar(cross)
