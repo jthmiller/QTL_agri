@@ -37,12 +37,14 @@ png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
-################################################################################
+## SET MAP TO RESONABLE DIST TO CLEAN
 map <- pull.map(cross)
-newpos <- lapply(map,function(X) { rescale(as.numeric(X),to = c(1,150)) } )
-chr <- as.character(i)
-cross$geno[[chr]]$map <- as.numeric(unlist(newpos))
+newpos <- lapply(map,function(X) { setNames(rescale(as.numeric(X),to = c(1,150)),markernames(cross))  } )
+attr(newpos,'class') <- 'map'
+class(newpos[[1]]) <- 'A'
+attr(newpos[[1]], "loglik") <- -44116
 
+cross <- replace.map(cross,newpos)
 
 ### REMOVE SINGLE CROSSOVERS
 cross <- removeDoubleXO(cross, chr=i)
