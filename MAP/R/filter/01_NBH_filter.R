@@ -51,13 +51,15 @@ crossbk <- cross
 ################################################################################
 
 #### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
-#bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-#bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
-#bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-#bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
-#bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
-#
-#cross <- switchAlleles(cross, markers = bfix_swit12)
+bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
+bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
+bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
+bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
+bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
+
+cross <- switchAlleles(cross, markers = bfix_swit12)
+
+crossbk <- cross
 ################################################################################
 
 #################################################################################
@@ -91,51 +93,48 @@ crossbk <- cross
 ##cross <- subset(cross, chr=c(1,2,8,18,24))
 ################################################################################
 
-#### Pvalue and Missing ##############################################
-gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
+##### Pvalue and Missing ##############################################
+#gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
+#bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
+#################################################################################
+cross <- subset(cross,chr=Z)
+mis <- 10
+pval <- 1e-06
+toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
+cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+gt <- geno.table(cross)
 bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
-################################################################################
-mis <- 3
-toss.missing <- c("NBH_5525","NBH_6177","NBH_5528")
-gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
-bfixA <- rownames(gt[which(gt$missing < mis),])
 cross <- pull.markers(cross,bfixA)
-cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 
+crossf <- cross
+# Determine what percent of markers are kept after filter
+#table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
 
-
-
-
-
-
-## Determine what percent of markers are kept after filter
-table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
-
-################################################################################
-## Get a cross object of parent genotypes
-cross.par <- subset(cross, ind=cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
-DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
-DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-
-###### FILTER #######################################################
-cross <- pull.markers(cross,bfixA)
-cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
-################################################################################
-
-### Faster filter ##############################################################
-mfl <- paste0(pop,'prefiltered_markernames.tsv')
-mfl <- file.path(mpath,mfl)
-write.table(markernames(cross), mfl)
-
-inds <- paste0(pop,'prefiltered_indnames.tsv')
-inds <- file.path(mpath,inds)
-write.table(cross$pheno, inds)
-
-swit <- paste0(pop,'prefiltered_switch.tsv')
-swit <- file.path(mpath,swit)
-write.table(bfix_swit12, swit)
-################################################################################
+#################################################################################
+### Get a cross object of parent genotypes
+#cross.par <- subset(cross, ind=cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
+#DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
+#DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
+#DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
+#
+####### FILTER #######################################################
+#cross <- pull.markers(cross,bfixA)
+#cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+#################################################################################
+#
+#### Faster filter ##############################################################
+#mfl <- paste0(pop,'prefiltered_markernames.tsv')
+#mfl <- file.path(mpath,mfl)
+#write.table(markernames(cross), mfl)
+#
+#inds <- paste0(pop,'prefiltered_indnames.tsv')
+#inds <- file.path(mpath,inds)
+#write.table(cross$pheno, inds)
+#
+#swit <- paste0(pop,'prefiltered_switch.tsv')
+#swit <- file.path(mpath,swit)
+#write.table(bfix_swit12, swit)
+#################################################################################
 
 #################################################################################
 #
@@ -152,13 +151,13 @@ write.table(bfix_swit12, swit)
 #cross <- switchAlleles(cross, markers = switch)
 #cross <- pull.markers(cross,marks$x)
 #
+##################################################################################
+#sapply(1:24,function(i){
+#ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
+#cross <<- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
+# maxit = 1, tol = 0.1, sex.sp = F)
+#})
 #################################################################################
-sapply(1:24,function(i){
-ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
-cross <<- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
- maxit = 1, tol = 0.1, sex.sp = F)
-})
-################################################################################
 
 ### PLOTS ######################################################################
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
@@ -169,6 +168,120 @@ par(mfrow=c(2,1))
  plot(1:length(gt[bfixA,1]), -log10(gt[bfixA,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
 dev.off()
 ################################################################################
+cross <- crossf
+
+#cross <- subset(cross,chr=Z)
+RF <- 0.05
+LOD <- 15
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+crossrf_0.05 <- cross
+plm(cross)
+
+
+cross <- tspOrder(cross = cross, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+cross <- removeDoubleXO(cross, chr=1:10)
+
+dist <- sapply(chrnames(cross), function(X) { mean(-log10(geno.table(cross, chr=X)$P.value)) })
+
+plot_test('dist')
+hist(dist[which(nmar(cross) > 10)])
+dev.off()
+
+keep <- names(which(dist < 5))
+cross <- subset(cross,chr=keep)
+
+cross1 <- cross
+
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+keep <- names(which(nmar(cross) > 2))
+cross <- subset(cross,chr=keep)
+cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
+
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+cross <- tspOrder(cross = cross, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+
+
+
+
+
+## TOSS INVARIANT
+###cross_hom <- subset(cross,chr=c(1,2))
+#cross <- subset(cross,chr=chrnames(cross)[3]:nchr(cross))
+#kp <- names(which(nmar(cross) > 2))
+#cross <- subset(cross,chr=kp)
+#plm(cross)
+
+
+
+crossp <- cross
+
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+cross0.5 <- cross
+
+RF <- 0.15
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+cross <- tspOrder(cross = cross, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+
+crosst <- cross
+
+
+cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+
+
+crossL <- cross
+
+cross <- tspOrder(cross = cross, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+
+cross <- removeDoubleXO(cross)
+drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.15)))
+plm(cross)
+print(nmar(cross))
+
+
+plm(reorg.2a)
+
+plm(c2)
+
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+swits <- markernames(cross, chr=chrnames(cross)[1])
+cross <- switchAlleles(cross, markers = swits)
+cross <- formLinkageGroups(cross, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+
+link_1 <- function(cross){
+
+  cross <- tspOrder(cross = reorg.2a, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+  cross <- removeDoubleXO(cross)
+
+
+
 
 library(qtl)
 library(doParallel)
@@ -182,7 +295,20 @@ test_link <- function(Z){
   reorg.2a <- reorg.2
 
   reorg.2a <- tspOrder(cross = reorg.2a, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
-  plm(reorg.2a)
+  ##plm(reorg.2a)
+  ##ro <- subset(reorg.2a,chr=c(1,2))
+  ##reorg.2a <- subset(reorg.2a,chr=c(2:nchr(reorg.2a))
+
+  reorg.2a <- removeDoubleXO(reorg.2a, chr = 1:6)
+  drop <- names(which(colSums(is.na(pull.geno(reorg.2a))) > (nind(reorg.2a)*0.15)))
+  length(drop)
+  reorg.2 <- drop.markers(reorg.2,drop)
+  print(nmar(reorg.2))
+
+
+
+
+
 
    ## switch it
   swits <- markernames(reorg.2a, chr=1)

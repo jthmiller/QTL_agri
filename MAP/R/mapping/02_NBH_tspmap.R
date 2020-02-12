@@ -39,7 +39,7 @@ dev.off()
 ## SET MAP TO RESONABLE DIST TO CLEAN
 chr <- as.character(i)
 map <- pull.map(cross)
-newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",markernames(cross)))/250000,markernames(cross))  } )
+newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",markernames(cross)))/100000,markernames(cross))  } )
 attr(newpos,'class') <- 'map'
 class(newpos[[chr]]) <- 'A'
 attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
@@ -51,6 +51,7 @@ print(summary(pull.map(cross)))
 cross <- removeDoubleXO(cross, chr=chr)
 drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.15)))
 print(nmar(cross))
+#plm(cross)
 
 ### GET ONLY 1 MARKER PER RAD TAG
 mrks <- as.numeric(gsub(".*:","",markernames(cross)))/100
@@ -64,6 +65,10 @@ print(nmar(cross))
 ## PRELIM ORDER w all errors
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
+pos <- as.numeric(gsub(".*:","",markernames(cross)))
+map <- as.numeric(pull.map(cross)[[1]])
+if(cor(pos,map, use="complete.obs") < 0) cross <- flip.order(cross, i)
+
 ### Remove single crossovers
 cross <- removeDoubleXO(cross, chr=chr)
 drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.25)))
@@ -73,11 +78,14 @@ print(nmar(cross))
 
 ### Smooth over errors
 cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
+plm(cross)
 
 png(paste0('~/public_html/',pop,'_gts_postclean_mapped',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 3 | pull.geno(cross) == 1, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
+
+cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08, min.prob=0.995)
 
 #### MAP #######################################################################
 
