@@ -14,7 +14,7 @@ suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 library(scales)
 ################################################################################
-## 24 14 15 (first marker or so)
+## 1 2 8 10 12 23
 
 fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
@@ -27,9 +27,9 @@ cross$pheno$sex <- sex.vec
 
 ################################################################################
 
-ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
-cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
- maxit = 1, tol = 0.1, sex.sp = F)
+#ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
+#cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
+# maxit = 1, tol = 0.1, sex.sp = F)
 
 png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
  cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 3 | pull.geno(cross) == 1, na.rm = T))
@@ -39,7 +39,7 @@ dev.off()
 ## SET MAP TO RESONABLE DIST TO CLEAN
 chr <- as.character(i)
 map <- pull.map(cross)
-newpos <- lapply(map,function(X) { setNames(rescale(as.numeric(X),to = c(1,150)),markernames(cross))  } )
+newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",markernames(cross)))/250000,markernames(cross))  } )
 attr(newpos,'class') <- 'map'
 class(newpos[[chr]]) <- 'A'
 attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
@@ -47,26 +47,36 @@ names(newpos) <- chr
 cross <- replace.map(cross,newpos)
 print(summary(pull.map(cross)))
 
-### Remove single crossovers
-
+### Remove single crossovers (not informative for ordering chuncks
 cross <- removeDoubleXO(cross, chr=chr)
+drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.15)))
+print(nmar(cross))
 
 ### GET ONLY 1 MARKER PER RAD TAG
-mrks <- as.numeric(gsub("*.:","",markernames(cross)))/100
+mrks <- as.numeric(gsub(".*:","",markernames(cross)))/100
 names(mrks) <- markernames(cross)
 n.missing <- nmissing(subset(cross, chr=chr), what="mar")
 wts <- -log( (n.missing+1) / (nind(cross)+1) )
-a <- pickMarkerSubset(mrks, 1, wts)
+a <- pickMarkerSubset(mrks, 2, wts)
 cross <- pull.markers(cross,a)
+print(nmar(cross))
+
+## PRELIM ORDER w all errors
+cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+### Remove single crossovers
+cross <- removeDoubleXO(cross, chr=chr)
+drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.25)))
+length(drop)
+cross <- drop.markers(cross,drop)
+print(nmar(cross))
 
 ### Smooth over errors
-cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.9975)
-
-drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.25)))
-cross <- drop.markers(cross,drop)
+cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
 
 png(paste0('~/public_html/',pop,'_gts_postclean_mapped',i,'.png'),height=2500,width=4500)
- geno.image(cross, reorder=1, cex=2)
+ cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 3 | pull.geno(cross) == 1, na.rm = T))
+ geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
 #### MAP #######################################################################

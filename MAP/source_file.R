@@ -1516,6 +1516,13 @@ get_genes_cm <- function(chr, start,stop,models,colm){
  return(models[inx,])
 }
 ################################################
+plm <- function(cross){
+png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
+ cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 3 | pull.geno(cross) == 1, na.rm = T))
+ geno.image(cross, chr=i, reorder=6, cex=2)
+dev.off()
+}
+################################################
 
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')

@@ -40,53 +40,53 @@ crossbk <- cross
 ### ENRICH FOR AAxBB ##########################################################
 
 ## DROP DANGEROUS ABxAB cross ##################################################
-DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
-DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-DROP2 <- names(DROP2)[which(as.numeric(DROP2)==2)]
-DROP <- intersect(DROP1,DROP2)
-cross <- drop.markers(cross,DROP)
+#DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
+#DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
+#DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
+#DROP2 <- names(DROP2)[which(as.numeric(DROP2)==2)]
+#DROP <- intersect(DROP1,DROP2)
+#cross <- drop.markers(cross,DROP)
 ### WHAT PERCENT? ####
 ## table(gsub(":.*","",DROP))/table(gsub(":.*","",markernames(cross2)))
 ################################################################################
 
-### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
-bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
-bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
-bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
-
-cross <- switchAlleles(cross, markers = bfix_swit12)
+#### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
+#bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
+#bfix_swit1 <- names(bfix)[which(as.numeric(bfix)==1)]
+#bfix <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
+#bfix_swit2 <- names(bfix)[which(as.numeric(bfix)==3)]
+#bfix_swit12 <- intersect(bfix_swit1 ,bfix_swit2)
+#
+#cross <- switchAlleles(cross, markers = bfix_swit12)
 ################################################################################
 
-################################################################################
-### Get highly likely AB x AB markers ##########################################
-bfix1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-bfix1 <- names(bfix1)[which(as.numeric(bfix1)==3)]
-bfix2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-bfix2 <- names(bfix2)[which(as.numeric(bfix2)==1)]
-parABxAB <- intersect(bfix1,bfix2)
+#################################################################################
+#### Get highly likely AB x AB markers ##########################################
+#bfix1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
+#bfix1 <- names(bfix1)[which(as.numeric(bfix1)==3)]
+#bfix2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
+#bfix2 <- names(bfix2)[which(as.numeric(bfix2)==1)]
+#parABxAB <- intersect(bfix1,bfix2)
+#
+#gt_nopar <- geno.table(subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F')))
+#parABxAB <- intersect(rownames(gt_nopar[which(gt_nopar$P.value > 0.01),]) ,parABxAB)
+#cross.1 <- pull.markers(cross,parABxAB)
+#################################################################################
 
-gt_nopar <- geno.table(subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F')))
-parABxAB <- intersect(rownames(gt_nopar[which(gt_nopar$P.value > 0.01),]) ,parABxAB)
-cross.1 <- pull.markers(cross,parABxAB)
-################################################################################
-
-### TEST SAMPLE GT SIMILARITY ##################################################
-cross.1 <- subset(cross.1,ind=!cross.1$pheno$ID%in%c('NBH_NBH1M','NBH_NBH1F'))
-cpgt <- comparegeno(cross.1)
-colnames(cpgt) <- cross.1$pheno$ID
-rownames(cpgt) <- cross.1$pheno$ID
-cpgt[cpgt==NaN] <- NA
-diag(cpgt) <- NA
-cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
-################################################################################
-png(paste0('~/public_html/NBH_relat.png'))
- hist(cpgt)
-dev.off()
-################################################################################
-toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
+#### TEST SAMPLE GT SIMILARITY ##################################################
+#cross.1 <- subset(cross.1,ind=!cross.1$pheno$ID%in%c('NBH_NBH1M','NBH_NBH1F'))
+#cpgt <- comparegeno(cross.1)
+#colnames(cpgt) <- cross.1$pheno$ID
+#rownames(cpgt) <- cross.1$pheno$ID
+#cpgt[cpgt==NaN] <- NA
+#diag(cpgt) <- NA
+#cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
+#################################################################################
+#png(paste0('~/public_html/NBH_relat.png'))
+# hist(cpgt)
+#dev.off()
+#################################################################################
+#toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 ################################################################################
 ##cross <- subset(cross, chr=c(1,2,8,18,24))
 ################################################################################
@@ -95,6 +95,18 @@ toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
 bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
 ################################################################################
+mis <- 3
+toss.missing <- c("NBH_5525","NBH_6177","NBH_5528")
+gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
+bfixA <- rownames(gt[which(gt$missing < mis),])
+cross <- pull.markers(cross,bfixA)
+cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+
+
+
+
+
+
 
 ## Determine what percent of markers are kept after filter
 table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
@@ -168,6 +180,9 @@ test_link <- function(Z){
   all <- subset(cross,chr=Z)
   reorg.2 <- formLinkageGroups(all, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
   reorg.2a <- reorg.2
+
+  reorg.2a <- tspOrder(cross = reorg.2a, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+  plm(reorg.2a)
 
    ## switch it
   swits <- markernames(reorg.2a, chr=1)
