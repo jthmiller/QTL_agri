@@ -55,7 +55,7 @@ drop <- names(which(colSums(is.na(pull.geno(cross))) > 5))
 
 cross <- drop.markers(cross,drop)
 
-png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)
+png(paste0('~/public_html/',pop,'_gts_postclean_mapped',i,'.png'),height=2500,width=4500)
  geno.image(cross, reorder=1, cex=2)
 dev.off()
 
