@@ -60,7 +60,7 @@ png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)
  geno.image(cross, reorder=1, cex=2)
 dev.off()
 
-#### MAP
+#### MAP #######################################################################
 
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
