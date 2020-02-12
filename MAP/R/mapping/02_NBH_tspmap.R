@@ -14,6 +14,7 @@ suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 library(scales)
 ################################################################################
+## 24 14 15 (first marker or so)
 
 fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
@@ -31,14 +32,13 @@ cross <- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "ko
  maxit = 1, tol = 0.1, sex.sp = F)
 
 png(paste0('~/public_html/',pop,'_gts_preclean',i,'.png'),height=2500,width=4500)
- cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))
+ cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 3 | pull.geno(cross) == 1, na.rm = T))
  geno.image(cross, chr=i, reorder=6, cex=2)
 dev.off()
 
 ## SET MAP TO RESONABLE DIST TO CLEAN
 chr <- as.character(i)
 map <- pull.map(cross)
-
 newpos <- lapply(map,function(X) { setNames(rescale(as.numeric(X),to = c(1,150)),markernames(cross))  } )
 attr(newpos,'class') <- 'map'
 class(newpos[[chr]]) <- 'A'
@@ -47,12 +47,22 @@ names(newpos) <- chr
 cross <- replace.map(cross,newpos)
 print(summary(pull.map(cross)))
 
+### Remove single crossovers
+
 cross <- removeDoubleXO(cross, chr=chr)
 
+### GET ONLY 1 MARKER PER RAD TAG
+mrks <- as.numeric(gsub("*.:","",markernames(cross)))/100
+names(mrks) <- markernames(cross)
+n.missing <- nmissing(subset(cross, chr=chr), what="mar")
+wts <- -log( (n.missing+1) / (nind(cross)+1) )
+a <- pickMarkerSubset(mrks, 1, wts)
+cross <- pull.markers(cross,a)
+
+### Smooth over errors
 cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.9975)
 
-drop <- names(which(colSums(is.na(pull.geno(cross))) > 5))
-
+drop <- names(which(colSums(is.na(pull.geno(cross))) > (nind(cross)*0.25)))
 cross <- drop.markers(cross,drop)
 
 png(paste0('~/public_html/',pop,'_gts_postclean_mapped',i,'.png'),height=2500,width=4500)
@@ -80,8 +90,13 @@ dev.off()
 
 ################################################################################
 
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
+X <- 1:length(Y)
 
-
+png(paste0('~/public_html/',pop,'_physpo_concord',i,'_tsp.png'),width=1000,height=500)
+ plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
+ points(X,Y)
+dev.off()
 ###cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
 #
 #png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)

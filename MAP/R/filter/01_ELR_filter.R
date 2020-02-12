@@ -66,25 +66,25 @@
 ##cross.1 <- pull.markers(cross,parABxAB)
 ####################################################################################
 ####
-####### TEST SAMPLE GT SIMILARITY ##################################################
-##cross.1 <- subset(cross.1,ind=!cross$pheno$ID%in%c('BLI_BI1124M'))
-##cpgt <- comparegeno(cross.1)
-##colnames(cpgt) <- cross.1$pheno$ID
-##rownames(cpgt) <- cross.1$pheno$ID
-##cpgt[cpgt==NaN] <- NA
-##diag(cpgt) <- NA
-##cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
+##### TEST SAMPLE GT SIMILARITY ##################################################
+cross.1 <- subset(cross,ind=!cross$pheno$ID%in%c('BLI_BI1124M'))
+cpgt <- comparegeno(cross.1)
+colnames(cpgt) <- cross.1$pheno$ID
+rownames(cpgt) <- cross.1$pheno$ID
+cpgt[cpgt==NaN] <- NA
+diag(cpgt) <- NA
+cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
 ####################################################################################
 ####
 ####################################################################################
 ########## Remove the samples related by more than 80% of genotypes #####
-##wh <- which(cpgt > 0.7, arr=TRUE)
-##wh <- wh[wh[,1] < wh[,2],]
-##mats <- cbind(rownames(wh),colnames(cpgt)[as.numeric(wh[,2])])
-##toss.relat <- unique(apply(mats,1,function(X){
-## X[which.max(c(nmissing(cross.1)[X[1]],nmissing(cross.1)[X[2]]))]
-##}))
-##
+wh <- which(cpgt > 0.8, arr=TRUE)
+wh <- wh[wh[,1] < wh[,2],]
+mats <- cbind(rownames(wh),colnames(cpgt)[as.numeric(wh[,2])])
+toss.relat <- unique(apply(mats,1,function(X){
+ X[which.max(c(nmissing(cross.1)[X[1]],nmissing(cross.1)[X[2]]))]
+}))
+
 ####USE MIS_IDd samples for map, but not QTL
 ##
 ######### toss related and then #################################################
@@ -130,29 +130,46 @@ rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
 
+toss.badata <- c("ELR_10869","ELR_10987")
+cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.badata,'BLI_BI1124M','ELR_ER1124F'))
+
+gt <- geno.table(cross)
+bfixA <- rownames(gt[which(gt$P.value > 0.00001 & gt$missing < 8),])
+cross <- pull.markers(cross,bfixA)
 ################################################################################
 
-flt <- file.path(mpath,paste0(pop,'_ABxAB_markernames.tsv'))
-DROP <- read.table(flt)$x
+#flt <- file.path(mpath,paste0(pop,'_ABxAB_markernames.tsv'))
+#DROP <- read.table(flt)$x
 
 ## Switch AAxBB
-swt <- file.path(mpath,paste0(pop,'_switch_markernames.tsv'))
-bfix_swit <- read.table(swt)$x
+#swt <- file.path(mpath,paste0(pop,'_switch_markernames.tsv'))
+#bfix_swit <- read.table(swt)$x
 
 ## Pval and missing
-gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
-gt.pmiss <- read.table(gtpm)
-bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.001 & gt.pmiss$missing < 5),])
+#gtpm <- file.path(mpath,paste0(pop,'_gtpmiss.tsv'))
+#gt.pmiss <- read.table(gtpm)
+#bfixA <- rownames(gt.pmiss[which(gt.pmiss$P.value > 0.0001 & gt.pmiss$missing < 5),])
+#
+##cross <- drop.markers(cross,DROP)
+#cross <- switchAlleles(cross, markers = bfix_swit)
+#cross <- pull.markers(cross,bfixA)
 
-## Bad data individuals
-toss.related <- c("ELR_10978","ELR_10977","ELR_10982","ELR_10974","ELR_10980","ELR_10973","ELR_10971","ELR_10979","ELR_10987")
-##toss.badata <- c("ELR_10869","ELR_10967","ELR_11592","ELR_11115","ELR_11103","ELR_10981","ELR_11593")
-toss.badata <- c("ELR_10869","ELR_10987")
 
-cross <- drop.markers(cross,DROP)
-cross <- switchAlleles(cross, markers = bfix_swit)
-cross <- pull.markers(cross,bfixA)
-cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.related,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
+##toss.badata <- c("ELR_10869","ELR_10987")
+##cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.badata,'BLI_BI1124M','ELR_ER1124F'))
+##
+png(paste0('~/public_html/',pop,'_gts_unmapped_unfiltered.png'),height=2500,width=4500)
+ geno.image(cross, reorder=1, cex=2)
+dev.off()
+##
+##
+##
+#### Bad data individuals
+##
+##toss.related <- c("ELR_10978","ELR_10977","ELR_10982","ELR_10974","ELR_10980","ELR_10973","ELR_10971","ELR_10979","ELR_10987")
+####toss.badata <- c("ELR_10869","ELR_10967","ELR_11592","ELR_11115","ELR_11103","ELR_10981","ELR_11593")
+##toss.badata <- c("ELR_10869","ELR_10987")
+####cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.related,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
 ################################################################################
 
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
@@ -198,6 +215,7 @@ for(Z in 1:24){
 
  cross <<- drop.markers(cross, drops)
  cross <<- switchAlleles(cross, switched)
+ print(Z)
 
 }
 
@@ -207,8 +225,6 @@ for(Z in 1:24){
 fl <- file.path(mpath,paste0(pop,'_unmapped_filtered'))
 write.cross(cross,filestem=fl,format="csv")
 ################################################################################
-
-system('sbatch 02_map.sh "ELR"')
 
 png(paste0('~/public_html/',pop,'_RF_physpo.png'),width=2000, height=2000)
 par(mfrow=c(4,6))
