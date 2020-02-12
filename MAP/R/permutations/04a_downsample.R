@@ -29,13 +29,39 @@ cross <- read.cross(
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross <- jittermap(cross)
 
-## Estimate gt prob and impute before downsample
+gt <- geno.table(cross)
+mis <- 5
+bfixA <- rownames(gt[which(gt$missing < mis),])
 
-dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
+cross <- pull.markers(cross, bfixA)
+cross_imp <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
+
+
+
+## Estimate gt prob and impute before downsample
+dups <- findDupMarkers(cross, exact.only=T, adjacent.only=T)
+#dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
 dups <- names(dups)
 if(pop == 'ELR.missing') dups <- c(dups,"AHR2a_del")
-cross <- pull.markers(cross, dups)
+cross <- drop.markers(cross, dups)
 cross
+
+crossbk <- cross
+
+cross_imp <- fill.geno(cross, method="argmax", error.prob = 0.08)
+
+
+
+cross_imp <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.998)
+cross_imp <- fill.geno(cross_imp, method="no_dbl_XO", error.prob = 0.08)
+cross_imp <- fill.geno(cross_imp, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
+
+png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)
+ geno.image(cross_imp, reorder=1, cex=2)
+dev.off()
+
+
+
 ################################################################################
 fl <- file.path(mpath,paste0(pop,'_downsampled'))
 write.cross(cross,filestem=fl,format="csv")

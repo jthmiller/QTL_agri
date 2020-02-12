@@ -41,7 +41,7 @@ erprob <- err[which.max(lod)]
 
 print(paste('error lod =',erprob))
 
-cross_map <-  est.map(cross, error.prob=erprob,map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
 

@@ -47,99 +47,20 @@ names(newpos) <- chr
 cross <- replace.map(cross,newpos)
 print(summary(pull.map(cross)))
 
-### REMOVE SINGLE CROSSOVERS
 cross <- removeDoubleXO(cross, chr=chr)
-cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
-cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
-print('done with errorlod calculation 1')
 
-### REMOVE PROBLEM MARKERS LEADING TO A CROSSOVER IN > 50% of individuals
-xos <- locateXO(cross, full.info=T)
-xos <- xos[which(unlist(lapply(xos, is.matrix)))]
-indx <- sapply(xos,function(X){
- if(any( X[,'nTypedBetween'] < 3 | is.na(X[,'nTypedBetween']))){
-  a <- which(X[,'nTypedBetween'] < 3 | is.na(X[,'nTypedBetween']))
-  l <- as.list(X[a,'ileft'])
-  r <- as.list(X[a,'iright'])
+cross <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.9975)
 
-  a <- mapply(function(Z,Y) { seq(Z,Y) }, Z = l, Y = r )
-  as.numeric(unlist(a))
- }
-})
-ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
-a <- rep(ind, times = unlist(lapply(indx,length)))
-b <- as.numeric(unlist(indx))
+drop <- names(which(colSums(is.na(pull.geno(cross))) > 5))
 
-prob.marks <- as.numeric(names(which(table(b) > (nind(cross)/2))))
-prob.marks <- markernames(cross)[prob.marks]
-cross <- drop.markers(cross,prob.marks)
-#################################################################################
+cross <- drop.markers(cross,drop)
 
-cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
-print('done with errorlod calculation 2')
 
-### SET VERY SHORT (< 3 markers) CROSSOVERS TO NA
-xos <- locateXO(cross, full.info=T)
-xos <- xos[which(unlist(lapply(xos, is.matrix)))]
-indx <- sapply(xos,function(X){
- if(any( X[,'nTypedBetween'] < 2 | is.na(X[,'nTypedBetween']))){
-  a <- which(X[,'nTypedBetween'] < 2 | is.na(X[,'nTypedBetween']))
-  l <- as.list(X[a,'ileft'])
-  r <- as.list(X[a,'iright'])
-
-  a <- mapply(function(Z,Y) { seq(Z,Y) }, Z = l, Y = r )
-  as.numeric(unlist(a))
- }
-})
-ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
-a <- rep(ind, times = unlist(lapply(indx,length)))
-b <- as.numeric(unlist(indx))
-ab <- cbind(a,b)
-
-## SET SHORT XO TO NA
-ch <- as.character(i)
-mat <- cross$geno[[ch]]$data
-mat[cbind(a,b)] <- NA
-cross$geno[[ch]]$data <- mat
-
-## CLEANUP
-cross <- removeDoubleXO(cross, chr=chr)
-cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
-#################################################################################
-
-## REMOVE INDIVIDUAL GTs THAT LEAD TO HIGH ERRORLOD
-cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
-
-print('done with errorlod calculation 3')
-
-toperr <- top.errorlod(cross, cutoff=5)
-
-if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 )
-
- for(z in 1:nrow(toperr)) {
-  chr <- toperr$chr[z]
-  id <- toperr$id[z]
-  mar <- toperr$marker[z]
-  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
-  print(paste(toperr$id[z],toperr$marker[z]))
- }
-
- cross <- removeDoubleXO(cross, chr=chr)
- cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
-#################################################################################
-
-################################################################################
-
-png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=4500)
- cross$pheno$gtps <- order(rowSums(pull.geno(cross) == 2, na.rm = T))
- geno.image(cross, chr=i, reorder=6, cex=2)
+png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)
+ geno.image(cross, reorder=1, cex=2)
 dev.off()
 
-png(paste0('~/public_html/',pop,'_gts_phenosort',i,'.png'),height=2500,width=4500)
- geno.image(cross, chr=i, reorder=1, cex=2)
-dev.off()
-
-################################################################################
+#### MAP
 
 cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
@@ -159,8 +80,134 @@ png(paste0('~/public_html/',pop,'_gts_phenosort_mapped',i,'.png'),height=2500,wi
 dev.off()
 
 ################################################################################
-## about 8% error rate
-##cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))/nmar(cross)
-##ind <- cross$pheno$ID[which(cross$pheno$gtps > 0.90)]
-##
-##(0.907113463 + 0.918871252 + 0.941211052)/3
+
+
+
+###cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
+#
+#png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)
+# geno.image(cross, reorder=1, cex=2)
+#dev.off()
+#
+#plot_test('mis')
+#hist(colSums(is.na(pull.geno(cross))))
+#dev.off()
+#
+#
+#### REMOVE SINGLE CROSSOVERS
+#cross <- removeDoubleXO(cross, chr=chr)
+#cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
+#cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
+#print('done with errorlod calculation 1')
+#
+#### REMOVE PROBLEM MARKERS LEADING TO A CROSSOVER IN > 50% of individuals
+#xos <- locateXO(cross, full.info=T)
+#xos <- xos[which(unlist(lapply(xos, is.matrix)))]
+#indx <- sapply(xos,function(X){
+# if(any( X[,'nTypedBetween'] < 3 | is.na(X[,'nTypedBetween']))){
+#  a <- which(X[,'nTypedBetween'] < 3 | is.na(X[,'nTypedBetween']))
+#  l <- as.list(X[a,'ileft'])
+#  r <- as.list(X[a,'iright'])
+#
+#  a <- mapply(function(Z,Y) { seq(Z,Y) }, Z = l, Y = r )
+#  as.numeric(unlist(a))
+# }
+#})
+#ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
+#a <- rep(ind, times = unlist(lapply(indx,length)))
+#b <- as.numeric(unlist(indx))
+#
+#prob.marks <- as.numeric(names(which(table(b) > (nind(cross)/2))))
+#prob.marks <- markernames(cross)[prob.marks]
+#cross <- drop.markers(cross,prob.marks)
+##################################################################################
+#
+#cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
+#print('done with errorlod calculation 2')
+#
+#### SET VERY SHORT (< 3 markers) CROSSOVERS TO NA
+#xos <- locateXO(cross, full.info=T)
+#xos <- xos[which(unlist(lapply(xos, is.matrix)))]
+#indx <- sapply(xos,function(X){
+# if(any( X[,'nTypedBetween'] < 2 | is.na(X[,'nTypedBetween']))){
+#  a <- which(X[,'nTypedBetween'] < 2 | is.na(X[,'nTypedBetween']))
+#  l <- as.list(X[a,'ileft'])
+#  r <- as.list(X[a,'iright'])
+#
+#  a <- mapply(function(Z,Y) { seq(Z,Y) }, Z = l, Y = r )
+#  as.numeric(unlist(a))
+# }
+#})
+#ind <- as.numeric(sapply(names(indx), function(x) { which(cross$pheno$ID == x) } ))
+#a <- rep(ind, times = unlist(lapply(indx,length)))
+#b <- as.numeric(unlist(indx))
+#ab <- cbind(a,b)
+#
+### SET SHORT XO TO NA
+#ch <- as.character(i)
+#mat <- cross$geno[[ch]]$data
+#mat[cbind(a,b)] <- NA
+#cross$geno[[ch]]$data <- mat
+#
+### CLEANUP
+#cross <- removeDoubleXO(cross, chr=chr)
+#cross <- fill.geno(cross, method="no_dbl_XO", error.prob = 0.08)
+##################################################################################
+#
+### REMOVE INDIVIDUAL GTs THAT LEAD TO HIGH ERRORLOD
+#cross <- calc.errorlod(cross, error.prob = 0.08, version="new", map.function="kosambi")
+#
+#print('done with errorlod calculation 3')
+#
+#toperr <- top.errorlod(cross, cutoff=5)
+#
+#if ( length(top.errorlod(cross, cutoff=5)[1,]) > 0 )
+#
+# for(z in 1:nrow(toperr)) {
+#  chr <- toperr$chr[z]
+#  id <- toperr$id[z]
+#  mar <- toperr$marker[z]
+#  cross$geno[[chr]]$data[cross$pheno$id==id, mar] <- NA
+#  print(paste(toperr$id[z],toperr$marker[z]))
+# }
+#
+# cross <- removeDoubleXO(cross, chr=chr)
+# cross <- fill.geno(cross, method="no_dbl_XO", , error.prob = 0.08)
+##################################################################################
+#
+#################################################################################
+#
+#png(paste0('~/public_html/',pop,'_gts_postclean',i,'.png'),height=2500,width=4500)
+# cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))
+# geno.image(cross, chr=i, reorder=6, cex=2)
+#dev.off()
+#
+#png(paste0('~/public_html/',pop,'_gts_phenosort',i,'.png'),height=2500,width=4500)
+# geno.image(cross, chr=i, reorder=1, cex=2)
+#dev.off()
+#
+#################################################################################
+#
+#cross <- tspOrder(cross = cross,hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+#
+#pos <- as.numeric(gsub(".*:","",markernames(cross)))
+#map <- as.numeric(pull.map(cross)[[1]])
+#
+#if(cor(pos,map, use="complete.obs") < 0){
+# cross <<- flip.order(cross, i)
+#}
+#
+#cross <- shiftmap(cross, offset=0)
+#
+#write.cross(cross,chr=i,filestem=filename,format="csv")
+#
+#png(paste0('~/public_html/',pop,'_gts_phenosort_mapped',i,'.png'),height=2500,width=4500)
+# geno.image(cross, chr=i, reorder=1, cex=2)
+#dev.off()
+#
+#################################################################################
+### about 8% error rate
+###cross$pheno$gtps <- as.numeric(rowSums(pull.geno(cross) == 2, na.rm = T))/nmar(cross)
+###ind <- cross$pheno$ID[which(cross$pheno$gtps > 0.90)]
+###
+###(0.907113463 + 0.918871252 + 0.941211052)/3

@@ -25,7 +25,7 @@ gnos <- lapply(cross,function(X){
   data.frame(X[[1]][[1]][['data']],stringsAsFactors=F)
 })
 gnos <- do.call(cbind,gnos)
-gnos <- cbind(cross[[1]]$pheno,gnos)
+gnos <- cbind(cross[[1]]$pheno[,ph],gnos)
 gnos$ID <- as.character(gnos$ID)
 
 m_names <- unlist(sapply(cross,function(X){
@@ -35,9 +35,10 @@ m_names <- unlist(sapply(cross,function(X){
 colnames(gnos) <- c('Pheno','sex','ID','bin','pheno_norm',m_names)
 rownames(gnos) <- cross[[1]]$pheno$ID
 
-map <- c(colnames(cross[[1]]$pheno),unname(unlist(sapply(cross,pull.map))))
-chr <- c(colnames(cross[[1]]$pheno),gsub(":.*","",m_names))
-info <- c(colnames(cross[[1]]$pheno),m_names)
+ph <- c('Pheno','sex','ID','bin','pheno_norm')
+map <- c(colnames(cross[[1]]$pheno[,ph]),unname(unlist(sapply(cross,pull.map))))
+chr <- c(colnames(cross[[1]]$pheno[,ph]),gsub(":.*","",m_names))
+info <- c(colnames(cross[[1]]$pheno[,ph]),m_names)
 headers <- rbind(info,chr,map)
 colnames(headers) <- headers[1,]
 headers[2:3,1:5] <- ''

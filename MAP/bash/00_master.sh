@@ -13,21 +13,21 @@ sbatch -J "ELR" $bashsc/01_filter.sh 'ELR' '14' '0.1' '2' '0.00001'
 ## sbatch -J "NEW" $bashsc/01_filter.sh 'NEW'
 ## srun Rscript $script_dir/R/01b_ELR_add_AHR_genotypes.R
 
-## MAP
+## ORDER MARKERS
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" -p low --array=1 $bashsc/02a_map.sh 'NBH'
-sbatch -J "NBH_map" -p low --array=2-24 $bashsc/02a_map.sh 'NBH'
-
+sbatch -J "NBH_map" -p low --array=1-24 $bashsc/02a_map.sh 'NBH'
 sbatch -J "ELR_map" -p low --array=1-24 $bashsc/02a_map.sh 'ELR'
 
 ## sbatch -J "BRP" $bashsc/02_map.sh 'BRP'
 ## sbatch -J "NEW"  $bashsc/02_map.sh 'NEW'
 ## sbatch -J "ELR_M"  $bashsc/02_map_missing.sh 'ELR'
 
+### ESTIMATE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" -p low --array=6 $bashsc/02c_map_estmap.sh 'NBH'
+sbatch -J "NBH_map" -p low --array=7-24 $bashsc/02c_map_estmap.sh 'NBH'
 sbatch -J "ELR_map" -p low --array=1-24 $bashsc/02c_map_estmap.sh 'ELR'
 
+### WRITE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
 sbatch -J "ELR_wc" $bashsc/03_write_map_cross.sh 'ELR'
