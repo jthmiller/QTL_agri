@@ -40,6 +40,10 @@ sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
 ################################################################################
 
+crossbk  <- cross
+cross <- crossbk
+################################################################################
+
 ################################################################################
 ## drop invariant and ABxAB cross in grand parents
 m <- which(cross$pheno$ID=='NBH_NBH1M')
@@ -56,154 +60,82 @@ cross <- drop.markers(cross,drop)
 ### ENRICH FOR AAxBB ##########################################################
 
 ## DROP DANGEROUS ABxAB cross ##################################################
-DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
-DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-DROP2 <- names(DROP2)[which(as.numeric(DROP2)==2)]
-DROP <- intersect(DROP1,DROP2)
-cross <- drop.markers(cross,DROP)
-### WHAT PERCENT? ####
-## table(gsub(":.*","",DROP))/table(gsub(":.*","",markernames(cross2)))
+## ALREADY DROPPED IN INVARIANT FILTER
 ################################################################################
 
-#### SWITCH ALLELES THAT ARE PROB AA x BB #######################################
+#### SWITCH ALLELES THAT ARE PROB AA x BB ######################################
 bfixm <- pull.geno(cross)[m,]
 bfix_swit1 <- names(bfixm)[which(as.numeric(bfixm)==1)]
 bfixf <- pull.geno(cross)[f,]
 bfix_swit2 <- names(bfixf)[which(as.numeric(bfixf)==3)]
 bfix_swit12 <- unique(c(bfix_swit1 ,bfix_swit2))
 cross <- switchAlleles(cross, markers = bfix_swit12)
+################################################################################
 
-## Parent markers
-parc <- subset(cross,ind=c('NBH_NBH1M','NBH_NBH1F'))
 ##2 27500454 27504907      aip
 # 2:27374265   2       0  1  0  1      0      0 0.36787944
 # 2:27601321   2       0  1  0  1      0      0 0.36787944
-a <- which(markernames(parc, chr=2) == '2:27374265')
-b <- which(markernames(parc, chr=2) == '2:27601321')
 
-plot_test('par_nbh', width=2000, height = 5000)
+## Parent markers
+parc <- subset(cross,ind=c('NBH_NBH1M','NBH_NBH1F'))
+plot_test('par_nbh', width=4000, height = 5000)
 par(mfrow = c(24,1))
-for(i in 1:24){
- geno.image(parc, chr=i)
- #if(i==2) abline(v=a,lwd = 10)
- #if(i==2) abline(v=b,lwd = 10)
-}
-dev.off()
+for(i in 1:24){ geno.image(parc, chr=i)} ; dev.off()
 
 #################################################################################
 #### Get highly likely (Parent) AB x AB markers ##########################################
-bfix1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-bfix1 <- names(bfix1)[which(as.numeric(bfix1)==3)]
-bfix2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-bfix2 <- names(bfix2)[which(as.numeric(bfix2)==1)]
-parABxAB <- intersect(bfix1,bfix2)
+bfix <- pull.geno(cross)
+m <- which(cross$pheno$ID=='NBH_NBH1M')
+f <- which(cross$pheno$ID=='NBH_NBH1F')
+bfixm <- names(which(bfix[m,]==3))
+bfixf <- names(which(bfix[f,]==1))
+
+## Higher confidence markers
+high_parABxAB <- intersect(bfix1,bfix2)
+## Lower confidence markers
+low_parABxAB <- unique(bfix1,bfix2)
+
+crossh <- pull.markers(cross, high_parABxAB)
+crossl <- pull.markers(cross, low_parABxAB)
+plot_test('nbh_remove_AB_h', width=1000, height = 500); geno.image(crossh, chr=2);dev.off()
+plot_test('nbh_remove_AB_l', width=1000, height = 500); geno.image(crossl, chr=2);dev.off()
+
+#parABxAB <- low_parABxAB
+parABxAB <- high_parABxAB
 cross <- pull.markers(cross, parABxAB)
 
-plot_test('par2_nbh_AB', width=1000, height = 500); geno.image(cross, chr=1);dev.off()
-
-#gt_nopar <- geno.table(subset(cross,ind=!cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F')))
-#parABxAB <- intersect(rownames(gt_nopar[which(gt_nopar$P.value > 0.01),]) ,parABxAB)
-#cross.1 <- pull.markers(cross,parABxAB)
-#################################################################################
-
-#### TEST SAMPLE GT SIMILARITY ##################################################
-#cross.1 <- subset(cross.1,ind=!cross.1$pheno$ID%in%c('NBH_NBH1M','NBH_NBH1F'))
-#cpgt <- comparegeno(cross.1)
-#colnames(cpgt) <- cross.1$pheno$ID
-#rownames(cpgt) <- cross.1$pheno$ID
-#cpgt[cpgt==NaN] <- NA
-#diag(cpgt) <- NA
-#cpgt <- cpgt[rowSums(is.na(cpgt)) < nind(cross.1),colSums(is.na(cpgt)) < nind(cross.1)]
-#################################################################################
-#png(paste0('~/public_html/NBH_relat.png'))
-# hist(cpgt)
-#dev.off()
-#################################################################################
-#toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
+################################################################################
+## TOSS PARENTS AND HIGH MISSING DATA SAMPLES
+toss.missing <- names(which(nmissing(cross)/(sum(nmar(cross))) > 0.20))
+##toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 ## is "NBH_5646" another grandparent sample??
-################################################################################
-##cross <- subset(cross, chr=c(1,2,8,18,24))
-################################################################################
-
-##### Pvalue and Missing ##############################################
-#gt <- geno.table(subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F')))
-#bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
-#################################################################################
-#cross <- subset(cross,chr=Z)
-
-toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
+toss.missing <- c(toss.missing,"NBH_5646")
 cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+################################################################################
+
+### TOSS MARKERS WITH HIGH PERCENTAGE OF MISSING DATA ##########################
 misg <- function(X,perc) { nind(cross) * perc }
 mis <- misg(cross,0.10)
 drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
 cross <- drop.markers(cross,drop)
-
-# Determine what percent of markers are kept after filter
-#table(gsub(":.*","",bfixA))/table(gsub(":.*","",markernames(cross)))
-
-#################################################################################
-### Get a cross object of parent genotypes
-#cross.par <- subset(cross, ind=cross$pheno$ID %in% c('NBH_NBH1M','NBH_NBH1F'))
-#DROP1 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1M',]
-#DROP1 <- names(DROP1)[which(as.numeric(DROP1)==2)]
-#DROP2 <- pull.geno(cross)[cross$pheno$ID=='NBH_NBH1F',]
-#
-####### FILTER #######################################################
-#cross <- pull.markers(cross,bfixA)
-#cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
-#################################################################################
-#
-#### Faster filter ##############################################################
-#mfl <- paste0(pop,'prefiltered_markernames.tsv')
-#mfl <- file.path(mpath,mfl)
-#write.table(markernames(cross), mfl)
-#
-#inds <- paste0(pop,'prefiltered_indnames.tsv')
-#inds <- file.path(mpath,inds)
-#write.table(cross$pheno, inds)
-#
-#swit <- paste0(pop,'prefiltered_switch.tsv')
-#swit <- file.path(mpath,swit)
-#write.table(bfix_swit12, swit)
-#################################################################################
-
-#################################################################################
-#
-#mfl <- file.path(mpath,paste0(pop,'prefiltered_markernames.tsv'))
-#marks <- read.table(mfl, stringsAsFactors=F)
-#
-#inds <- file.path(mpath,paste0(pop,'prefiltered_indnames.tsv'))
-#inds <- read.table(inds, stringsAsFactors=F)
-#
-#switch <- file.path(mpath,paste0(pop,'prefiltered_switch.tsv'))
-#switch <- read.table(switch, stringsAsFactors=F)
-#
-#cross <- subset(cross, ind=cross$pheno$ID %in% inds$ID)
-#cross <- switchAlleles(cross, markers = switch)
-#cross <- pull.markers(cross,marks$x)
-#
-##################################################################################
-#sapply(1:24,function(i){
-#ord <- order(as.numeric(gsub(".*:","",names(pull.map(cross)[[as.character(i)]]))))
-#cross <<- switch.order(cross, chr = i, ord, error.prob = 0.01, map.function = "kosambi",
-# maxit = 1, tol = 0.1, sex.sp = F)
-#})
-#################################################################################
+################################################################################
 
 ### PLOTS ######################################################################
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
 Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
 X <- 1:length(Y)
 gt <- geno.table(cross)
-plot_test('nbh_mar_regression', width = 5500, height = 750)
+plot_test('nbh_mar_regression_hi_confid', width = 5500, height = 750)
 par(mfrow=c(3,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
  plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ abline(h=6)
  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
   points(X,Y)
 dev.off()
 ################################################################################
+
+i <- 2
 
 mapit <- function(i){
  erprob <- 0.05
@@ -220,7 +152,9 @@ mapit <- function(i){
  cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
  dist <- sapply(chrnames(cross2), function(X) { mean(-log10(geno.table(cross2, chr=X)$P.value)) })
- keep <- names(which(dist < 5))
+ keep <- names(which(dist < 6))
+
+ #PLOT
  plot_test(paste0(pop,i,'dist')); hist(dist[which(nmar(cross2) > 10)], breaks=30) ; dev.off()
 
  ## drop distorted lg
@@ -229,7 +163,7 @@ mapit <- function(i){
 
  ### PVAL filt #################
  gt <- geno.table(cross2)
- pval <- 1.0e-5
+ pval <- 1.0e-6
  mis <- misg(cross2,0.15)
  bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
  cross2 <- pull.markers(cross2,bfixA)
@@ -268,10 +202,12 @@ mapit <- function(i){
 
  ## CALCULATE AVERAGE PVAL FOR EACH GROUP
  dist <- sapply(chrnames(cross30), function(X) { mean(-log10(geno.table(cross30, chr=X)$P.value)) })
+
+ ### PLOT DISTORTION DISTRIB
  plot_test(paste0(pop,i,'dist')); hist(dist[which(nmar(cross30) > 10)], breaks=10); dev.off()
 
  ### Drop lod distortion greater than log10 5
- keep <- names(which(dist < 5))
+ keep <- names(which(dist < 6))
  cross30 <- subset(cross30,chr=keep)
 
  ### Last linkage test before imputation
@@ -310,6 +246,7 @@ mapit <- function(i){
  print(paste('dropped',length(bfixA),'markers due to missing data'))
  cross30.3 <- drop.markers(cross30.3, bfixA)
 
+ ### FINAL ORDER
  RF <- 0.25
  LOD <- 10
  cross30.4 <- formLinkageGroups(cross30.3, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
@@ -347,7 +284,7 @@ registerDoParallel(cl)
 #########################################################
 
 cross30 <- thin_by_radtag(cross30, dist = 0.5)
-plotit(cross30.3)
+plotit(cross30.4)
 
 
 
