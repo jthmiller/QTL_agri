@@ -5,11 +5,9 @@ RF <- as.numeric(commandArgs(TRUE)[4])
 mis <- as.numeric(commandArgs(TRUE)[5])
 pval <- as.numeric(commandArgs(TRUE)[6])
 
-#source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 
 mpath <- '/home/jmiller1/QTL_agri/data'
-libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
-suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 ################################################################################
 ## read in the QTL cross

@@ -20,5 +20,7 @@ mylib <- "/home/jmiller1/R/x86_64-pc-linux-gnu-library/3.5"
 ##mpacks <- c("qtl", "foreach", "qtl2", "qtlTools", "plyr")
 mpacks <- c("qtl", "qtl2", "qtlTools", "plyr")
 #mpacks <- c("qtl", "foreach", "qtl2", "qtlTools", "doParallel", "plyr")
-
 lapply(mpacks, require, character.only = TRUE, lib.loc = mylib)
+
+libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
+suppressMessages(sapply(libs2load, require, character.only = TRUE))
