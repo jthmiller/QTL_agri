@@ -1524,7 +1524,28 @@ dev.off()
 }
 
 ################################################
+thin_by_radtag <- function(cross_in = cross30, dist = 1){
+ chr <- chrnames(cross_in)
+ map <- pull.map(cross_in)
+ newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",names(X)))/100000,names(X))  } )
+ newpos <- lapply(newpos, function(X){  class(X) <- 'A'; X } )
+ attr(newpos,'class') <- 'map'
+ ##attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
+ names(newpos) <- chr
+ cross_in <- replace.map(cross_in, newpos)
+ print(summary(pull.map(cross_in)))
 
+ ### GET ONLY 1 MARKER PER RAD TAG
+ mrks <- as.numeric(gsub(".*:","",markernames(cross_in)))/100
+ names(mrks) <- markernames(cross_in)
+ n.missing <- nmissing(cross_in, what="mar")
+ wts <- -log( (n.missing+1) / (nind(cross_in)+1) )
+ a <- pickMarkerSubset(mrks, dist, wts)
+ cross_in <- pull.markers(cross_in,a)
+ print(nmar(cross_in))
+ return(cross_in)
+}
+################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
 ##environment(parallel.droponemarker) <- asNamespace('qtl')

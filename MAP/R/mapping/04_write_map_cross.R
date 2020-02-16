@@ -5,14 +5,14 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- paste0(pop,'imp.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
 ## put chromosomes together
 ###############################################################################
 
-arg <- paste0(pop,'_all_mark_?[0-9]?[0-9]_tsp.csv')
+arg <- paste0(pop,'_all_mark_imputed_?[0-9]?[0-9]_tsp.csv')
 file_list <- list.files(mpath, arg)
 
 arg2 <- paste0(pop,'_all_mark_')

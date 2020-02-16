@@ -5,7 +5,7 @@ RF <- as.numeric(commandArgs(TRUE)[4])
 mis <- as.numeric(commandArgs(TRUE)[5])
 pval <- as.numeric(commandArgs(TRUE)[6])
 
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+#source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 
 mpath <- '/home/jmiller1/QTL_agri/data'
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
@@ -76,11 +76,11 @@ bfix_swit2 <- names(bfixf)[which(as.numeric(bfixf)==3)]
 bfix_swit12 <- unique(c(bfix_swit1 ,bfix_swit2))
 cross <- switchAlleles(cross, markers = bfix_swit12)
 
+## Parent markers
 parc <- subset(cross,ind=c('NBH_NBH1M','NBH_NBH1F'))
 ##2 27500454 27504907      aip
 # 2:27374265   2       0  1  0  1      0      0 0.36787944
 # 2:27601321   2       0  1  0  1      0      0 0.36787944
-
 a <- which(markernames(parc, chr=2) == '2:27374265')
 b <- which(markernames(parc, chr=2) == '2:27601321')
 
