@@ -1545,6 +1545,31 @@ thin_by_radtag <- function(cross_in = cross30, dist = 1){
  print(nmar(cross_in))
  return(cross_in)
 }
+####################################################################################
+
+plotit <- function(crs){
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(crs))))/1000000
+ X <- 1:length(Y)
+ gt <- geno.table(crs)
+ sm <- scanone(crs, pheno.col=4, model="binary",method="mr")
+
+ png(paste0('~/public_html/',pop,'_gts_test',i,'.png'),height=1500,width=2500)
+ par(mfrow=c(4,1))
+  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,20), cex =1)
+  plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex =1)
+  crs$pheno$gtps <- (as.numeric(rowSums(pull.geno(crs) == 1 | pull.geno(crs) == 1, na.rm = T))*10) + (as.numeric(rowSums(pull.geno(crs) == 3, na.rm = T))*5)
+  #crs$pheno$gtps <- rowSums(pull.geno(cross))
+  geno.image(crs, reorder=6, cex=2)
+  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
+  abline(h=27.504907, col='red')
+  points(X,Y)
+ dev.off()
+
+ plot_test(paste0(pop,'_rf_test',i))
+ plotRF(crs)
+ dev.off()
+}
+
 ################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')

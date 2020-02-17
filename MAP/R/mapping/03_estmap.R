@@ -13,13 +13,14 @@ filename <- file.path(mpath,mapfile)
 
 #libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 #suppressMessages(sapply(libs2load, require, character.only = TRUE))
+
 library(qtl)
 library(doParallel)
 cl <- makeCluster(5)
 registerDoParallel(cl)
 
 ################################################################################
-mapfile2 <- paste0(pop,'_all_mark_',i,'_tsp.csv')
+mapfile2 <- paste0(pop,'unmapped_all_mark_imputed_',i,'_tsp.csv')
 
 cross <- read.cross(file=mapfile2 , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 

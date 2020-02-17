@@ -50,3 +50,18 @@ get_genes(18,17538823)
 ## close to above
 18:20367708   1 1060 5.2823253
 18:20367780   1 1070 5.2823253
+
+
+
+
+a <- '/home/jmiller1/QTL_Map_Raw/vcftools.cov/geno.depth.gdepth'
+b <- '/home/jmiller1/QTL_Map_Raw/vcftools.cov/site.mean.depth.ldepth.mean'
+
+a <- read.table(a)
+b <- read.table(b, header=T)
+
+dp <- b[which(b$CHROM == 'chr2'),]
+
+plot_test('depth')
+plot(1:length(dp[,1]),dp[,3] )
+dev.off()

@@ -25,6 +25,26 @@ do
 	$plink --bfile $indpops/$X --out $indpops/$X $flagset --pheno $pheno --all-pheno --keep-cluster-names $X $geno $maf --recode --biallelic-only strict --snps-only just-acgt --nonfounders
 done
 
+for X in NBH BRP NEW ELR
+do
+vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all \
+| vcftools --vcf - --counts > ~/QTL_agri/data/$X.counts
+done
+
+for X in NBH BRP NEW ELR
+do
+vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all \
+| vcftools --vcf - --site-depth > ~/QTL_agri/data/$X.site-depth
+done
+
+
+vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf $maxf --remove-filtered-all \
+| vcftools --vcf - --site-mean-depth > ~/QTL_agri/data/$X.site-mean-depth
+done
+
 
 
 

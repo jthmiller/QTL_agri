@@ -14,6 +14,10 @@ library(scales)
 
 
 
+
+
+
+
 indHET <- cbind(1:length(cross$pheno$ID),rowSums(pull.geno(cross) == 2, na.rm = T))
 indHET <- indHET[order(as.numeric(indHET[,2]), decreasing=T),]
 
