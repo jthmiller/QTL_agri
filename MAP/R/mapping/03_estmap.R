@@ -5,6 +5,7 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 ##source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
+mapfile <- paste0(pop,'unmapped_all_mark_imputed_',i,'_tsp.csv')
 filename <- file.path(mpath,mapfile)
 
 #libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
@@ -16,9 +17,9 @@ cl <- makeCluster(5)
 registerDoParallel(cl)
 
 ################################################################################
-mapfile2 <- paste0(pop,'unmapped_all_mark_imputed_',i,'_tsp.csv')
 
-cross <- read.cross(file=mapfile2 , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
+cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 loglik <- err <- c(0.0001, 0.001, 0.01, 0.08)
 
