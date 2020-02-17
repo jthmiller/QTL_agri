@@ -53,15 +53,32 @@ get_genes(18,17538823)
 
 
 
+a <- '/home/jmiller1/QTL_agri/data/out.ldepth'
+a <- read.table(a,header=T)
 
-a <- '/home/jmiller1/QTL_Map_Raw/vcftools.cov/geno.depth.gdepth'
-b <- '/home/jmiller1/QTL_Map_Raw/vcftools.cov/site.mean.depth.ldepth.mean'
+plot_test('depth_2', width=1000, height=10000)
+par(mfrow = c(24,1))
+for(i in 1:24){
+chr <- paste0('chr',i)
+dp <- a[which(a$CHROM == chr),]
+plot(1:length(dp[,1]),dp[,3], pch=19, col='red', cex=0.5 )
+points(1:length(dp[,1]),dp[,4], pch=19, col='blue' , cex=0.5)
+}
+dev.off()
 
-a <- read.table(a)
-b <- read.table(b, header=T)
 
-dp <- b[which(b$CHROM == 'chr2'),]
+b <- '/home/jmiller1/QTL_agri/data/filt.out.frq.count'
+b <- read.table(b)
+b$V5 <- gsub(".*:","",b$V5)
+b$V6 <- gsub(".*:","",b$V6)
 
-plot_test('depth')
-plot(1:length(dp[,1]),dp[,3] )
+plot_test('depth', width=1000, height=10000)
+par(mfrow = c(24,1))
+
+for(i in 1:24){
+chr <- paste0('chr',i)
+dp <- b[which(b$V1 == chr),]
+plot(1:length(dp[,1]),dp[,5], pch=19, col='red', cex=0.5 )
+points(1:length(dp[,1]),dp[,6], pch=19, col='blue' , cex=0.5)
+}
 dev.off()

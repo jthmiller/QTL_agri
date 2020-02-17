@@ -28,20 +28,22 @@ for X in NBH BRP NEW ELR
 do
 vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
 | vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all --recode \
+| vcf-sort \
 | vcftools --vcf - --counts > ~/QTL_agri/data/$X.counts
 done
 
 for X in NBH BRP NEW ELR
 do
 vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
-| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all --recode \
-| vcftools --vcf - --site-depth > ~/QTL_agri/data/$X.site-depth
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all --recode --stdout \
+| > ~/QTL_agri/data/$X.vcf
 done
 
 for X in NBH BRP NEW ELR
 do
 vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
-| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf $maxf --remove-filtered-all \
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all --recode --stdout \
+| vcf-sort \
 | vcftools --vcf - --site-mean-depth > ~/QTL_agri/data/$X.site-mean-depth
 done
 

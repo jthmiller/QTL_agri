@@ -15,7 +15,6 @@ cross <- read.cross(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
 format = "csvr", geno = c(1:3), estimate.map = FALSE)
 ################################################################################
 
-
 ################################################################################
 ### Pull names from plinkfile
 path <- file.path(mpath, paste(pop, ".ped", sep = ""))
@@ -34,10 +33,6 @@ sex <- read.table(file.path(mpath,'sex.txt'),stringsAsFactors=F)
 rownames(sex) <- sex$ID
 sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
-################################################################################
-
-crossbk  <- cross
-cross <- crossbk
 ################################################################################
 
 ################################################################################
@@ -279,7 +274,7 @@ plotit(cross30)
 
  cross30.4 <- shiftmap(cross30.4, offset=0)
 
- mapfile <- paste0(pop,'unmapped_all_mark_imputed_',i,'_tsp')
+ mapfile <- paste0(pop,'_unmapped_all_mark_imputed_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
  write.cross(cross30.4,chr=i,filestem=filename,format="csv")
  plotit(cross30.4)
