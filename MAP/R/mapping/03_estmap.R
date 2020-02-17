@@ -23,7 +23,7 @@ registerDoParallel(cl)
 
 cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
-loglik <- err <- c(0.0001, 0.001, 0.01, 0.08)
+loglik <- err <- c(0.0001, 0.001, 0.01, 0.05)
 
 update.lik <- function(z){
   cat(z, "of", length(err), "\n")
