@@ -7,4 +7,4 @@
 
 script_dir='/home/jmiller1/QTL_agri/MAP'
 
-Rscript $script_dir/R/mapping/02_${1}_tspmap_estmap.R --vanilla "$SLURM_ARRAY_TASK_ID" "${1}"
+Rscript $script_dir/R/mapping/03_estmap.R --vanilla "$SLURM_ARRAY_TASK_ID" "${1}"

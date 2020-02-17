@@ -11,7 +11,6 @@ flagset='--set-missing-var-ids @:#  --allow-extra-chr --autosome-num 24 --allow-
 geno='--geno .5'
 maf='--mac 5'
 
-
 module load vcftools
 
 ## vcftools filters
@@ -28,18 +27,19 @@ done
 for X in NBH BRP NEW ELR
 do
 vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
-| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all \
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all --recode \
 | vcftools --vcf - --counts > ~/QTL_agri/data/$X.counts
 done
 
 for X in NBH BRP NEW ELR
 do
 vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
-| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all \
+| vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf --remove-filtered-all --recode \
 | vcftools --vcf - --site-depth > ~/QTL_agri/data/$X.site-depth
 done
 
-
+for X in NBH BRP NEW ELR
+do
 vcftools --gzvcf $vcfdir/SOMM.vcf.gz --keep $infiles/$X.samples --remove-filtered-all --recode --stdout \
 | vcftools --vcf - --max-meanDP 90 --maxDP 90 --stdout --minGQ 20 $maf $maxf --remove-filtered-all \
 | vcftools --vcf - --site-mean-depth > ~/QTL_agri/data/$X.site-mean-depth

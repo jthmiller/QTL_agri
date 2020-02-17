@@ -5,10 +5,6 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 ##source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-
-fl <- file.path(paste0(pop,'_unmapped_filtered.csv'))
-
-mapfile <- paste0(pop,'_all_mark_imputed_',i,'_tsp')
 filename <- file.path(mpath,mapfile)
 
 #libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
