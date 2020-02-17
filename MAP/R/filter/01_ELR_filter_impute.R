@@ -89,6 +89,7 @@ mapit_noimpute <- function(i){
  cross2 <- pull.markers(cross2,bfixA)
  ###############################################################################
 
+ ## Switch phase of groups that are out of phase with LG1
  rf <- pull.rf(est.rf(cross2))
  chr <- chrnames(cross2)[-1]
  rf.mean <- sapply(chr, function(X) { mean(rf[markernames(cross2,chr=1),markernames(cross2,chr=X)],na.rm=T) })
@@ -96,8 +97,8 @@ mapit_noimpute <- function(i){
  cross2 <- switchAlleles(cross2, markers = markernames(cross2,chr=flips))
 
  ## RETURN ALL MARKERS TO THE SAME LG ##########################################
- RF <- 20/nind(cross2)
- LOD <- 12
+ RF <- 8/nind(cross2)
+ LOD <- 8
  cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
  cross2 <- subset(cross2, chr=chrnames(cross2)[1])
  ###############################################################################
@@ -106,13 +107,12 @@ mapit_noimpute <- function(i){
  ord <- order(as.numeric(unlist(pull.map(cross2))))
  cross2 <- switch.order(cross2, chr = 1, ord, error.prob = 0.01, map.function = "kosambi", maxit = 1, tol = 0.1, sex.sp = F)
 
+ cross2 <- removeDoubleXO(cross2)
+ cross2 <- fill.geno(cross2, method="no_dbl_XO", error.prob = 0.05, min.prob=0.995)
+
  ## Take the best marker every 1kb #############################################
- cross2 <- thin_by_distortion(cross2,100)
+ cross2 <- thin_by_distortion(cross2,10)
  ###############################################################################
-
- ##############################################################################
-
- cross2 <- removeDoubleXO(cross2)
 
  #############################
  ## REMOVE MARKERS WITH HIGH MISSING DATA
@@ -120,38 +120,30 @@ mapit_noimpute <- function(i){
  bfixA <- names(which(colSums(is.na(pull.geno(cross2))) > mis))
  print(paste('dropped',length(bfixA),'markers due to missing data'))
  cross2 <- drop.markers(cross2, bfixA)
- ###############################################################################
-
- cross2 <- removeDoubleXO(cross2)
-
  #############################
- ## REMOVE MARKERS WITH HIGH MISSING DATA
- mis <- misg(cross2,0.20)
- bfixA <- names(which(colSums(is.na(pull.geno(cross2))) > mis))
- print(paste('dropped',length(bfixA),'markers due to missing data'))
- cross2 <- drop.markers(cross2, bfixA)
- ###############################################################################
-
  pos <- as.numeric(gsub(".*:","",markernames(cross2)))
  map <- as.numeric(pull.map(cross2)[[1]])
 
  if(cor(pos,map, use="complete.obs") < 0) cross2 <- flip.order(cross2, 1)
-
  cross2 <- shiftmap(cross2, offset=0)
 
  mapfile <- paste0(pop,'_unmapped_noimput_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
  write.cross(cross2,filestem=filename,format="csv")
 
- cross3 <- fill.geno(cross2, method="no_dbl_XO", error.prob = 0.05, min.prob=0.995)
- cross3 <- fill.geno(cross3, method="maxmarginal", error.prob = 0.05, min.prob=0.99)
-
- mapfile <- paste0(pop,'_unmapped_imputed_',i,'_tsp')
+ cross3 <- fill.geno(cross2, method="maxmarginal", error.prob = 0.05, min.prob=0.98)
+ cross3 <- fill.geno(cross3, method="no_dbl_XO", error.prob = 0.05, min.prob=0.98)
+ cross3 <- tspOrder(cross = cross3, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+ pos <- as.numeric(gsub(".*:","",markernames(cross3)))
+ map <- as.numeric(pull.map(cross3)[[1]])
+ if(cor(pos,map, use="complete.obs") < 0) cross3 <- flip.order(cross3, 1)
+ cross3 <- shiftmap(cross3, offset=0)
+ mapfile <- paste0(pop,'_imputed_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
- write.cross(cross2,filestem=filename,format="csv")
+ write.cross(cross3,filestem=filename,format="csv")
 
  cross4 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- mapfile <- paste0(pop,'_unmapped_reordered_imputed_',i,'_tsp')
+ mapfile <- paste0(pop,'_reordered_noImp_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
  write.cross(cross4,filestem=filename,format="csv")
 

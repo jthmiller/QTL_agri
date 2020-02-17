@@ -191,15 +191,6 @@ mapit_noimpute <- function(i){
  cross2 <- drop.markers(cross2, bfixA)
  ###############################################################################
 
- #cross2 <- removeDoubleXO(cross2)
-
- ### REMOVE MARKERS WITH HIGH MISSING DATA
- #mis <- misg(cross2,0.20)
- #bfixA <- names(which(colSums(is.na(pull.geno(cross2))) > mis))
- #print(paste('dropped',length(bfixA),'markers due to missing data'))
- #cross2 <- drop.markers(cross2, bfixA)
- ################################################################################
-
  #############################
  pos <- as.numeric(gsub(".*:","",markernames(cross2)))
  map <- as.numeric(pull.map(cross2)[[1]])
