@@ -1547,13 +1547,13 @@ thin_by_radtag <- function(cross_in = cross30, dist = 1){
 }
 ####################################################################################
 
-plotit <- function(crs){
+plotit <- function(crs,nme){
  Y <- c(0, as.numeric(gsub(".*:","",markernames(crs))))/1000000
  X <- 1:length(Y)
  gt <- geno.table(crs)
  sm <- scanone(crs, pheno.col=4, model="binary",method="mr")
 
- png(paste0('~/public_html/',pop,'_gts_test',i,'.png'),height=1500,width=2500)
+ png(paste0('~/public_html/',pop,'_',i,'_',nme,'.png'),height=1500,width=2500)
  par(mfrow=c(4,1))
   plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,20), cex =1)
   plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex =1)
@@ -1565,12 +1565,51 @@ plotit <- function(crs){
   points(X,Y)
  dev.off()
 
- plot_test(paste0(pop,'_rf_test',i))
+ plot_test(paste0(pop,'_rf_test_',nme,i))
  plotRF(crs)
  dev.off()
 }
 
-################################################
+### weight by distortion pvalue
+thin_by_distortion <- function(cross_in = cross30, dist = 1){
+ chr <- chrnames(cross_in)
+ map <- pull.map(cross_in)
+ gt <- geno.table(cross_in)
+
+ newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",names(X)))/100000,names(X))  } )
+ newpos <- lapply(newpos, function(X){  class(X) <- 'A'; X } )
+ attr(newpos,'class') <- 'map'
+ ##attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
+ names(newpos) <- chr
+ cross_in <- replace.map(cross_in, newpos)
+ print(summary(pull.map(cross_in)))
+
+ ### GET ONLY 1 MARKER PER RAD TAG
+ mrks <- as.numeric(gsub(".*:","",markernames(cross_in)))/100
+ names(mrks) <- markernames(cross_in)
+
+ wts <- rescale(log10(gt$P.value), c(0,100))
+
+ a <- pickMarkerSubset(mrks, dist, wts)
+ cross_in <- pull.markers(cross_in,a)
+ print(nmar(cross_in))
+ return(cross_in)
+}
+
+################################################################################
+use_phys_map <- function(cross_in){
+ chr <- chrnames(cross_in)
+ map <- pull.map(cross_in)
+ gt <- geno.table(cross_in)
+
+ newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",names(X)))/100000,names(X))  } )
+ newpos <- lapply(newpos, function(X){  class(X) <- 'A'; X } )
+ attr(newpos,'class') <- 'map'
+ names(newpos) <- chr
+ cross_in <- replace.map(cross_in, newpos)
+ return(cross_in)
+}
+################################################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
 ##environment(parallel.droponemarker) <- asNamespace('qtl')

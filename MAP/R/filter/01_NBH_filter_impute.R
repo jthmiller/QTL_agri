@@ -1,13 +1,13 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
-LOD <- as.numeric(commandArgs(TRUE)[3])
-RF <- as.numeric(commandArgs(TRUE)[4])
-mis <- as.numeric(commandArgs(TRUE)[5])
-pval <- as.numeric(commandArgs(TRUE)[6])
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 
 mpath <- '/home/jmiller1/QTL_agri/data'
+
+libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
+suppressMessages(sapply(libs2load, require, character.only = TRUE))
+library(scales)
 
 ################################################################################
 ## read in the QTL cross
@@ -82,9 +82,9 @@ bfixm <- names(which(bfix[m,]==3))
 bfixf <- names(which(bfix[f,]==1))
 
 ## Higher confidence markers
-high_parABxAB <- intersect(bfix1,bfix2)
+high_parABxAB <- intersect(bfixm,bfixf)
 ## Lower confidence markers
-low_parABxAB <- unique(bfix1,bfix2)
+low_parABxAB <- unique(bfixf,bfixm)
 
 crossh <- pull.markers(cross, high_parABxAB)
 crossl <- pull.markers(cross, low_parABxAB)
@@ -126,163 +126,108 @@ par(mfrow=c(3,1))
 dev.off()
 ################################################################################
 
-i <- 8
-
-mapit <- function(i){
+mapit_noimpute <- function(i){
 
  erprob <- 0.05
  Z <- i
 
- cross2 <- subset(cross,chr=Z)
+ cross1 <- subset(cross,chr=Z)
  toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137")
- cross2 <- subset(cross2, ind=!cross2$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
- cross2 <- est.rf(cross2)
+ cross1 <- subset(cross1, ind=!cross1$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+ cross1 <- use_phys_map(cross1)
+ cross1 <- est.rf(cross1)
 
- ### MAKE LOW/NO RECOMB GROUPS FOR CLEANUP
- ## high LOD initial check phase
- RF <- 2/nind(cross2)
- LOD <- 15
- cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ ### MAKE LOW/NO RECOMB GROUPS FOR CLEANUP #####################################
+ ## high LOD initial check phase ###############################################
+ RF <- 3/nind(cross1)
+ LOD <- 20
+ cross2 <- formLinkageGroups(cross1, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
- ### REMOVE NON AB AB
+ ### REMOVE NON AB AB ###################################################
  dist <- sapply(chrnames(cross2), function(X) { mean(-log10(geno.table(cross2, chr=X)$P.value)) })
- keep <- names(which(dist < 5))
+ keep <- names(which(dist < 7))
  cross2 <- subset(cross2,chr=keep)
+ ####################################################################
 
- cross2 <- subset(cross2, chr=names(which(nmar(cross2) > 1)))
- cross2 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- cross2 <- removeDoubleXO(cross2)
-
- ### PUT BACK INTO 1 GROUP
- RF <- 20/nind(cross2)
- LOD <- 15
- cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- cross2 <- subset(cross2, chr=chrnames(cross2)[1])
- cross2 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- cross2 <- removeDoubleXO(cross2)
-
- ca <- checkAlleles(cross2, threshold=5)
- cross2 <- switchAlleles(cross2, markers = ca$marker)
-
- RF <- 2/nind(cross2)
- LOD <- 15
- cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
-
- ## drop distorted lg
-
- cross2 <- fill.geno(cross2, method="no_dbl_XO", error.prob = 0.08, min.prob=0.995)
-
- ### PVAL filt #################
+ ### PVAL filt #################################################################
  gt <- geno.table(cross2)
- pval <- 1.0e-6
+ pval <- 1.0e-7
  mis <- misg(cross2,0.15)
  bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
  cross2 <- pull.markers(cross2,bfixA)
- #############################
+ ###############################################################################
 
- cross2 <- thin_by_radtag(cross2, dist = 0.5)
+ ## Take the best marker every 1kb #############################################
+ cross2 <- thin_by_distortion(cross2,10)
+ ###############################################################################
 
- #############################
- swits <- markernames(cross2, chr= chrnames(cross2)[1])
- ## switch singletons before getting rid of them
- swits <- c(swits, markernames(cross2, names(which(nmar(cross2) < 2))))
- cross2 <- switchAlleles(cross2, markers = swits)
- RF <- 3/nind(cross2)
- LOD <- 15
+ ## RETURN ALL MARKERS TO THE SAME LG ##########################################
+ RF <- 20/nind(cross2)
+ LOD <- 12
  cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- swits <- markernames(cross2, chr=chrnames(cross2)[1])
- cross2 <- switchAlleles(cross2, markers = swits)
- #############################
+ cross2 <- subset(cross2, chr=chrnames(cross2)[1])
+ ###############################################################################
+ crossbk <- cross2
 
- RF <- 2/nind(cross2)
- LOD <- 15
- cross30 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ cross2 <- use_phys_map(cross2)
+ ord <- order(as.numeric(unlist(pull.map(cross2))))
+ cross2 <- switch.order(cross2, chr = 1, ord, error.prob = 0.01, map.function = "kosambi", maxit = 1, tol = 0.1, sex.sp = F)
 
- ca <- checkAlleles(cross30, threshold=6)
- cross30 <- switchAlleles(cross30, markers = ca$marker)
- cross30 <- formLinkageGroups(cross30, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ ## Take the best marker every 1kb #############################################
+ cross2 <- thin_by_distortion(cross2,100)
+ ###############################################################################
 
- ### REMOVES SINGLETONS
- cross30 <- subset(cross30, chr=names(which(nmar(cross30) > 1)))
- cross30 <- tspOrder(cross = cross30, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
-plotit(cross30)
- ## HIGH LOD REMOVE CROSSOVERS
- cross30 <- removeDoubleXO(cross30)
- cross30 <- fill.geno(cross30, method="no_dbl_XO", error.prob = 0.05, min.prob=0.995)
+ ##############################################################################
+
+ cross2 <- removeDoubleXO(cross2)
 
  ## REMOVE MARKERS WITH HIGH MISSING DATA
- mis <- misg(cross30,0.10)
- bfixA <- names(which(colSums(is.na(pull.geno(cross30))) > mis))
+ mis <- misg(cross2,0.20)
+ bfixA <- names(which(colSums(is.na(pull.geno(cross2))) > mis))
  print(paste('dropped',length(bfixA),'markers due to missing data'))
- cross30 <- drop.markers(cross30, bfixA)
+ cross2 <- drop.markers(cross2, bfixA)
+ ###############################################################################
 
- ## CALCULATE AVERAGE PVAL FOR EACH GROUP
- dist <- sapply(chrnames(cross30), function(X) { mean(-log10(geno.table(cross30, chr=X)$P.value)) })
+ cross2 <- removeDoubleXO(cross2)
 
- ### PLOT DISTORTION DISTRIB
- plot_test(paste0(pop,i,'dist')); hist(dist[which(nmar(cross30) > 10)], breaks=10); dev.off()
+ #############################
+ pos <- as.numeric(gsub(".*:","",markernames(cross2)))
+ map <- as.numeric(pull.map(cross2)[[1]])
 
- ### Drop lod distortion greater than log10 5
- keep <- names(which(dist < 6))
- cross30 <- subset(cross30,chr=keep)
+ if(cor(pos,map, use="complete.obs") < 0) cross2 <- flip.order(cross2, 1)
 
- ### Last linkage test before imputation
- RF <- 0.05
- LOD <- 20
- cross30 <- formLinkageGroups(cross30, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- cross30.1 <- subset(cross30, chr=names(which(nmar(cross30) > 1)))
- cross30.1 <- tspOrder(cross = cross30.1, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+ cross2 <- shiftmap(cross2, offset=0)
 
- cross30.2 <- fill.geno(cross30.1, method="maxmarginal", error.prob = 0.05, min.prob=0.995)
- mis <- misg(cross30.2,0.10)
- bfixA <- names(which(colSums(is.na(pull.geno(cross30.2))) > mis))
- print(paste('dropping',length(bfixA),'markers due to missing data'))
- cross30.2 <- drop.markers(cross30.2,bfixA)
-
- swits <- markernames(cross30.2, chr=chrnames(cross30.2)[1])
- cross30.2 <- switchAlleles(cross30.2, markers = swits)
- cross30.2 <- formLinkageGroups(cross30.2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- swits <- markernames(cross30.2, chr=chrnames(cross30.2)[1])
- cross30.2 <- switchAlleles(cross30.2, markers = swits)
- cross30.2 <- formLinkageGroups(cross30.2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
-
- cross30.2 <- subset(cross30.2, chr=names(which(nmar(cross30.2) > 1)))
- cross30.2 <- fill.geno(cross30.2, method="maxmarginal", error.prob = 0.05, min.prob=0.995)
-
- RF <- 0.1
- LOD <- 20
- cross30.3 <- formLinkageGroups(cross30.2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- cross30.3 <- subset(cross30.3, chr=names(which(nmar(cross30.3) > 1)))
- cross30.3 <- tspOrder(cross = cross30.3, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- cross30.3 <- fill.geno(cross30.3, method="no_dbl_XO", error.prob = 0.05, min.prob=0.995)
-
- ## REMOVE MARKERS WITH MISSING DATA
- mis <- misg(cross30.3,0.10)
- bfixA <- names(which(colSums(is.na(pull.geno(cross30.3))) > mis))
- print(paste('dropped',length(bfixA),'markers due to missing data'))
- cross30.3 <- drop.markers(cross30.3, bfixA)
-
- ### FINAL ORDER
- cross30.4 <- formLinkageGroups(cross30.3, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- cross30.4 <- subset(cross30.4,chr=names(which.max(nmar(cross30.4))))
- cross30.4 <- tspOrder(cross = cross30.4, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
-
- pos <- as.numeric(gsub(".*:","",markernames(cross30.4)))
- map <- as.numeric(pull.map(cross30.4)[[1]])
-
- if(cor(pos,map, use="complete.obs") < 0) cross30.4 <- flip.order(cross30.4, 1)
-
- cross30.4 <- shiftmap(cross30.4, offset=0)
-
- mapfile <- paste0(pop,'_unmapped_all_mark_imputed_',i,'_tsp')
+ mapfile <- paste0(pop,'_unmapped_noimput_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
- write.cross(cross30.4,chr=i,filestem=filename,format="csv")
- plotit(cross30.4)
- print(paste('done with chr',i))
+ write.cross(cross2,filestem=filename,format="csv")
+
+ cross3 <- fill.geno(cross2, method="no_dbl_XO", error.prob = 0.05, min.prob=0.995)
+ cross3 <- fill.geno(cross3, method="maxmarginal", error.prob = 0.05, min.prob=0.99)
+
+ mapfile <- paste0(pop,'_unmapped_imputed_',i,'_tsp')
+ filename <- file.path(mpath,mapfile)
+ write.cross(cross2,filestem=filename,format="csv")
+
+
+ cross4 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+ mapfile <- paste0(pop,'_unmapped_reordered_imputed_',i,'_tsp')
+ filename <- file.path(mpath,mapfile)
+ write.cross(cross4,filestem=filename,format="csv")
+
+ plotit(cross2,nme='no_imp')
+ plotit(cross3,nme='imputed')
+ plotit(cross4,nme='reorder_noimp')
 }
 
-foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit(i)
 
-plotit(cross2)
-plotit(cross30.2)
-plotit(cross30.4)
+library(qtl)
+library(doParallel)
+cl <- makeCluster(20)
+registerDoParallel(cl)
+foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
+
+#######################################################################################
+#######################################################################################
+#######################################################################################
+#######################################################################################
