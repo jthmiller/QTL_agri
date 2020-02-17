@@ -1,3 +1,14 @@
+pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
+
+source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+
+mpath <- '/home/jmiller1/QTL_agri/data'
+
+libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
+suppressMessages(sapply(libs2load, require, character.only = TRUE))
+library(scales)
+
+
 ###############
 AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
 colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
@@ -72,13 +83,32 @@ b <- read.table(b)
 b$V5 <- gsub(".*:","",b$V5)
 b$V6 <- gsub(".*:","",b$V6)
 
+ords <- order(as.numeric(gsub("chr","",b$V1)))
+b <- b[ords,]
+
+plot_test('depth', width=10000, height=1000)
+par(mfrow = c(2,1))
+plot(1:length(b[,1]),b[,5], pch=19, col=as.factor(b$V1), cex=0.5)
+plot(1:length(b[,1]),b[,6], pch=19, col=as.factor(b$V1), cex=0.5)
+dev.off()
+
+
 plot_test('depth', width=1000, height=10000)
 par(mfrow = c(24,1))
-
 for(i in 1:24){
 chr <- paste0('chr',i)
 dp <- b[which(b$V1 == chr),]
 plot(1:length(dp[,1]),dp[,5], pch=19, col='red', cex=0.5 )
 points(1:length(dp[,1]),dp[,6], pch=19, col='blue' , cex=0.5)
 }
+dev.off()
+
+
+b <- '/home/jmiller1/QTL_agri/data/out.ldepth.mean'
+b <- read.table(b,header=T)
+
+plot_test('mean_depth', width=10000, height=1000)
+plot(1:length(b[,1]),b[,4], pch=19, col=as.factor(b$CHROM), cex=0.5 )
+
+#points(1:length(b[,1]),b[,4], pch=19, col='red' , cex=0.5)
 dev.off()
