@@ -8,6 +8,16 @@ libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 library(scales)
 
+mpath <- '/home/jmiller1/QTL_agri/data'
+#fl <- paste0(pop,'imp.mapped.tsp.csv')
+fl <- paste0(pop,'.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
+
+cross <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
 
 ###############
 AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
@@ -21,21 +31,9 @@ AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
+ahr_genes$mid_phy <- apply(ahr_genes[,c('str','stp')],1,mean,na.rm=T)
 ###############
-##2 27500454 27504907      aip
 
-## skips aip
-crossT <- crossbk
-aip <- c("2:27373969","2:27374040","2:27374166","2:27374218","2:27374233","2:27374243","2:27374265","2:27374287","2:27600701","2:27600733","2:27600769","2:27600770","2:27600796","2:27600825","2:27600841","2:27600881","2:27601072","2:27601121","2:27601212","2:27601321")
-aip <-  which(markernames(crossT) %in% aip)
-aipL <- which(markernames(crossT) == "2:27374287")
-aipR <- which(markernames(crossT) == "2:27600701")
-round(sm$lod[aip])
-
-
-##8 16483144 16483822     ARNT
-## 18 20388317 20468133    AHR2b
-## ALL GENES
 genes.bed <- read.table(file.path(mpath,"lifted_genes.bed"), stringsAsFactors = F, header = T)
 genes.bed$chr <- gsub('chr','',genes.bed$chr)
 genes.bed <- genes.bed[genes.bed$chr %in% c(1:24),]
@@ -48,6 +46,36 @@ get_genes <- function(chr,pos){
  dis <- whole_chrom[near,'mid'] - pos
  cbind(whole_chrom[near,],dis)
 }
+
+
+get_marks <- function(chr,pos,cross_in = cross){
+ phy_vec <- as.numeric(gsub(".*:","",markernames(cross_in,chr)))
+ markernames(cross_in,chr)[which.min(abs(phy_vec - pos))]
+}
+
+ahr_genes$close_marker <- mapply(get_marks,chr=ahr_genes$chr ,pos=ahr_genes$mid_phy)
+ahr_genes$dist <- abs(as.numeric(gsub(".*:","",ahr_genes$close_marker)) - ahr_genes$mid_phy)
+
+
+########## NOTES ########################
+## Segregation distortion at chr 13
+
+
+
+##2 27500454 27504907      aip
+
+## skips aip in NBH
+crossT <- crossbk
+aip <- c("2:27373969","2:27374040","2:27374166","2:27374218","2:27374233","2:27374243","2:27374265","2:27374287","2:27600701","2:27600733","2:27600769","2:27600770","2:27600796","2:27600825","2:27600841","2:27600881","2:27601072","2:27601121","2:27601212","2:27601321")
+aip <-  which(markernames(crossT) %in% aip)
+aipL <- which(markernames(crossT) == "2:27374287")
+aipR <- which(markernames(crossT) == "2:27600701")
+round(sm$lod[aip])
+
+
+##8 16483144 16483822     ARNT
+## 18 20388317 20468133    AHR2b
+## ALL GENES
 
 aip_peak2 <- get_genes(37728488,2)
 ## bad assembly

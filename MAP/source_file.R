@@ -1547,7 +1547,7 @@ thin_by_radtag <- function(cross_in = cross30, dist = 1){
 }
 ####################################################################################
 
-plotit <- function(crs,nme){
+plotit <- function(crs,nme='test'){
  Y <- c(0, as.numeric(gsub(".*:","",markernames(crs))))/1000000
  X <- 1:length(Y)
  gt <- geno.table(crs)
