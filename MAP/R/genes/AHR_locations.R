@@ -33,21 +33,6 @@ source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
 ahr_genes$mid_phy <- apply(ahr_genes[,c('str','stp')],1,mean,na.rm=T)
 ###############
-
-genes.bed <- read.table(file.path(mpath,"lifted_genes.bed"), stringsAsFactors = F, header = T)
-genes.bed$chr <- gsub('chr','',genes.bed$chr)
-genes.bed <- genes.bed[genes.bed$chr %in% c(1:24),]
-genes.bed$mid <- round(apply(genes.bed[c('start','end')],1,mean))
-
-get_genes <- function(chr,pos){
- whole_chrom <- genes.bed[which(genes.bed$chr == chr),]
- min.ind <- which.min(abs(whole_chrom$mid - pos))
- near <- c(min.ind -1,min.ind,min.ind+1)
- dis <- whole_chrom[near,'mid'] - pos
- cbind(whole_chrom[near,],dis)
-}
-
-
 get_marks <- function(chr,pos,cross_in = cross){
  phy_vec <- as.numeric(gsub(".*:","",markernames(cross_in,chr)))
  markernames(cross_in,chr)[which.min(abs(phy_vec - pos))]
@@ -55,11 +40,45 @@ get_marks <- function(chr,pos,cross_in = cross){
 
 ahr_genes$close_marker <- mapply(get_marks,chr=ahr_genes$chr ,pos=ahr_genes$mid_phy)
 ahr_genes$dist <- abs(as.numeric(gsub(".*:","",ahr_genes$close_marker)) - ahr_genes$mid_phy)
+ahr_genes <- ahr_genes[,c(-2,-3,-5)]
+
+sm <- scanone(cross, pheno.col=1, model="normal",method="ehk")
+ahr_genes$lod <- sm[ahr_genes$close_marker,'lod']
+
+###############
+genes.bed <- read.table(file.path(mpath,"lifted_genes.bed"), stringsAsFactors = F, header = T)
+genes.bed$chr <- gsub('chr','',genes.bed$chr)
+genes.bed <- genes.bed[genes.bed$chr %in% c(1:24),]
+genes.bed$mid <- round(apply(genes.bed[c('start','end')],1,mean))
+
+genes.bed <- genes.bed[order(genes.bed$chr,genes.bed$start),]
+
+get_genes <- function(chr,pos,ngens=2){
+ whole_chrom <- genes.bed[which(genes.bed$chr == chr),]
+ min.ind <- as.numeric(which.min(abs(whole_chrom$mid - pos)))
+ near <- c((min.ind-ngens):(min.ind+ngens))
+ dis <- whole_chrom[near,'mid'] - pos
+ cbind(whole_chrom[near,],dis)
+}
+###############
 
 
 ########## NOTES ########################
-## Segregation distortion at chr 13
+## Segregation distortion at chr 13 in NBH
 
+##ELR CANDS
+           chr  pos   lod
+1:20732863    1 1700 2.145
+6:18757871    6 4050 3.079
+8:35554693    8 2290 3.289
+13:13275880  13 3010 5.620
+18:20367780  18 2230 6.204
+
+get_genes(1,20732863,5)
+get_genes(6,18757871,5)
+get_genes(8,35554693,5)
+get_genes(13,13275880,5)
+get_genes(18,20367780,5)
 
 
 ##2 27500454 27504907      aip
@@ -72,12 +91,20 @@ aipL <- which(markernames(crossT) == "2:27374287")
 aipR <- which(markernames(crossT) == "2:27600701")
 round(sm$lod[aip])
 
+13:22948319
+13:25505826
+get_genes(13,22948319,3)
+get_genes(13,348607,5)
+
+get_genes(13,348607)
 
 ##8 16483144 16483822     ARNT
 ## 18 20388317 20468133    AHR2b
 ## ALL GENES
 
 aip_peak2 <- get_genes(37728488,2)
+get_genes(24,33090077)
+
 ## bad assembly
 bad_marker <- get_genes(14,12556225)
 bad_marker <- get_genes(19,2435634)

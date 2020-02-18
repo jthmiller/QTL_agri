@@ -126,9 +126,10 @@ par(mfrow=c(3,1))
 dev.off()
 ################################################################################
 
- toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137")
- cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
+ #toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137")
+ #cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 
+### NEEDS to be redone 8,10 (add scaffs?), 16(minor), 18 (still losing first 5 MB)
 
 mapit_noimpute <- function(i){
 
@@ -229,6 +230,7 @@ library(doParallel)
 cl <- makeCluster(20)
 registerDoParallel(cl)
 foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
+
 
 #######################################################################################
 #######################################################################################

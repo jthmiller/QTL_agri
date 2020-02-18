@@ -45,6 +45,10 @@ cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=100
 
 cross <- qtl:::replace.map(cross,cross_map)
 
+mapfile <- paste0(pop,'_imputed_estmap_',i,'_tsp')
+
+filename <- file.path(mpath,mapfile)
+
 write.cross(cross,chr=i,filestem=filename,format="csv")
 
 print(paste(pop, 'cross written'))

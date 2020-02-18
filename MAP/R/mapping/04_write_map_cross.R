@@ -5,32 +5,31 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-fl <- paste0(pop,'imp.mapped.tsp.csv')
+fl <- paste0(pop,'temp.imp.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
 ## put chromosomes together
 ###############################################################################
-
-arg <- paste0(pop,'_all_mark_imputed_?[0-9]?[0-9]_tsp.csv')
+arg <- paste0(pop,'_imputed_?[0-9]?[0-9]_tsp.csv')
+#arg <- paste0(pop,'_all_mark_imputed_?[0-9]?[0-9]_tsp.csv')
 file_list <- list.files(mpath, arg)
-
-arg2 <- paste0(pop,'_all_mark_')
-chr <- gsub(arg2,'',file_list)
-chr <- as.numeric(gsub("_tsp.csv",'',chr))
+file_list <- c(file_list, 'NBH_imputed_2unmapped_tsp.csv')
 
 cross <- lapply(file_list,function(X){ read.cross(file=X,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)})
 
 gnos <- lapply(cross,function(X){
   data.frame(X[[1]][[1]][['data']],stringsAsFactors=F)
 })
+
+
+ph <- c('Pheno','sex','ID','bin','pheno_norm')
+
 gnos <- do.call(cbind,gnos)
 gnos <- cbind(cross[[1]]$pheno[,ph],gnos)
 gnos$ID <- as.character(gnos$ID)
 
-m_names <- unlist(sapply(cross,function(X){
-  markernames(X)
-}))
+m_names <- unlist(sapply(cross,function(X){ markernames(X) }))
 
 colnames(gnos) <- c('Pheno','sex','ID','bin','pheno_norm',m_names)
 rownames(gnos) <- cross[[1]]$pheno$ID

@@ -27,8 +27,8 @@ AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
 
-###############
-### test seg dist
+#############################################
+### test locus interaction seg distortion
 
 probs <- c(0.0625,0.125,0.25)
 gts <- c('AA','AB','BB')
@@ -60,6 +60,15 @@ csq <- function(mara, marb) {
 }
 
 #### long ################################
+
+
+library(qtl)
+library(doParallel)
+cl <- makeCluster(20)
+registerDoParallel(cl)
+foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
+
+
 csq.pval <- apply(rf.gts, 2, function(X){
  apply(rf.gts, 2, csq, marb = X)
 })
