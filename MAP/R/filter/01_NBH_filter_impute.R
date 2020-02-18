@@ -1,7 +1,7 @@
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 mpath <- '/home/jmiller1/QTL_agri/data'
 

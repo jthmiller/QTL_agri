@@ -1,6 +1,6 @@
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 mpath <- '/home/jmiller1/QTL_agri/data'
 
@@ -29,7 +29,7 @@ AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
 AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
 AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
 AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
 ahr_genes$mid_phy <- apply(ahr_genes[,c('str','stp')],1,mean,na.rm=T)
 ###############

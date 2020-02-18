@@ -3,7 +3,8 @@
 i <- commandArgs(TRUE)[commandArgs(TRUE) %in% c(1:24)]
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
-##source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+##source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
+
 mpath <- '/home/jmiller1/QTL_agri/data'
 #mapfile <- paste0(pop,'_unmapped_all_mark_imputed_',i,'_tsp.csv')
 #filename <- file.path(mpath,mapfile)
