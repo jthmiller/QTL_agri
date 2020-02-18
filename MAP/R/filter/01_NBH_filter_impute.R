@@ -131,6 +131,15 @@ dev.off()
 
 ### NEEDS to be redone 8,10 (add scaffs?), 16(minor), 18 (still losing first 5 MB)
 
+
+mapfile <- paste0(pop,'_filtered_unphased')
+filename <- file.path(mpath,mapfile)
+write.cross(cross,filestem=filename,format="csv")
+fl <- paste0(pop,'_filtered_unphased.csv')
+cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
+i <- 8
+
 mapit_noimpute <- function(i){
 
  erprob <- 0.05

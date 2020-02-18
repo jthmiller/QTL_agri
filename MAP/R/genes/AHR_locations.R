@@ -62,6 +62,10 @@ get_genes <- function(chr,pos,ngens=2){
 }
 ###############
 
+PLOT ALLELE (AND GENOTYPE) BALLANCE ACROSS EACH CHROMOSOME
+
+
+
 
 ########## NOTES ########################
 ## Segregation distortion at chr 13 in NBH

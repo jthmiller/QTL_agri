@@ -22,7 +22,6 @@ gnos <- lapply(cross,function(X){
   data.frame(X[[1]][[1]][['data']],stringsAsFactors=F)
 })
 
-
 ph <- c('Pheno','sex','ID','bin','pheno_norm')
 
 gnos <- do.call(cbind,gnos)
