@@ -45,9 +45,13 @@ erprob <- err[which.max(lod)]
 
 print(paste('error lod =',erprob))
 
-cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=10000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=1, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
+
+ pos <- as.numeric(gsub(".*:","",markernames(cross)))
+ map <- as.numeric(pull.map(cross)[[1]])
+ if(cor(pos,map, use="complete.obs") < 0) cross <- flip.order(cross, 1)
 
 mapfile <- paste0(pop,'_imputed_estmap_',i,'_tsp')
 

@@ -133,16 +133,14 @@ dev.off()
 
 ### NEEDS to be redone 8,10 (add scaffs?), 16(minor), 18 (still losing first 5 MB)
 
-
+### WHITE THE ABOVE CROSS OBJECT
 mapfile <- paste0(pop,'_filtered_unphased')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
 
-
+### READ IN THE TABLE
 fl <- paste0(pop,'_filtered_unphased.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
-i <- 22
 
 mapit_noimpute <- function(i){
 
@@ -194,8 +192,6 @@ mapit_noimpute <- function(i){
  cross2 <- thin_by_distortion(cross2,1)
  ###############################################################################
 
- crossbk1 <- cross2
-
  ###############################################################################
  keep <- chrnames(cross2)
  lm <- sapply(keep[-1],function(z){ mean(pull.rf(cross2, what='lod')[markernames(cross2,keep[1]),markernames(cross2,z)]) })
@@ -223,8 +219,6 @@ mapit_noimpute <- function(i){
  ord <- order(as.numeric(unlist(pull.map(cross2))))
  cross2 <- switch.order(cross2, chr = 1, ord, error.prob = 0.01, map.function = "kosambi", maxit = 1, tol = 0.1, sex.sp = F)
 
- crossbk2 <- cross2
-
  ## REMOVE MARKERS WITH FREQUENTLY HIGH LOD ERROR
  erl <- calc.errorlod(cross2,error.prob=0.05, map.function="kosambi")
  terl <- top.errorlod(erl, cutoff=4)
@@ -251,7 +245,6 @@ mapit_noimpute <- function(i){
  cross2 <- drop.markers(cross2, bfixA)
  ###############################################################################
 
- crossbk3 <- cross2
 
  ## Take the best marker every RAD #############################################
  cross2 <- thin_by_distortion(cross2,1)
@@ -285,7 +278,7 @@ mapit_noimpute <- function(i){
 
 library(qtl)
 library(doParallel)
-cl <- makeCluster(5)
+cl <- makeCluster(20)
 registerDoParallel(cl)
 foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
 
