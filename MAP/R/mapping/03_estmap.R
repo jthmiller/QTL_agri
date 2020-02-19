@@ -9,8 +9,11 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 #mapfile <- paste0(pop,'_unmapped_all_mark_imputed_',i,'_tsp.csv')
 #filename <- file.path(mpath,mapfile)
 
-mapfile <- paste0(pop,'_imputed_',i,'_tsp.csv')
+mapfile <- paste0(pop,'_order_impute_',i,'_tsp.csv')
 filename <- file.path(mpath,mapfile)
+
+#mapfile <- paste0(pop,'_imputed_',i,'_tsp.csv')
+#filename <- file.path(mpath,mapfile)
 
 #libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap")
 #suppressMessages(sapply(libs2load, require, character.only = TRUE))

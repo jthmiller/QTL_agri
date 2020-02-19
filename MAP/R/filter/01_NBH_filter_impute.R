@@ -95,6 +95,8 @@ parABxAB <- low_parABxAB
 #parABxAB <- high_parABxAB
 cross <- pull.markers(cross, parABxAB)
 
+high_confid <- intersect(bfixm,bfixf)
+low_confid <- low_parABxAB[!low_parABxAB %in% high_parABxAB]
 ################################################################################
 ## TOSS PARENTS AND HIGH MISSING DATA SAMPLES
 toss.missing <- names(which(nmissing(cross)/(sum(nmar(cross))) > 0.20))
@@ -135,24 +137,26 @@ dev.off()
 mapfile <- paste0(pop,'_filtered_unphased')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
+
+
 fl <- paste0(pop,'_filtered_unphased.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
-i <- 8
+i <- 22
 
 mapit_noimpute <- function(i){
 
  erprob <- 0.05
  Z <- i
 
- cross1 <- subset(cross,chr=Z)
+ cross1 <- subset(cross,chr=i)
  cross1 <- use_phys_map(cross1)
  cross1 <- est.rf(cross1)
 
  ### MAKE LOW/NO RECOMB GROUPS FOR CLEANUP #####################################
  ## high LOD initial check phase ###############################################
- RF <- 3/nind(cross1)
- LOD <- 20
+ RF <- 6/nind(cross1)
+ LOD <- 16
  cross2 <- formLinkageGroups(cross1, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
  ### REMOVE NON AB AB ###################################################
@@ -162,81 +166,126 @@ mapit_noimpute <- function(i){
  ####################################################################
 
  ### PVAL filt #################################################################
+ ### Allow more distortion in markers that were confrimed in the g.parents (1.0e-5)
+ ### Filter more strictly for the markers that might be ABxAA
  gt <- geno.table(cross2)
- pval <- 1.0e-6
+ pval.h <- 1.0e-6
+ pval.l <- 1.0e-3
  mis <- misg(cross2,0.15)
- bfixA <- rownames(gt[which(gt$P.value > pval & gt$missing < mis),])
+ bfixH <- rownames(gt[which(gt$P.value > pval.h & gt$missing < mis),])
+ bfixH <- high_confid[high_confid %in% bfixH]
+
+ bfixL <- rownames(gt[which(gt$P.value > pval.l & gt$missing < mis),])
+ bfixL <- low_confid[low_confid %in% bfixL]
+
+ bfixA <- unique(c(bfixH,bfixL))
  cross2 <- pull.markers(cross2,bfixA)
  ###############################################################################
 
- ## Switch phase of groups that are out of phase with LG1
+ ###############################################################################
+ # Filter singletons by more strict threshold
+ gt <- geno.table(cross2)
+ keep2 <- names(which(nmar(cross2) < 3))
+ toss <- which(gt[markernames(cross2,keep2),'P.value'] < 1.0e-3)
+ cross2 <- drop.markers(cross2,markernames(cross2,keep2)[toss])
+ ###############################################################################
+
+ ## Take the best marker every RAD #############################################
+ cross2 <- thin_by_distortion(cross2,1)
+ ###############################################################################
+
+ crossbk1 <- cross2
+
+ ###############################################################################
+ keep <- chrnames(cross2)
+ lm <- sapply(keep[-1],function(z){ mean(pull.rf(cross2, what='lod')[markernames(cross2,keep[1]),markernames(cross2,z)]) })
+ drop <- names(which(lm < 1))
+ cross2 <- drop.markers(cross2,markernames(cross2,drop))
+ ###############################################################################
+
+ ###############################################################################
  rf <- pull.rf(est.rf(cross2))
- chr <- chrnames(cross2)[-1]
- rf.mean <- sapply(chr, function(X) { mean(rf[markernames(cross2,chr=1),markernames(cross2,chr=X)],na.rm=T) })
- flips <- names(which(rf.mean > 0.5))
- cross2 <- switchAlleles(cross2, markers = markernames(cross2,chr=flips))
+ keep <- chrnames(cross2)
+ minrf <- sapply(keep[-1],function(z){ min(rf[markernames(cross2,keep[1]),markernames(cross2,z)]) })
+ chr <- names(which(minrf > 0.1))
+ cross2 <- drop.markers(cross2,markernames(cross2,chr=chr))
+ ###############################################################################
 
  ## RETURN ALL MARKERS TO THE SAME LG ##########################################
  RF <- 10/nind(cross2)
- LOD <- 8
+ LOD <- 10
  cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
  cross2 <- subset(cross2, chr=chrnames(cross2)[1])
  ###############################################################################
 
+ ## USE PHYSICAL COORDS TO INITIALIZE
  cross2 <- use_phys_map(cross2)
  ord <- order(as.numeric(unlist(pull.map(cross2))))
  cross2 <- switch.order(cross2, chr = 1, ord, error.prob = 0.01, map.function = "kosambi", maxit = 1, tol = 0.1, sex.sp = F)
 
- cross2 <- removeDoubleXO(cross2)
- cross2 <- fill.geno(cross2, method="no_dbl_XO", error.prob = 0.05, min.prob=0.995)
+ crossbk2 <- cross2
 
- ## Take the best marker every 1kb #############################################
- cross2 <- thin_by_distortion(cross2,10)
+ ## REMOVE MARKERS WITH FREQUENTLY HIGH LOD ERROR
+ erl <- calc.errorlod(cross2,error.prob=0.05, map.function="kosambi")
+ terl <- top.errorlod(erl, cutoff=4)
+
+ ## REMOVE GENOTYPES WITH HIGH LOD ERROR
+ print(paste('dropped',length(terl[,1]),'genotypes due to error lod'))
+
+ if(dim(terl)[1] > 0)
+ for(m in 1:nrow(terl)) {
+  chr <- terl$chr[m]
+  id <- terl$id[m]
+  mar <- terl$marker[m]
+  cross2$geno[[chr]]$data[cross2$pheno$ID==id, mar] <- NA
+ }
+
+ ###############################################################################
+ cross2 <- removeDoubleXO(cross2)
  ###############################################################################
 
- ## REMOVE MARKERS WITH HIGH MISSING DATA
+ ## REMOVE MARKERS WITH HIGH RATE OF MISSING DATA
  mis <- misg(cross2,0.10)
  bfixA <- names(which(colSums(is.na(pull.geno(cross2))) > mis))
  print(paste('dropped',length(bfixA),'markers due to missing data'))
  cross2 <- drop.markers(cross2, bfixA)
  ###############################################################################
 
- #############################
- pos <- as.numeric(gsub(".*:","",markernames(cross2)))
- map <- as.numeric(pull.map(cross2)[[1]])
+ crossbk3 <- cross2
 
- if(cor(pos,map, use="complete.obs") < 0) cross2 <- flip.order(cross2, 1)
- cross2 <- shiftmap(cross2, offset=0)
+ ## Take the best marker every RAD #############################################
+ cross2 <- thin_by_distortion(cross2,1)
+ ###############################################################################
 
- mapfile <- paste0(pop,'_unmapped_noimput_',i,'_tsp')
+ mapfile <- paste0(pop,'_physorder_noimput_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
  write.cross(cross2,filestem=filename,format="csv")
 
- cross3 <- fill.geno(cross2, method="maxmarginal", error.prob = 0.05, min.prob=0.98)
- cross3 <- fill.geno(cross3, method="no_dbl_XO", error.prob = 0.05, min.prob=0.98)
- cross3 <- tspOrder(cross = cross3, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- pos <- as.numeric(gsub(".*:","",markernames(cross3)))
+ cross3 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
  map <- as.numeric(pull.map(cross3)[[1]])
- if(cor(pos,map, use="complete.obs") < 0) cross3 <- flip.order(cross3, 1)
- cross3 <- shiftmap(cross3, offset=0)
- mapfile <- paste0(pop,'_imputed_',i,'_tsp')
+ if(cor(1:length(map),map, use="complete.obs") < 0) cross3 <- flip.order(cross3, chrnames(cross3))
+
+ mapfile <- paste0(pop,'_reorder_noimput_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
  write.cross(cross3,filestem=filename,format="csv")
 
- cross4 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- mapfile <- paste0(pop,'_reordered_noImp_',i,'_tsp')
+ cross4 <- fill.geno(cross3, method="maxmarginal", error.prob = 0.05, min.prob=0.99)
+ cross5 <- fill.geno(cross4, method="no_dbl_XO", error.prob = 0.05, min.prob=0.99)
+
+ mapfile <- paste0(pop,'_order_impute_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
- write.cross(cross4,filestem=filename,format="csv")
+ write.cross(cross5,filestem=filename,format="csv")
 
  plotit(cross2,nme='no_imp')
- plotit(cross3,nme='imputed')
- plotit(cross4,nme='reorder_noimp')
+ plotit(cross3,nme='reorder')
+ plotit(cross5,nme='reorder_imp')
 }
 
 
 library(qtl)
 library(doParallel)
-cl <- makeCluster(20)
+cl <- makeCluster(5)
 registerDoParallel(cl)
 foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
 
@@ -245,3 +294,4 @@ foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
 #######################################################################################
 #######################################################################################
 #######################################################################################
+22

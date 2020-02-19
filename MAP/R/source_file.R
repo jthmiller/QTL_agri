@@ -1610,6 +1610,8 @@ use_phys_map <- function(cross_in){
  return(cross_in)
 }
 ################################################################################
+misg <- function(X,perc) { nind(cross) * perc }
+################################################################################
 environment(plot.draws) <- asNamespace('qtl')
 environment(read.cross.jm) <- asNamespace('qtl')
 ##environment(parallel.droponemarker) <- asNamespace('qtl')
