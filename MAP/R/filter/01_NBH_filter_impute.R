@@ -3,17 +3,29 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
+
+mpath <- '/home/jmiller1/QTL_Map_Raw/popgen/plinkfiles/ind.pops'
+fl <- 'NBH.um.unmapped.f2.csvr'
+################################################################################
+## read in the QTL cross
+cross <- read.cross(file = file.path(mpath, fl),
+format = "csvr", geno = c(1:3), estimate.map = FALSE)
+################################################################################
+
+
+################################################################################
+
 mpath <- '/home/jmiller1/QTL_agri/data'
 
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 library(scales)
 
-################################################################################
-## read in the QTL cross
-cross <- read.cross(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
-format = "csvr", geno = c(1:3), estimate.map = FALSE)
-################################################################################
+#################################################################################
+### read in the QTL cross
+#cross <- read.cross(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
+#format = "csvr", geno = c(1:3), estimate.map = FALSE)
+#################################################################################
 
 ################################################################################
 ### Pull names from plinkfile
@@ -128,19 +140,35 @@ par(mfrow=c(3,1))
 dev.off()
 ################################################################################
 
+crossbk <- cross
+
  #toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137")
  #cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 
-### NEEDS to be redone 8,10 (add scaffs?), 16(minor), 18 (still losing first 5 MB)
+ nw_marks <- grep('NW_',markernames(cross), value = T)
+ toss <- rownames(gt[nw_marks, ][which(gt[nw_marks,'P.value'] < 1.0e-5),])
+ cross <- drop.markers(cross,toss)
 
-### WHITE THE ABOVE CROSS OBJECT
-mapfile <- paste0(pop,'_filtered_unphased')
+ nw_marks <- grep('NW_',markernames(cross), value = T)
+ cross_NW <- subset(cross, chr=nw_marks)
+ RF <- 0.05
+ LOD <- 20
+ cross_NW <- formLinkageGroups(cross_NW, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ chr <- names(which(nmar(cross_NW) > 3))
+ cross <- subset(cross, chr=c(1:24,chr))
+ nw_marks <- grep('NW_',markernames(cross), value = T)
+
+
+### WRITE THE ABOVE CROSS OBJECT
+mapfile <- paste0(pop,'_filtered_unphased_NW')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
 
 ### READ IN THE TABLE
-fl <- paste0(pop,'_filtered_unphased.csv')
+fl <- paste0(pop,'_filtered_unphased_NW.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
+i <- 2
 
 mapit_noimpute <- function(i){
 
@@ -245,7 +273,6 @@ mapit_noimpute <- function(i){
  cross2 <- drop.markers(cross2, bfixA)
  ###############################################################################
 
-
  ## Take the best marker every RAD #############################################
  cross2 <- thin_by_distortion(cross2,1)
  ###############################################################################
@@ -269,6 +296,24 @@ mapit_noimpute <- function(i){
  mapfile <- paste0(pop,'_order_impute_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
  write.cross(cross5,filestem=filename,format="csv")
+
+
+ ## TEST WHETHER UNMAPPED MARKERS ARE LINKED
+ goodmarks <- markernames(cross2)
+ cross_NW <- pull.markers(cross,c(goodmarks,nw_marks))
+ RF <- 0.05
+ LOD <- 20
+ cross_NW <- formLinkageGroups(cross_NW, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ cross_NW <- subset(cross_NW, chr=1)
+ ca <- checkAlleles(cross_NW)
+
+ cross_NW <- tspOrder(cross = cross_NW, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+ cross4 <- fill.geno(cross3, method="maxmarginal", error.prob = 0.05, min.prob=0.99)
+ cross5 <- fill.geno(cross4, method="no_dbl_XO", error.prob = 0.05, min.prob=0.99)
+
+
+
+
 
  plotit(cross2,nme='no_imp')
  plotit(cross3,nme='reorder')

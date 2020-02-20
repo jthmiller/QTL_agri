@@ -11,10 +11,10 @@ fl <- file.path(mpath,fl)
 ################################################################################
 ## put chromosomes together
 ###############################################################################
-arg <- paste0(pop,'_imputed_?[0-9]?[0-9]_tsp.csv')
+arg <- paste0(pop,'_imputed_estmap_?[0-9]?[0-9]_tsp.csv')
 #arg <- paste0(pop,'_all_mark_imputed_?[0-9]?[0-9]_tsp.csv')
 file_list <- list.files(mpath, arg)
-file_list <- c(file_list, 'NBH_imputed_2unmapped_tsp.csv')
+#file_list <- c(file_list, 'NBH_imputed_2unmapped_tsp.csv')
 
 cross <- lapply(file_list,function(X){ read.cross(file=X,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)})
 
@@ -54,6 +54,19 @@ cross <- read.cross(
  estimate.map = FALSE
 )
 
+### PLOTS ######################################################################
+sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
+Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
+X <- 1:length(Y)
+gt <- geno.table(cross)
+plot_test('nbh_mar_regression_hi_confid', width = 5500, height = 750)
+par(mfrow=c(3,1))
+ plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ abline(h=6)
+ plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
+  points(X,Y)
+dev.off()
 ##############################################################################
 if(pop == 'NBH') {
  mfl <- paste0(pop,'_markernames.tsv')

@@ -24,7 +24,7 @@ sbatch -J "ELR" $bashsc/01_filter.sh 'ELR' '14' '0.1' '2' '0.00001'
 
 ### ESTIMATE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" -p high --array=1-24 $bashsc/02c_map_estmap.sh 'NBH'
+sbatch -J "NBH_map" --mem=12G -p high --array=1-9 $bashsc/02c_map_estmap.sh 'NBH'
 sbatch -J "ELR_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'ELR'
 
 ### WRITE MAP
