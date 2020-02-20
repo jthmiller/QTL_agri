@@ -14,13 +14,11 @@ format = "csvr", geno = c(1:3), estimate.map = FALSE)
 
 
 ################################################################################
-
 mpath <- '/home/jmiller1/QTL_agri/data'
 
 libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 library(scales)
-
 #################################################################################
 ### read in the QTL cross
 #cross <- read.cross(file = file.path(mpath, paste0(pop, ".unphased.f2.csvr")),
@@ -332,6 +330,3 @@ foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
 
 #######################################################################################
 #######################################################################################
-#######################################################################################
-#######################################################################################
-22
