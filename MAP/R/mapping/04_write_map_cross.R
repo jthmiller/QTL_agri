@@ -13,8 +13,8 @@ fl <- file.path(mpath,fl)
 ###############################################################################
 arg <- paste0(pop,'_imputed_estmap_?[0-9]?[0-9]_tsp.csv')
 #arg <- paste0(pop,'_all_mark_imputed_?[0-9]?[0-9]_tsp.csv')
+
 file_list <- list.files(mpath, arg)
-#file_list <- c(file_list, 'NBH_imputed_2unmapped_tsp.csv')
 
 cross <- lapply(file_list,function(X){ read.cross(file=X,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)})
 
