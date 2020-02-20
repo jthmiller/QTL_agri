@@ -8,7 +8,8 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 mpath <- '/home/jmiller1/QTL_agri/data'
 #mapfile <- paste0(pop,'_unmapped_all_mark_imputed_',i,'_tsp.csv')
 #filename <- file.path(mpath,mapfile)
-mapfile <- paste0(pop,'_order_impute_NW_',i,'_tsp.csv')
+#mapfile <- paste0(pop,'_order_impute_NW_',i,'_tsp.csv')
+mapfile <- paste0(pop,'_order_impute_',z,'_tsp.csv')
 #mapfile <- paste0(pop,'_order_impute_',i,'_tsp.csv')
 filename <- file.path(mpath,mapfile)
 
