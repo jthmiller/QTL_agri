@@ -162,8 +162,6 @@ dev.off()
 #mfl <- file.path(mpath,'NBH_low_confid.tsv')
 #write.table(high_confid,mfh)
 #write.table(low_confid,mfl)
-
-
 pop <- 'NBH'
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
@@ -182,7 +180,7 @@ low_confid <- as.character(read.table(mfl)[,1])
 high_confid <- as.character(read.table(mfh)[,1])
 ################################################################################
 ## THIN TO ONE MARKER PER KB
-cross <- thin_by_distortion(cross,1)
+cross <- thin_by_distortion(cross,10)
 ################################################################################
 
 nw_marks <- grep('NW_',markernames(cross), value = T)
@@ -194,7 +192,7 @@ mapit_noimpute <- function(i){
  Z <- i
 
  cross1 <- subset(cross,chr=c(i,nw_chr))
- #cross1 <- use_phys_map(cross1)
+ cross1 <- use_phys_map(cross1)
  cross1 <- est.rf(cross1)
  premap <- high_confid[high_confid %in% markernames(cross1,i)]
 
@@ -220,40 +218,41 @@ mapit_noimpute <- function(i){
  bfixL <- low_confid[low_confid %in% bfixL]
 
  bfixA <- unique(c(as.character(bfixH),as.character(bfixL)))
- cross3 <- pull.markers(cross2,bfixA)
+ cross2 <- pull.markers(cross2,bfixA)
  ###############################################################################
 
  ### REMOVE NON AB AB ###################################################
- dist <- sapply(chrnames(cross3), function(X) { mean(-log10(geno.table(cross3, chr=X)$P.value)) })
+ dist <- sapply(chrnames(cross2), function(X) { mean(-log10(geno.table(cross2, chr=X)$P.value)) })
  keep <- names(which(dist < 4))
- cross3 <- subset(cross3,chr=keep)
+ cross2 <- subset(cross2,chr=keep)
  ####################################################################
+
  ###############################################################################
  # Filter singletons by more strict threshold
- gt <- geno.table(cross3)
- keep2 <- names(which(nmar(cross3) < 3))
- toss <- which(gt[markernames(cross3,keep2),'P.value'] < 1.0e-3)
- cross4 <- drop.markers(cross3,markernames(cross3,keep2)[toss])
+ gt <- geno.table(cross2)
+ keep2 <- names(which(nmar(cross2) < 3))
+ toss <- which(gt[markernames(cross2,keep2),'P.value'] < 1.0e-3)
+ cross2 <- drop.markers(cross2,markernames(cross2,keep2)[toss])
  ###############################################################################
 
  ###############################################################################
  chr <- names(which(table(gt[premap,'chr']) > 5))
- test <- chrnames(cross4)[!chrnames(cross4) %in% chr]
- lm <- sapply(test,function(z){ mean(pull.rf(cross4, what='lod')[markernames(cross4,chr),markernames(cross4,z)]) })
+ test <- chrnames(cross2)[!chrnames(cross2) %in% chr]
+ lm <- sapply(test,function(z){ mean(pull.rf(cross2, what='lod')[markernames(cross2,chr),markernames(cross2,z)]) })
  drop <- names(which(lm < 2))
- cross5 <- drop.markers(cross4,markernames(cross4,drop))
+ cross2 <- drop.markers(cross2,markernames(cross2,drop))
  ###############################################################################
 
  ## RETURN ALL MARKERS TO THE SAME LG ##########################################
- gt <- geno.table(cross5)
- chri <- names(which(table(gt[premap,'chr']) > 5))
+ gt <- geno.table(cross2)
+ chri <- names(which(table(gt[premap,'chr']) > 1))
 
  ## use 50th percentile lod and rf to regroup all markers
- LOD <- quantile(unlist(pull.rf(cross5,what='lod',chr=chri)),probs = 0.50, na.rm=T)
- RF <- quantile(unlist(pull.rf(cross5,chr=chri)),probs = 0.50, na.rm=T)
+ LOD <- quantile(unlist(pull.rf(cross2,what='lod',chr=chri)),probs = 0.75, na.rm=T)
+ RF <- quantile(unlist(pull.rf(cross2,chr=chri)),probs = 0.25, na.rm=T)
 
- cross6 <- formLinkageGroups(cross5, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
- cross6 <- subset(cross6, chr=names(which.max(nmar(cross6))))
+ cross2 <- formLinkageGroups(cross2, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ cross2 <- subset(cross2, chr=names(which.max(nmar(cross2))))
  ###############################################################################
 
  ### USE PHYSICAL COORDS TO INITIALIZE
@@ -277,45 +276,45 @@ mapit_noimpute <- function(i){
  #}
 
  ###############################################################################
- cross7 <- tspOrder(cross = cross6, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+ cross2 <- tspOrder(cross = cross2, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
  mapfile <- paste0(pop,'_reorder_noimput_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
- write.cross(cross7,filestem=filename,format="csv")
+ write.cross(cross2,filestem=filename,format="csv")
 ###############################################################################
 ###############################################################################
 
 ###############################################################################
 ###############################################################################
- cross8 <- removeDoubleXO(cross7)
- cross8 <- fill.geno(cross8, method="no_dbl_XO", error.prob = 0.05, min.prob=0.99)
+ cross3 <- removeDoubleXO(cross2)
+ cross3 <- fill.geno(cross3, method="no_dbl_XO", error.prob = 0.05, min.prob=0.99)
 
  ## REMOVE MARKERS WITH HIGH RATE OF MISSING DATA
- mis <- misg(cross8,0.10)
- bfixA <- names(which(colSums(is.na(pull.geno(cross8))) > mis))
+ mis <- misg(cross3,0.10)
+ bfixA <- names(which(colSums(is.na(pull.geno(cross3))) > mis))
  print(paste('dropped',length(bfixA),'markers due to missing data'))
- cross9 <- drop.markers(cross8, bfixA)
+ cross3 <- drop.markers(cross3, bfixA)
  ###############################################################################
 
- cross10 <- tspOrder(cross = cross9, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+ cross3 <- tspOrder(cross = cross3, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 
- map <- as.numeric(pull.map(cross10)[[1]])
- if(cor(1:length(map),map, use="complete.obs") < 0) cross10 <- flip.order(cross10, chrnames(cross10))
+ map <- as.numeric(pull.map(cross3)[[1]])
+ if(cor(1:length(map),map, use="complete.obs") < 0) cross3 <- flip.order(cross3, chrnames(cross3))
 
  mapfile <- paste0(pop,'_reorder2_noimput_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
- write.cross(cross10,filestem=filename,format="csv")
+ write.cross(cross3,filestem=filename,format="csv")
 ###############################################################################
 ###############################################################################
 
 ###############################################################################
 ###############################################################################
- cross11 <- fill.geno(cross10, method="maxmarginal", error.prob = 0.05, min.prob=0.95)
- cross11 <- fill.geno(cross11, method="no_dbl_XO", error.prob = 0.05, min.prob=0.95)
+ cross4 <- fill.geno(cross3, method="maxmarginal", error.prob = 0.05, min.prob=0.95)
+ cross5 <- fill.geno(cross4, method="no_dbl_XO", error.prob = 0.05, min.prob=0.95)
 
  mapfile <- paste0(pop,'_order_impute_',i,'_tsp')
  filename <- file.path(mpath,mapfile)
- write.cross(cross11,filestem=filename,format="csv")
+ write.cross(cross5,filestem=filename,format="csv")
 ###############################################################################
 ###############################################################################
  ## TEST WHETHER UNMAPPED MARKERS ARE LINKED
@@ -337,9 +336,9 @@ mapit_noimpute <- function(i){
  #filename <- file.path(mpath,mapfile)
  #write.cross(cross_NW,filestem=filename,format="csv")
 
- plotit(cross7,nme='no_imp')
- plotit(cross10,nme='reorder')
- plotit(cross11,nme='reorder_imp')
+ plotit(cross2,nme='no_imp')
+ plotit(cross3,nme='reorder')
+ plotit(cross5,nme='reorder_imp')
  #plotit(cross_NW,nme='reorder_imp_NW')
  print(paste('done with chr',i))
 }
@@ -347,33 +346,21 @@ mapit_noimpute <- function(i){
 library(doParallel)
 cl <- makeCluster(20)
 registerDoParallel(cl)
-foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i)
+invisible(foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit_noimpute(i))
 #a <- c(11,10,9,13,12,16)
 
 png(paste0('~/public_html/',pop,'all_phys.png'),height=2500,width=2500)
 par(mfrow=c(6,4))
-for (B in 1:24){
- fl <- paste0(pop,'_reorder_noimput_',B,'_tsp.csv')
- cross_plot <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
- Y <- c(0, as.numeric(gsub(".*:","",markernames(cross_plot))))/1000000
+for (z in 1:24){
+ fl <- paste0(pop,'_order_impute_',z,'_tsp.csv')
+ cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
  X <- 1:length(Y)
- plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',B), ylab='physical position')
+ plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',z), ylab='physical position')
  points(X,Y)
 }
 dev.off()
 
-
-png(paste0('~/public_html/',pop,'all_rf.png'),height=2500,width=2500)
-par(mfrow=c(6,4))
-for (B in 1:24){
- fl <- paste0(pop,'_reorder_noimput_',B,'_tsp.csv')
- cross_plot <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
- plotRF(cross_plot)
-}
-dev.off()
-
-
-plotit(cross5)
 
 #######################################################################################
 #######################################################################################
