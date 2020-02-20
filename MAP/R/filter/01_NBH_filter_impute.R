@@ -308,16 +308,18 @@ mapit_noimpute <- function(i){
  ca <- checkAlleles(cross_NW)
 
  cross_NW <- tspOrder(cross = cross_NW, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
- cross4 <- fill.geno(cross3, method="maxmarginal", error.prob = 0.05, min.prob=0.99)
- cross5 <- fill.geno(cross4, method="no_dbl_XO", error.prob = 0.05, min.prob=0.99)
+ cross_NW <- removeDoubleXO(cross_NW)
+ cross_NW4 <- fill.geno(cross_NW, method="maxmarginal", error.prob = 0.05, min.prob=0.99)
+ cross_NW5 <- fill.geno(cross_NW4, method="no_dbl_XO", error.prob = 0.05, min.prob=0.99)
 
-
-
-
+ mapfile <- paste0(pop,'_order_impute_NW_',i,'_tsp')
+ filename <- file.path(mpath,mapfile)
+ write.cross(cross_NW5,filestem=filename,format="csv")
 
  plotit(cross2,nme='no_imp')
  plotit(cross3,nme='reorder')
  plotit(cross5,nme='reorder_imp')
+ plotit(cross_NW5,nme='reorder_imp_NW')
 }
 
 
