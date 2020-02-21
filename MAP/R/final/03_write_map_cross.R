@@ -5,18 +5,29 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 library('qtl')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-fl <- paste0(pop,'temp.imp.mapped.tsp.csv')
+fl <- paste0(pop,'_imp.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
 ## put chromosomes together
 ###############################################################################
+
+
 arg <- paste0(pop,'_imputed_estmap_?[0-9]?[0-9]_tsp.csv')
+
+#arg <- paste0(pop,'_order_impute_?[0-9]?[0-9]_tsp.csv')
 #arg <- paste0(pop,'_all_mark_imputed_?[0-9]?[0-9]_tsp.csv')
 
 file_list <- list.files(mpath, arg)
 
 cross <- lapply(file_list,function(X){ read.cross(file=X,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)})
+
+chrs <- gsub("_tsp.csv","",gsub('NBH_imputed_estmap_','',file_list))
+
+for( i in 1:24){ names(cross[[i]]$geno) <- chrs[i] }
+
+chr <- unlist(lapply(cross,function(X){ rep(chrnames(X), times=length(markernames(X))) } ))
+
 
 gnos <- lapply(cross,function(X){
   data.frame(X[[1]][[1]][['data']],stringsAsFactors=F)
@@ -35,7 +46,9 @@ rownames(gnos) <- cross[[1]]$pheno$ID
 
 ph <- c('Pheno','sex','ID','bin','pheno_norm')
 map <- c(colnames(cross[[1]]$pheno[,ph]),unname(unlist(sapply(cross,pull.map))))
-chr <- c(colnames(cross[[1]]$pheno[,ph]),gsub(":.*","",m_names))
+
+chr <- c(colnames(cross[[1]]$pheno[,ph]),chr)
+## made above
 info <- c(colnames(cross[[1]]$pheno[,ph]),m_names)
 headers <- rbind(info,chr,map)
 colnames(headers) <- headers[1,]
@@ -61,11 +74,11 @@ X <- 1:length(Y)
 gt <- geno.table(cross)
 plot_test('nbh_mar_regression_hi_confid', width = 5500, height = 750)
 par(mfrow=c(3,1))
- plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
- plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,15), cex = 0.25)
+ plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,5), cex = 0.25)
  abline(h=6)
  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
-  points(X,Y)
+  points(X,Y, pch = 19, cex = 0.25)
 dev.off()
 ##############################################################################
 if(pop == 'NBH') {
