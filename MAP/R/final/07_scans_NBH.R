@@ -49,7 +49,7 @@ add_Q4_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="b
 cross.grid.fixed <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.01, map.function="kosambi", stepwidth="fixed")
 cross.grid.fixed <- reduce2grid(cross.grid.fixed)
 sone.grid <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="em")
-sone.grid.perms <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="em", n.perm=10000, n.cluster=cores)
+sone.grid.perms <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster=1)
 lod <- summary(sone.grid.perms)[[2]]
 qtl <- summary(sone.grid,lod)
 

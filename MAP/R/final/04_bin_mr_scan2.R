@@ -1,3 +1,4 @@
+32
 #!/bin/R
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 cores <- as.numeric(commandArgs(TRUE)[3])
@@ -18,12 +19,15 @@ fl <- file.path(mpath,fl)
 ################################################################################
 ##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
+################################################################################
+################################################################################
 
-cross <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
+##TOO MANY MARKERS
+##fl <- paste0(pop,'_imp.mapped.tsp.csv')
+
+fl <- file.path(paste0(pop,'_downsampled.csv'))
+
+cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 ################################################################################
 

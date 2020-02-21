@@ -8,7 +8,7 @@ library('qtl')
 ##library('parallel')
 library('snow')
 
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
@@ -18,66 +18,49 @@ fl <- file.path(mpath,fl)
 ################################################################################
 erp <- 0.0025
 cores <- 22
-cores <- 5
 ################################################################################
 ################################################################################
-## Read cross
+fl <- paste0(pop,'_imp.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
+
 cross <- read.cross(
  file = fl,
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE
 )
+
 cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 cross <- jittermap(cross)
 
+cross <- removeDoubleXO(cross)
+
 gt <- geno.table(cross)
 mis <- 5
-bfixA <- rownames(gt[which(gt$missing < mis),])
+bfixA <- rownames(gt[which(gt$missing > mis),])
+cross <- drop.markers(cross, bfixA)
+print(paste('markers dropped due to missing =',length(bfixA)))
 
-cross <- pull.markers(cross, bfixA)
-cross_imp <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
-
-
-
-## Estimate gt prob and impute before downsample
-dups <- findDupMarkers(cross, exact.only=T, adjacent.only=T)
-#dups <- findDupMarkers(cross, exact.only=F, adjacent.only=F)
-dups <- names(dups)
-if(pop == 'ELR.missing') dups <- c(dups,"AHR2a_del")
+dups <- findDupMarkers(cross, exact.only=F, adjacent.only=T)
+dups <- unlist(dups)
+print(paste('markers dropped due to duplicate =',length(dups)))
 cross <- drop.markers(cross, dups)
-cross
+cross <- removeDoubleXO(cross)
 
-crossbk <- cross
+png(paste0('~/public_html/',pop,'_gts_dwsmpl.png'),height=2500,width=4500)
+ geno.image(cross, reorder=1, cex=2)
+dev.off()
 
-cross_imp <- fill.geno(cross, method="argmax", error.prob = 0.08)
 
-
-
-cross_imp <- fill.geno(cross, method="maxmarginal", error.prob = 0.08, min.prob=0.998)
-cross_imp <- fill.geno(cross_imp, method="no_dbl_XO", error.prob = 0.08)
-cross_imp <- fill.geno(cross_imp, method="maxmarginal", error.prob = 0.08, min.prob=0.995)
+cross_imp <- fill.geno(cross, method="maxmarginal", error.prob = 0.01, min.prob=0.99)
 
 png(paste0('~/public_html/',pop,'_gts_all.png'),height=2500,width=4500)
  geno.image(cross_imp, reorder=1, cex=2)
 dev.off()
 
-
-
 ################################################################################
-fl <- file.path(mpath,paste0(pop,'_downsampled'))
+fl <- file.path(mpath,paste0(pop,'_downsampled.csv'))
 write.cross(cross,filestem=fl,format="csv")
 ################################################################################
-
-cross$pheno <- as.data.frame(cross$pheno)
-
-cross <- sim.geno(cross, stepwidth="fixed", step=dens,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=100)
-cross <- calc.genoprob(cross, stepwidth="fixed", step=dens, error.prob=erp, off.end=1, map.function="kosambi")
-cross <- argmax.geno(cross, stepwidth="fixed", step=dens, error.prob=erp, off.end=1, map.function="kosambi")
-
-cross <- reduce2grid(cross)
-
-(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
-print('markers per CM')
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_downsampled.rsave')))
