@@ -53,15 +53,15 @@ sone.grid.perms <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method
 lod <- summary(sone.grid.perms)[[2]]
 qtl <- summary(sone.grid,lod)
 
-add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+add.qtl1 <- makeqtl(cross.grid.fixed, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 
-add.qtl1 <- refineqtl(cross, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary',
+add.qtl1 <- refineqtl(cross.grid.fixed, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary',
                       incl.markers=F)
 
-int.em <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
-                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
+int.em <- addint(cross.grid.fixed, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
+                 covar=data.frame(cross.grid.fixed$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
 
-add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+add_Q4_hk <- addqtl(cross.grid.fixed, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
                     formula = y~Q1+Q2+Q3+Q4)
 
