@@ -33,14 +33,8 @@ set.seed(arraynum)
 print(paste(cores,'cores'))
 erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
-#names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
-#attr(cross$geno[["X"]], 'class') <- 'X'
-
-(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
-print('markers per CM')
-
-length(colnames(pull.genoprob(cross)))/3
-print('markers')
+names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+attr(cross$geno[["X"]], 'class') <- 'X'
 
 ##################################################################################
 ##if(pop == 'ELR'){

@@ -6,33 +6,37 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
-
+### FILTER AND ORDER MARKERS
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_map" --mem=12G -p high --array=1-24 $bashsc/01_NBH_filter_impute.sh 'NBH'
-
+sbatch -J "ELR_map" --mem=12G -p high --array=1-24 $bashsc/01_ELR_filter_impute.sh 'NBH'
+#################################################################################
 
 ### ESTIMATE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'NBH'
 sbatch -J "ELR_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'ELR'
+#################################################################################
 
 ### WRITE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
+#################################################################################
 
 ### TWO LOCUS SCAN $1=population $2=number of cores to use
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "MRB.NBH" -p high -t 48:00:00 $bashsc/04_bin_mr_scan2.sh 'NBH' 22
+#################################################################################
 
 ### SCAN2 PERMS
 bashsc="$HOME/QTL_agri/MAP/bash"
 
-var2=$(sbatch \
- --mem=5G -p med --array=1-10 -t 3:00:00 \
+var1=$(sbatch \
+ --mem=5G -p low --array=1-10 -t 3:00:00 \
  -J "PERM.MRB.NBH" \
  $bashsc/04_bin_mr_perms.sh "--vanilla" 'NBH' '1' '1' \
  | cut -f4 -d' ')
-
+#################################################################################
 
 #################################################################################
 #################################################################################
