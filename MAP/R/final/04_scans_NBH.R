@@ -45,27 +45,30 @@ add_Q4_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="b
                        formula = y~Q1*Q3+Q2+Q4)
 
 
-
-cross.grid.fixed <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.01, map.function="kosambi", stepwidth="fixed")
+###### EM
+##cross.grid.fixed <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.01, map.function="kosambi", stepwidth="fixed")
+cross.grid.fixed <- sim.geno(cross,n.draws=160, step=1, off.end=1, error.prob=0.01, map.function="kosambi", stepwidth="fixed")
 cross.grid.fixed <- reduce2grid(cross.grid.fixed)
-sone.grid <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="em")
-sone.grid.perms <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="em", n.perm=1000, n.cluster=1)
+sone.grid <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="imp")
+
+sone.grid.perms <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="imp", n.perm=1000, n.cluster=1)
+
 lod <- summary(sone.grid.perms)[[2]]
 qtl <- summary(sone.grid,lod)
 
 add.qtl1 <- makeqtl(cross.grid.fixed, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 
-add.qtl1 <- refineqtl(cross.grid.fixed, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary',
+add.qtl1 <- refineqtl(cross.grid.fixed, pheno.col = 4, qtl=add.qtl1, method = "em", model='binary',
                       incl.markers=F)
 
-int.em <- addint(cross.grid.fixed, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
+int.em <- addint(cross.grid.fixed, pheno.col = 4, qtl = add.qtl1, method='em', model='binary',
                  covar=data.frame(cross.grid.fixed$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
 
-add_Q4_hk <- addqtl(cross.grid.fixed, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+add_Q4_em <- addqtl(cross.grid.fixed, pheno.col=4, qtl = add.qtl1, method="em", model="binary",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
                     formula = y~Q1+Q2+Q3+Q4)
 
-add_Q4_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+add_Q4_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="em", model="binary",
                        incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
                        formula = y~Q1*Q3+Q2+Q4)
 #

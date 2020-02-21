@@ -13,11 +13,8 @@ fl <- file.path(mpath,fl)
 ##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 
-cross <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
+fl <- file.path(paste0(pop,'_downsampled.csv'))
+cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 arraynum <- as.numeric(commandArgs(TRUE)[5])

@@ -15,17 +15,6 @@ mars <- find.marker(rf, bin.em.2$map$chr, bin.em.2$map$pos)
 ###############
 
 ###############
-AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
-colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
-AHR.bed$chrom <- as.numeric(gsub("chr", "", AHR.bed$chrom))
-AHR.bed$str <- as.numeric(AHR.bed$str)
-AHR.bed$stp <- as.numeric(AHR.bed$stp)
-AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
-AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
-AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
-AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
-ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
 
 #############################################
 ### test locus interaction seg distortion
