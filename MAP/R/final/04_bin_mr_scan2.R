@@ -36,6 +36,13 @@ attr(cross$geno[["X"]], 'class') <- 'X'
 ################################################################################
 
 sone <- scanone(cross,pheno.col=4, model="binary", method="mr")
+
+cross.grid.fixed <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.005, map.function="kosambi", stepwidth="fixed")
+cross.grid.fixed <- reduce2grid(cross.grid.fixed)
+sone.grid <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="mr")
+
+
+
 sone.perms <- scanone(cross,pheno.col=4, model="binary", method="mr", n.perm=10000, n.cluster=cores)
 
 summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="bayesint")
