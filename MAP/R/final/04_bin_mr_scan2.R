@@ -47,5 +47,5 @@ bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="mr",
  assumeCondIndep=T, n.cluster=cores, use="complete.obs")
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan2_bin_mrm.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 ################################################################################

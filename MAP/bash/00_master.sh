@@ -6,6 +6,44 @@ script_dir='/home/jmiller1/QTL_agri/MAP'
 ##install_github("jtlovell/qtlTools")
 ##install_github("mckaylab/TSPmap")
 
+
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_map" --mem=12G -p high --array=1-24 $bashsc/01_NBH_filter_impute.sh 'NBH'
+
+
+### ESTIMATE MAP
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'NBH'
+sbatch -J "ELR_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'ELR'
+
+### WRITE MAP
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
+
+### TWO LOCUS SCAN $1=population $2=number of cores to use
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_S2BE" -p high -t 48:00:00 $bashsc/04_bin_mr_scan2.sh 'NBH' 22
+
+
+
+#################################################################################
+#################################################################################
+#################################################################################
+
+
+
+
+
+
+
+### MASTER
+script_dir='/home/jmiller1/QTL_agri/MAP'
+
+#Sys.setenv(TAR = "/bin/tar")
+##install_github("kbroman/ASMap")
+##install_github("jtlovell/qtlTools")
+##install_github("mckaylab/TSPmap")
+
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH" $bashsc/01_filter.sh 'NBH' '17' '0.075' '2' '0.00001'
 sbatch -J "ELR" $bashsc/01_filter.sh 'ELR' '14' '0.1' '2' '0.00001'
