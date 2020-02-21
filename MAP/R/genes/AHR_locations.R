@@ -42,7 +42,7 @@ ahr_genes$close_marker <- mapply(get_marks,chr=ahr_genes$chr ,pos=ahr_genes$mid_
 ahr_genes$dist <- abs(as.numeric(gsub(".*:","",ahr_genes$close_marker)) - ahr_genes$mid_phy)
 ahr_genes <- ahr_genes[,c(-2,-3,-5)]
 
-sm <- scanone(cross, pheno.col=1, model="normal",method="ehk")
+sm <- scanone(cross, pheno.col=4, model="bin",method="mr")
 ahr_genes$lod <- sm[ahr_genes$close_marker,'lod']
 
 ###############
