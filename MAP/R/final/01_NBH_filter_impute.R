@@ -128,13 +128,13 @@ par(mfrow=c(3,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
  plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
  abline(h=6)
- plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
+ plot(c(1,length(X)),c(0,max(Y)),type="n", ylab='physical position')
   points(X,Y)
 dev.off()
 ################################################################################
 
  nw_marks <- grep('NW_',markernames(cross), value = T)
- toss <- rownames(gt[nw_marks,][which(gt[nw_marks,'P.value'] < 1.0e-5),])
+ toss <- rownames(gt[nw_marks,][which(gt[nw_marks,'P.value'] < 1.0e-4),])
  cross <- drop.markers(cross,toss)
 
  nw_marks <- grep('NW_',chrnames(cross), value = T)
@@ -187,7 +187,7 @@ cross <- pull.markers(cross,c(mp_marks,nw_marks))
 
 ################################################################################
 ## THIN TO ONE MARKER PER KB
-cross <- thin_by_distortion(cross,1)
+cross <- thin_by_distortion(cross,100)
 ################################################################################
 
 nw_marks <- grep('NW_',markernames(cross), value = T)

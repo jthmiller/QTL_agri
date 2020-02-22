@@ -19,18 +19,18 @@ cross <- read.cross(
 )
 
 ## DOWNSAMPLED
-fl <- file.path(paste0(pop,'_downsampled.csv'))
-cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-cross$pheno <- as.data.frame(cross$pheno)
+#fl <- file.path(paste0(pop,'_downsampled.csv'))
+#cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+#cross$pheno <- as.data.frame(cross$pheno)
 ################################################################################
 
-ahr <- get_AHR(cross)
-
-##rf <- subset(cross, chr = c(1:4,6:24))
-rf <- est.rf(cross, maxit=1000, tol=1e-6)
+ahr_genes <- get_AHR(cross)
+ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
 
 #############################################
-### test locus interaction seg distortion
+### test 2 locus interaction seg distortion
+##rf <- subset(cross, chr = c(1:4,6:24))
+rf <- est.rf(cross, maxit=1000, tol=1e-6)
 
 probs <- c(0.0625,0.125,0.25)
 gts <- c('AA','AB','BB')
@@ -60,29 +60,53 @@ csq <- function(mara, marb) {
 
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
 
+
+### WITH PARALELLE #########################################
 library(doParallel)
-cl <- makeCluster(20)
+cl <- makeCluster(5)
 registerDoParallel(cl)
 csq.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq.each(marb)
+csq.pval <- do.call(rbind,csq.pval)
 colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
+csq.pval.bk <- csq.pval
+#############################################################
 
-#### without parallel ################################
+rf.plots <- rf
 
-### applying over columns
-#csq.pval <- apply(rf.gts, 2, function(X){
-# apply(rf.gts, 2, csq, marb = X)
-#})
-#colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
-#csq.bk <- csq.pval
-
-
+## Set within chromosomes to zero #####
+for (i in chrnames(cross)){
+ mars <- markernames(rf, i)
+ csq.pval[mars,mars] <- NA
+ rf.plots$rf[mars,mars] <- NA
+}
 
 ########################################
+### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR
+maxdist <- lapply(chrnames(cross), function(i) {
+  mars <- markernames(rf, i)
+  a <- which(csq.pval[mars,] == min(csq.pval[mars,], na.rm = T), arr.ind=T)
+  b <- markernames(rf)[a[,'col']][1]
+  a <- rownames(a)[1]
+  cbind(a, b, -log10(csq.pval[cbind(a,b)]))
+})
+maxdist <- do.call(rbind,maxdist)
+maxdist <- maxdist[order(as.numeric(maxdist[,3])),]
+maxdist <- data.frame(maxdist, stringsAsFactors = F)
 
-TeaTasting <-
-matrix(c(3, 1, 1, 3),
-       nrow = 2,
-       dimnames = list(Guess = c("Milk", "Tea"),
-                       Truth = c("Milk", "Tea")))
+##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 
-fisher.test(TeaTasting, alternative = "greater")
+plot_test('CHRxCHR_LOD_scores')
+plotRF(rf.plots,zmax=4,col.scheme="redblue")
+dev.off()
+
+
+###############
+
+csq.pval[ahr_genes_sub$close_marker,ahr_genes_sub$close_marker]
+
+
+crs <- pull.markers(rf.plots, ahr_genes$close_marker)
+
+plot_test('qtlxqtl_SegLOD_scores')
+plotRF(crs,zmax=7,col.scheme="redblue")
+dev.off()

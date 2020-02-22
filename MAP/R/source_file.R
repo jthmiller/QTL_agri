@@ -1609,6 +1609,12 @@ use_phys_map <- function(cross_in){
  cross_in <- replace.map(cross_in, newpos)
  return(cross_in)
 }
+##########
+get_marks <- function(chr,pos,cross_in = cross){
+ phy_vec <- as.numeric(gsub(".*:","",markernames(cross_in,chr)))
+ markernames(cross_in,chr)[which.min(abs(phy_vec - pos))]
+}
+
 ################################################################################
 get_AHR <- function(cross){
  AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
@@ -1621,8 +1627,22 @@ get_AHR <- function(cross){
  AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
  AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
  source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
- return(cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F))
+ ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
+ ahr_genes$mid_phy <- apply(ahr_genes[,c('str','stp')],1,mean,na.rm=T)
+ ahr_genes$close_marker <- mapply(get_marks,chr=ahr_genes$chr ,pos=ahr_genes$mid_phy)
+ ahr_genes$dist <- round(abs(as.numeric(gsub(".*:","",ahr_genes$close_marker)) - ahr_genes$mid_phy))
+ sm <- scanone(cross, pheno.col=4, model="bin",method="mr")
+ ahr_genes$lod <- round(sm[ahr_genes$close_marker,'lod'])
+ AHP <- c('AHR1','aip','dla','atxn1a','atxn1b','ARNT','ARNT','cyp1b1','ahrr','ahr1b','AHR2b')
+ HSP <- grep('hsp',ahr_genes$gene, value = T)
+ ahr_genes$PATH <- NA
+ ahr_genes$PATH <- ifelse(ahr_genes$gene %in% AHP,'AHR',ahr_genes$PATH)
+ ahr_genes$PATH <- ifelse(ahr_genes$gene %in% HSP,'HSP',ahr_genes$PATH)
+ return(ahr_genes[,c('chr','gene','pos','lod','mid_phy','dist','close_marker','PATH')])
+
 }
+
+
 ################################################################################
 misg <- function(X,perc) { nind(cross) * perc }
 ################################################################################
