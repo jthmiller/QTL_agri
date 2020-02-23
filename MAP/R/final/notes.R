@@ -52,3 +52,8 @@ geno.crosstab(cross,'1:857165','18:20565637')
 
 ## ARE THE AHRS LINKED?
 pull.rf(cross,what='lod')['1:857165','18:20565637']
+
+
+geno.crosstab(cross,'13:22726743','2:34484101')
+
+geno.crosstab(cross,'24:30295052','3:29581625')

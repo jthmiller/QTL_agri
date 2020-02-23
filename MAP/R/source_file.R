@@ -1557,17 +1557,18 @@ plotit <- function(crs,nme='test'){
  par(mfrow=c(4,1))
   plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,20), cex =1)
   plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex =1)
+  abline(h=3.1316669, col='red')
   crs$pheno$gtps <- (as.numeric(rowSums(pull.geno(crs) == 1 | pull.geno(crs) == 1, na.rm = T))*10) + (as.numeric(rowSums(pull.geno(crs) == 3, na.rm = T))*5)
   #crs$pheno$gtps <- rowSums(pull.geno(cross))
   geno.image(crs, reorder=6, cex=2)
   plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
-  abline(h=27.504907, col='red')
-  points(X,Y)
+  ##abline(h=27.504907, col='red')
+  points(X,Y,pch=19)
  dev.off()
 
- plot_test(paste0(pop,'_rf_test_',nme,i))
- plotRF(crs)
- dev.off()
+ #plot_test(paste0(pop,'_rf_test_',nme,i))
+ #plotRF(crs)
+ #dev.off()
 }
 
 ### weight by distortion pvalue
@@ -1638,11 +1639,28 @@ get_AHR <- function(cross){
  ahr_genes$PATH <- NA
  ahr_genes$PATH <- ifelse(ahr_genes$gene %in% AHP,'AHR',ahr_genes$PATH)
  ahr_genes$PATH <- ifelse(ahr_genes$gene %in% HSP,'HSP',ahr_genes$PATH)
+ ahr_genes$pos <- round(ahr_genes$pos)
  return(ahr_genes[,c('chr','gene','pos','lod','mid_phy','dist','close_marker','PATH')])
 
 }
 
-
+### PLOTS ######################################################################
+po <- function(cross,nme){
+ sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
+ X <- 1:length(Y)
+ gt <- geno.table(cross)
+ plot_test(nme, width = 5500, height = 750)
+ par(mfrow=c(3,1))
+  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+  abline(h=5)
+  plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+  abline(h=3)
+  plot(c(1,length(X)),c(0,max(Y)),type="n", ylab='physical position')
+   points(X,Y)
+ dev.off()
+}
+################################################################################
 ################################################################################
 misg <- function(X,perc) { nind(cross) * perc }
 ################################################################################

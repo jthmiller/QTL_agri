@@ -25,7 +25,11 @@ cross <- read.cross(
 ################################################################################
 
 ahr_genes <- get_AHR(cross)
+gt <- geno.table(cross)
+ahr_genes$segdist <- -log10(gt[ahr_genes$close_marker,'P.value'])
+
 ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
+
 
 #############################################
 ### test 2 locus interaction seg distortion
