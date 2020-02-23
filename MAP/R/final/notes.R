@@ -57,3 +57,10 @@ pull.rf(cross,what='lod')['1:857165','18:20565637']
 geno.crosstab(cross,'13:22726743','2:34484101')
 
 geno.crosstab(cross,'24:30295052','3:29581625')
+
+
+geno.crosstab(cross,'22:17595037','2:33395185')
+geno.crosstab(cross,'22:19528880','2:33395185')
+
+
+5:7177487   8:8205241

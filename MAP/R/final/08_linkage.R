@@ -17,6 +17,15 @@ cross <- read.cross(
  format = "csv", genotypes=c("1","2","3"),
  estimate.map = FALSE
 )
+## HIGH CONFID IMPUTED
+mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp')
+filename <- file.path(mpath,mapfile)
+cross <- read.cross(
+ file = filename,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
+
 
 ## DOWNSAMPLED
 #fl <- file.path(paste0(pop,'_downsampled.csv'))
@@ -24,11 +33,14 @@ cross <- read.cross(
 #cross$pheno <- as.data.frame(cross$pheno)
 ################################################################################
 
+cross <- cross11
+
 ahr_genes <- get_AHR(cross)
 gt <- geno.table(cross)
 ahr_genes$segdist <- -log10(gt[ahr_genes$close_marker,'P.value'])
-
 ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
+
+
 
 
 #############################################
@@ -64,10 +76,9 @@ csq <- function(mara, marb) {
 
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
 
-
 ### WITH PARALELLE #########################################
 library(doParallel)
-cl <- makeCluster(5)
+cl <- makeCluster(20)
 registerDoParallel(cl)
 csq.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq.each(marb)
 csq.pval <- do.call(rbind,csq.pval)
@@ -99,8 +110,8 @@ maxdist <- data.frame(maxdist, stringsAsFactors = F)
 
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 
-plot_test('CHRxCHR_LOD_scores')
-plotRF(rf.plots,zmax=4,col.scheme="redblue")
+plot_test('CHRxCHR_LOD_scores',height=1000,width=1000)
+plotRF(rf.plots,zmax=8,col.scheme="redblue")
 dev.off()
 
 

@@ -9,8 +9,11 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 #mapfile <- paste0(pop,'_unmapped_all_mark_imputed_',i,'_tsp.csv')
 #filename <- file.path(mpath,mapfile)
 #mapfile <- paste0(pop,'_order_impute_NW_',i,'_tsp.csv')
-mapfile <- paste0(pop,'_order_impute_',i,'_tsp.csv')
 #mapfile <- paste0(pop,'_order_impute_',i,'_tsp.csv')
+#mapfile <- paste0(pop,'_order_impute_',i,'_tsp.csv')
+#filename <- file.path(mpath,mapfile)
+
+mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp')
 filename <- file.path(mpath,mapfile)
 
 #mapfile <- paste0(pop,'_imputed_',i,'_tsp.csv')
@@ -32,7 +35,7 @@ loglik <- err <- c(0.0001, 0.001, 0.01, 0.05)
 
 update.lik <- function(z){
   cat(z, "of", length(err), "\n")
-  tempmap <- est.map(cross,maxit=10000, error.prob=err[z])
+  tempmap <- est.map(cross,maxit=100, error.prob=err[z])
   loglik[z] <- sum(sapply(tempmap, attr, "loglik"))
 }
 
@@ -46,30 +49,21 @@ erprob <- err[which.max(lod)]
 
 print(paste('error lod =',erprob))
 
-cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=1, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
+cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=1000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 cross <- qtl:::replace.map(cross,cross_map)
 
- pos <- as.numeric(gsub(".*:","",markernames(cross)))
- map <- as.numeric(pull.map(cross)[[1]])
- if(cor(pos,map, use="complete.obs") < 0) cross <- flip.order(cross, 1)
+direc <- sapply(1:24,function(i) {
+ pos <- as.numeric(gsub(".*:","",markernames(cross,i)))
+ map <- as.numeric(pull.map(cross)[[i]])
+ cor(pos,map, use="complete.obs")
+})
 
-mapfile <- paste0(pop,'_imputed_estmap_',i,'_tsp')
+if(any(cor(pos,map, use="complete.obs") < 0) cross <- flip.order(cross,which(direc < 0))
 
+mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp_mapped')
 filename <- file.path(mpath,mapfile)
+write.cross(cross,filestem=filename,format="csv")
 
-write.cross(cross,chr=i,filestem=filename,format="csv")
-
-print(paste(pop, 'cross written'))
+print(paste(filename, 'cross written'))
 ################################################################################
-
-Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
-X <- 1:length(Y)
-
-png(paste0('~/public_html/',pop,'_RF_physpo_concord',i,'_tsp.png'),width=1000,height=500)
-par(mfrow=c(1,3))
- plotRF(cross,main=NULL)
- plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
- points(X,Y)
- plot(err, lod, xlab="Genotyping error rate", xlim=c(0,0.02), ylab=expression(paste(log[10], " likelihood")))
-dev.off()

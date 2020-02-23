@@ -13,8 +13,9 @@ library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 mpath <- '/home/jmiller1/QTL_agri/data'
-fl <- paste0(pop,'_imp.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
+#fl <- paste0(pop,'_imp.mapped.tsp.csv')
+#fl <- file.path(mpath,fl)
+
 
 ################################################################################
 ##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
@@ -25,10 +26,11 @@ fl <- file.path(mpath,fl)
 ##TOO MANY MARKERS
 ##fl <- paste0(pop,'_imp.mapped.tsp.csv')
 
-fl <- file.path(paste0(pop,'_downsampled.csv'))
+#fl <- file.path(paste0(pop,'_downsampled.csv'))
 
+fl <- 'NBH_2172_imputed_high_confidence_tsp_mapped.csv'
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
+#cores <- 20
 ################################################################################
 
 print(paste(cores,'cores'))

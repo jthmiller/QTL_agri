@@ -45,6 +45,22 @@ drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
 cross <- drop.markers(cross,drop)
 ################################################################################
 
+### READ THE UNMAPPED MARKER ASSIGNMENT TABLE
+movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
+move <- read.table(movefl, stringsAsFactors = F, header=T, sep = " ")
+move <- move[which(move$nw_marks_assign %in% markernames(cross4)),]
+
+### ASSIGN UNMAPPED MARKERS
+cross5 <- cross4
+for (i in 1:length(move[,1])){
+ cross5 <<- movemarker(cross5, marker = move[i,'nw_marks_assign'], newchr = move[i,'nw_ch'], newpos = as.numeric(move[i,'nw_pos']))
+}
+cross5 <- subset(cross5,chr=1:24)
+################################################################################
+
+
+
+
 ### PLOTS ######################################################################
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
 Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
