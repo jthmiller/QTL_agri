@@ -21,7 +21,7 @@ load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 
 print(paste(cores,'cores'))
-erp <- 0.0025
+erp <- 0.001
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
@@ -39,7 +39,7 @@ summary(scanone(cross,pheno.col=5, model="normal", method="imp",addcovar=g))
 # assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
 
 norm.imp.2 <- scantwo(cross, pheno.col=1, model="normal", method="imp",
- incl.markers=T,clean.output=T, clean.nmar=200, clean.distance=200,
+ incl.markers=T,clean.output=T, clean.nmar=100, clean.distance=100,
  assumeCondIndep=T, n.cluster=cores, addcovar=g)
 
 ################################################################################
