@@ -52,7 +52,7 @@ summary(scanone(cross,pheno.col=4, model="normal", method="imp",addcovar=g))
 ################################################################################
 
 norm.imp.perms.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
- incl.markers=F, clean.output=T, clean.nmar=200, clean.distance=200,
+ incl.markers=T, clean.output=T, clean.nmar=200, clean.distance=200,
  assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g, n.perm=perm_count)
 
 norm.imp.perms.pens <- calc.penalties(norm.imp.perms.2, alpha=0.1)
