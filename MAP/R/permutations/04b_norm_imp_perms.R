@@ -44,7 +44,7 @@ cov <- ifelse(pop == 'ELR',18,2)
 ################################################################################
 
 ################################################################################
-so <- summary(scanone(cross,pheno.col=4, model="normal", method="imp", intcovar=sex.phen))[cov,]
+so <- summary(scanone(cross,pheno.col=4, model="normal", method="imp"))[cov,]
 mar <- find.marker(cross, so$chr, so$lod)
 g <- pull.geno(fill.geno(cross))[,mar]
 g <- cbind(as.numeric(g==1), as.numeric(g==2))
@@ -52,13 +52,13 @@ summary(scanone(cross,pheno.col=4, model="normal", method="imp",addcovar=g))
 ################################################################################
 
 norm.imp.perms.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
- incl.markers=T, clean.output=T, clean.nmar=200, clean.distance=200,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g, n.perm=perm_count)
+ incl.markers=T, clean.output=T, clean.nmar=20, clean.distance=20,
+ assumeCondIndep=T, n.cluster=cores,  addcovar=g, n.perm=perm_count)
 
 norm.imp.perms.pens <- calc.penalties(norm.imp.perms.2, alpha=0.1)
 
 norm.imp.perms.1 <- scanone(cross, pheno.col=5, model='normal', method = "imp",
- n.perm = 10000, n.cluster=cores, intcovar=sex.phen, addcovar=g)
+ n.perm = 10000, n.cluster=cores, addcovar=g)
 
 lod <- summary(norm.imp.perms.1)[1]
 
