@@ -9,7 +9,12 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
-load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+##load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+
+mapfile <- "NBH_2172_imputed_high_confidence_tsp_mapped.csv"
+filename <- file.path(mpath,mapfile)
+cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+################################################################################
 
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 arraynum <- as.numeric(commandArgs(TRUE)[5])
@@ -23,16 +28,13 @@ set.seed(arraynum)
 ################################################################################
 
 print(paste(cores,'cores'))
-erp <- 0.0025
+erp <- 0.001
 sex.phen <- pull.pheno(cross, "sex")
-#names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
-#attr(cross$geno[["X"]], 'class') <- 'X'
+names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+attr(cross$geno[["X"]], 'class') <- 'X'
 
 (summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
 print('markers per CM')
-
-length(colnames(pull.genoprob(cross)))/3
-print('markers')
 
 ################################################################################
 if(pop == 'ELR'){
@@ -40,10 +42,10 @@ if(pop == 'ELR'){
 } else {
  cross <- subset(cross, chr=c(1,3:4,6:24))
 }
+cov <- ifelse(pop == 'ELR',18,2)
 ################################################################################
 
 ################################################################################
-cov <- ifelse(pop == 'ELR',18,2)
 so <- summary(scanone(cross,pheno.col=4, model="normal", method="imp", intcovar=sex.phen))[cov,]
 mar <- find.marker(cross, so$chr, so$lod)
 g <- pull.geno(fill.geno(cross))[,mar]

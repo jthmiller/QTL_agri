@@ -50,3 +50,5 @@ bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="mr",
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 ################################################################################
+
+### summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")

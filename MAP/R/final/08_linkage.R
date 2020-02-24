@@ -41,8 +41,6 @@ ahr_genes$segdist <- -log10(gt[ahr_genes$close_marker,'P.value'])
 ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
 
 
-
-
 #############################################
 ### test 2 locus interaction seg distortion
 ##rf <- subset(cross, chr = c(1:4,6:24))
@@ -110,10 +108,42 @@ maxdist <- data.frame(maxdist, stringsAsFactors = F)
 
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 
+##### HEATMAP
+csq.pval.hm <- data.matrix(-log10(csq.pval))
+
+plot_test('heatmap_dist',height=3000,width=3000)
+heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
+dev.off()
+
+
+ahr_genes_sub <- ahr_genes_sub[which(ahr_genes_sub$PATH == 'AHR'),]
+ahr.dist <- csq.pval[ahr_genes_sub$close_marker,]
+ahr_col <- as.factor(ahr_genes_sub$chr)
+
+which.max(-log10(csq.pval['22:19528880',]))
+
+
+plot_test('sfsd', width=5000, height=2000)
+
+plot(1:length(ahr.dist[2,]), -log10(ahr.dist[2,]), pch=19, cex=0.5, ylim=c(0,8))
+for(i in 2:11){
+#points(1:length(ahr.dist[i,]), -log10(ahr.dist[i,]), pch=19, cex=0.5)
+points(1:length(ahr.dist[i,]), -log10(ahr.dist[i,]), col=ahr_col[i], pch=19, cex=0.5)
+}
+points(1:length(gt[,1]), -log10(gt$P.value), col=as.factor(gt$chr), pch=19, cex=2, ylim=c(0,5))
+dev.off()
+
+
 plot_test('CHRxCHR_LOD_scores',height=1000,width=1000)
 plotRF(rf.plots,zmax=8,col.scheme="redblue")
 dev.off()
 
+
+a <- which(csq.pval[markernames(cross,22),] == min(csq.pval[markernames(cross,22),],na.rm=T ), arr.ind =T)
+markernames(cross)[43:49]
+markernames(cross)[196:197]
+
+which.min(csq.pval['20:19045496',])
 
 ###############
 
@@ -125,3 +155,6 @@ crs <- pull.markers(rf.plots, ahr_genes$close_marker)
 plot_test('qtlxqtl_SegLOD_scores')
 plotRF(crs,zmax=7,col.scheme="redblue")
 dev.off()
+
+
+which(csq.pval[markernames(cross,20),] == min(csq.pval[markernames(cross,20),],na.rm=T ), arr.ind =T)

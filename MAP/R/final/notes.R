@@ -1,14 +1,17 @@
 
 
+#chr10 23926932 23951650 XM_012876030.1  LOC105935564    aryl hydrocarbon receptor nuclear translocator-like protein 1
+#NW_012234311.1 1350282 1390498 XM_012867564.1   arntl   aryl hydrocarbon receptor nuclear translocator-like%2C transcript variant X1
+#NW_012225110.1 22934 115575 XM_012856879.1      exception=annotated by transcript or proteomic data     aryl-hydrocarbon receptor nuclear translocator 2
+
+## ON CHR 10
+## NW_012234311.1:1152974 (arntl)
+## NW_012234311.1:706431 (arnt2)
 
 
 ### CHR2 most often has distorted 2 locus interactions
 
 
-### 2 and 24 have large 2 locus distortion
-### Fall over HSP and AIP
-geno.crosstab(cross,'24:6637513','2:27956730')
-geno.crosstab(cross,'22:18254439','2:33399485')
 
 plot_test('dsf')
 plotPXG(cross,pheno.col=4,c('2:34937180','24:6767161'))
@@ -30,37 +33,58 @@ disto$P.value <- -log10(disto$P.value)
 disto <- disto[order(disto$P.value),]
 
 
-geno.crosstab(cross,'24:10652460','2:27956730')
- geno.crosstab(cross,'6:15097723', '18:19515505')
-
-geno.crosstab(cross,'24:809918','2:34936971')
 
 
 plot_test('sdf')
 plotPXG(cross,pheno.col=4,c('2:34936971','24:809918'))
 dev.off()
 
-
 AIP x HSP
-geno.crosstab(cross,'22:19409957','2:28570451')
+geno.crosstab(cross,'24:10291747','2:27757494')
+geno.crosstab(cross,'22:19528880','2:27757494')
+geno.crosstab(cross,'7:31714010','2:27757494')
 
+AHRa x AHRb (AHRa seems to have higher lod with AHRb)
+geno.crosstab(cross,'18:20367780','1:811175')
 
-AHRa seems to have higher lod with AHRb
-geno.crosstab(cross,'1:2698959','18:20565637')
+AIP x AHRb
+geno.crosstab(cross,'18:20367780','2:27757494')
 
-geno.crosstab(cross,'1:857165','18:20565637')
+AIP x ARNT
+geno.crosstab(cross,'8:16768182','2:27757494')
+geno.crosstab(cross,'8:9792760','2:27757494')
 
+AIP x AHRa
+geno.crosstab(cross,'1:811175','2:27757494')
+
+ARNT x ARNT (high segdist)
+geno.crosstab(cross,'13:24355608','8:16768182')
+
+ARNT and 20 (maxdist 8:9131715 20:19045496)
+geno.crosstab(cross,'20:19045496','8:16768182')
+geno.crosstab(cross,'20:19045496','8:9131715')
+-log10(csq.pval['20:19045496','8:9131715'])
+
+HSP and AIP
+geno.crosstab(cross,'2:33395185','22:19528880')
+
+which.max(-log10(csq.pval['2:27757494',])) == 8:9792760
+which.max(-log10(csq.pval['2:33882931',])) == 22:17595037
+################################################################################
 ## ARE THE AHRS LINKED?
 pull.rf(cross,what='lod')['1:857165','18:20565637']
-
-
 geno.crosstab(cross,'13:22726743','2:34484101')
-
 geno.crosstab(cross,'24:30295052','3:29581625')
-
-
 geno.crosstab(cross,'22:17595037','2:33395185')
 geno.crosstab(cross,'22:19528880','2:33395185')
+geno.crosstab(cross,'13:23470876','2:27757494')
+geno.crosstab(cross,'24:10652460','2:27956730')
+geno.crosstab(cross,'6:15097723', '18:19515505')
+geno.crosstab(cross,'24:809918','2:34936971')
 
 
-5:7177487   8:8205241
+plot_test('sdf')
+effectplot(cross,pheno.col=1,mname2='2:27757494',mname1='7:31714010')
+dev.off()
+
+geno.crosstab(cross,'7:31714010','2:27757494')
