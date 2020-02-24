@@ -33,6 +33,12 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/04_norm_imp_scan2.sh 'NBH' 22
 #################################################################################
 
+### TWO LOCUS SCAN $1=population $2=number of cores to use
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'NBH' 22
+#################################################################################
+
+
 ### SCAN2 PERMS
 bashsc="$HOME/QTL_agri/MAP/bash"
 
