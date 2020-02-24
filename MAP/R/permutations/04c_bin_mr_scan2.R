@@ -17,7 +17,11 @@ fl <- file.path(mpath,fl)
 ################################################################################
 ##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
-
+################################################################################
+mapfile <- "NBH_2172_imputed_high_confidence_tsp_mapped.csv"
+filename <- file.path(mpath,mapfile)
+cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross$pheno <- as.data.frame(cross$pheno)
 ################################################################################
 
 print(paste(cores,'cores'))

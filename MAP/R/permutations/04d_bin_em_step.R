@@ -16,6 +16,12 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
+################################################################################
+mapfile <- "NBH_2172_imputed_high_confidence_tsp_mapped.csv"
+filename <- file.path(mpath,mapfile)
+cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross$pheno <- as.data.frame(cross$pheno)
+cross <- calc.genoprob(cross, step=0, off.end=0, error.prob=0.001, map.function="kosambi", stepwidth="fixed")
 
 print(paste(cores,'cores'))
 erp <- 0.0025
