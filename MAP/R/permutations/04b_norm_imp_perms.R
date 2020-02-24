@@ -3,14 +3,13 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 library('qtl')
 ##library('parallel')
 library('snow')
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
 ##load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
-
 mapfile <- "NBH_2172_imputed_high_confidence_tsp_mapped.csv"
 filename <- file.path(mpath,mapfile)
 cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
