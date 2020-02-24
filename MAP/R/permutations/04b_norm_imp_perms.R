@@ -32,7 +32,7 @@ erp <- 0.001
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 attr(cross$geno[["X"]], 'class') <- 'X'
-cross <- drop.markers(cross, markernames(cross,'X'))
+##cross <- drop.markers(cross, markernames(cross,'X'))
 
 ################################################################################
 if(pop == 'ELR'){

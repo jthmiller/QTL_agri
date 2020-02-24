@@ -27,16 +27,20 @@ names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 
 ################################################################################
 cov <- ifelse(pop == 'ELR',18,2)
-so <- summary(scanone(cross,pheno.col=5, model="normal", method="imp", intcovar=sex.phen))[cov,]
+so <- summary(scanone(cross,pheno.col=1, model="normal", method="imp", intcovar=sex.phen))[cov,]
 mar <- find.marker(cross, so$chr, so$lod)
 g <- pull.geno(fill.geno(cross))[,mar]
 g <- cbind(as.numeric(g==1), as.numeric(g==2))
 summary(scanone(cross,pheno.col=5, model="normal", method="imp",addcovar=g))
 ################################################################################
 
-norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
- incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=200, clean.distance=200,
- assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
+#norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
+# incl.markers=F, chr = c(1:4,6:24),clean.output=T, clean.nmar=200, clean.distance=200,
+# assumeCondIndep=T, n.cluster=cores, intcovar=sex.phen, addcovar=g)
+
+norm.imp.2 <- scantwo(cross, pheno.col=1, model="normal", method="imp",
+ incl.markers=T,clean.output=T, clean.nmar=200, clean.distance=200,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g)
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_norm_imp.rsave')))
