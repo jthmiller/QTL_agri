@@ -32,9 +32,6 @@ sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 attr(cross$geno[["X"]], 'class') <- 'X'
 
-(summary(pull.map(cross))['overall','length']) / (length(colnames(pull.genoprob(cross)))/3)
-print('markers per CM')
-
 ################################################################################
 if(pop == 'ELR'){
  cross <- subset(cross, chr=c(1:4,6:17,19:24))
