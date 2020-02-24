@@ -6,4 +6,4 @@
 
 perms="$HOME/QTL_agri/MAP/R/permutations"
 
-Rscript $perms/04b_norm_imp_perms.R --vanilla "${1}" "${2}" "${3}"
+Rscript $perms/04b_norm_imp_perms.R --vanilla "${1}" "${2}" "${3}" "${4}" "${SLURM_ARRAY_TASK_ID}"
