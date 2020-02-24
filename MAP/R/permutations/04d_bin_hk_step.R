@@ -21,13 +21,16 @@ print(paste(cores,'cores'))
 erp <- 0.0025
 
 ################################################################################
-
+mapfile <- "NBH_2172_imputed_high_confidence_tsp_mapped.csv"
+filename <- file.path(mpath,mapfile)
+cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross$pheno <- as.data.frame(cross$pheno)
 ################################################################################
-load(file.path(mpath,paste0(pop,'_all_perms_bin_hk.rsave')))
+#load(file.path(mpath,paste0(pop,'_all_perms_bin_hk.rsave')))
 ## perms = scan2 permutations
 ## perms_1 = scanone permutations
 ## bin.em.perms.pens = 0.1 penalties
-load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
+#load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 ## sone = scanone
 ## bin.em.2 = scantow
 ## addcovar = g
@@ -40,8 +43,12 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_hk.rsave')))
 qtl <- makeqtl(cross, chr=so[top_2,'chr'], pos=so[top_2,'pos'], what="prob")
 qtl
 
+#full.bin.em.step <- stepwiseqtl(cross, model='binary', method = "hk", pheno.col = 4,
+# penalties=pens, incl.markers=T, qtl=qtl, additive.only = F,  scan.pairs = T, max.qtl=8)
+
 full.bin.em.step <- stepwiseqtl(cross, model='binary', method = "hk", pheno.col = 4,
- penalties=pens, incl.markers=T, qtl=qtl, additive.only = F,  scan.pairs = T, max.qtl=8)
+ incl.markers=T, qtl=qtl, additive.only = F,  scan.pairs = T, max.qtl=8)
+
 
 summary(full.bin.em.step)
 ################################################################################

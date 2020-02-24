@@ -23,6 +23,10 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
 #################################################################################
 
+### BIN HK STEPWISE QTL
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NBH_SWBH" --depend=afterany: $bashsc/04c_bin_hk_step.sh 'NBH' 22 22
+
 ### TWO LOCUS SCAN $1=population $2=number of cores to use
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "MRB.NBH" -p high -t 48:00:00 $bashsc/04_bin_mr_scan2.sh 'NBH' 22
