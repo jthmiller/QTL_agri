@@ -283,9 +283,9 @@ direc <- sapply(1:24,function(i) {
  cor(pos,map, use="complete.obs")
 })
 
-if(any(direc < 0) cross <- flip.order(cross,which(direc < 0))
+if(any(direc < 0)) cross <- flip.order(cross,which(direc < 0))
 
-mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp_mapped')
+mapfile <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
 

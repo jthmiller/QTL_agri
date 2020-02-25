@@ -12,11 +12,10 @@ library(doParallel)
 cl <- makeCluster(cores)
 registerDoParallel(cl)
 ################################################################################
-##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
 
 ## ELR
-fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
+fl <- 'ELR_imp.mapped.tsp.csv'
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 #############################################
 

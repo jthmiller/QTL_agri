@@ -14,14 +14,35 @@ sbatch -J "ELR_map" --mem=12G -p high --array=1-24 $bashsc/01_ELR_filter_impute.
 
 ### ESTIMATE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'NBH'
+srun -J "NBH_map" --mem=12G -p high $bashsc/02c_map_estmap.sh 'NBH'
 sbatch -J "ELR_map" --mem=12G -p high --array=1-24 $bashsc/02c_map_estmap.sh 'ELR'
 #################################################################################
 
 ### WRITE MAP
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "NBH_wc" $bashsc/03_write_map_cross.sh 'NBH'
+sbatch -J "ELR" $bashsc/03_write_map_cross.sh 'ELR'
 #################################################################################
+
+## RUN SCAN1 SCRIPT MANUAL TO BUILD QTL MODELS
+
+### TWO LOCUS SCAN $1=population $2=number of cores to use
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "MRB.NBH" -p high -t 48:00:00 $bashsc/04_bin_mr_scan2.sh 'NBH' 22
+#################################################################################
+
+### TWO LOCUS SCAN $1=population $2=number of cores to use
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/04_norm_imp_scan2.sh 'NBH' 22
+#################################################################################
+
+### TWO LOCUS SCAN $1=population $2=number of cores to use
+bashsc="$HOME/QTL_agri/MAP/bash"
+sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/04c_bin_em_scan2.sh 'NBH' 22
+#################################################################################
+
+
+
+
 
 ### BIN HK STEPWISE QTL
 bashsc="$HOME/QTL_agri/MAP/bash"

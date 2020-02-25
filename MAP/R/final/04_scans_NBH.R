@@ -4,21 +4,10 @@ library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-cores <- as.numeric(commandArgs(TRUE)[2])
+cores <- 20
 ################################################################################
-
-mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp_mapped')
-filename <- file.path(mpath,mapfile)
-################################################################################
-fl <- paste0(pop,'_imp.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
-
-cross <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
-
+fl <- 'NBH_2897_imputed_high_confidence_tsp_mapped.csv'
+cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 cross$pheno <- as.data.frame(cross$pheno)
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 attr(cross$geno[["X"]], 'class') <- 'X'
@@ -26,34 +15,28 @@ cross$pheno$pheno_norm <- nqrank(cross$pheno$Pheno)
 ################################################################################
 
 error <- 1e-04
+error <- 0.001
 cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", stepwidth="fixed")
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
 ################################################################################
 
 ################################################################################
 ## COVARIATES
-cov <- ifelse(pop == 'ELR',18,2)
 
-imp <- summary(scanone(cross, pheno.col=4, model="normal", method="imp"))[cov,]
-mar.imp <- find.marker(cross, imp$chr, imp$chr)
-g <- pull.geno(fill.geno(cross))[,mar.imp]
-g.imp <- cbind(as.numeric(g==1), as.numeric(g==2))
-summary(scanone(cross,pheno.col=4, model="normal", method="imp",addcovar=g))
-
-em <- summary(scanone(cross, pheno.col=4, model="bin", method="em"))[cov,]
-mar.em <- find.marker(cross, em$chr, em$chr)
-g <- pull.geno(fill.geno(cross))[,mar.em]
-g.em <- cbind(as.numeric(g==1), as.numeric(g==2))
-summary(scanone(cross,pheno.col=4, model="bin", method="em",addcovar=g))
-################################################################################
-
-################################################################################
-save.image(file.path(mpath,paste0(pop,'scan1_imputed.rsave')))
-################################################################################
+if(pop == 'NBH'){
+ mar <- '2:27373969'
+ g <- pull.geno(fill.geno(cross))[,mar.imp]
+ g <- cbind(as.numeric(g == 1), as.numeric(g == 2))
+} else {
+ mar <- '18:20422142'
+ g <- pull.geno(fill.geno(cross))[,mar.imp]
+ g <- cbind(as.numeric(g==1), as.numeric(g==2))
+}
 
 #### HK ##########################################################################################
 sone <- scanone(cross, pheno.col=4, model="binary", method="hk")
-sone.perms <- scanone(cross, pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
+sone.perms <- scanone(cross, pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores, addcovar=g)
+
 summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="bayesint")
 lod <- summary(sone.perms)[[2]]
 qtl <- summary(sone,lod)
@@ -116,7 +99,7 @@ summary(fit_hk_3int.sex)
 ################################################################################
 #### HK NORMAL #################################################################
 sone <- scanone(cross, pheno.col = 5, model="normal", method="hk")
-sone.perms <- scanone(cross, pheno.col = 5, model="normal", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
+sone.perms <- scanone(cross, pheno.col = 5, model="normal", method="hk", n.perm=1000, n.cluster=cores, addcovar=g)
 summary(sone, alpha=0.1, lodcolumn = 1, pvalues=T, perms=sone.perms, ci.function="bayesint")
 lod <- summary(sone.perms)[[2]]
 qtl <- summary(sone,lod)
@@ -240,6 +223,5 @@ int.imp <- addint(cross, pheno.col = 5, qtl = imp.qtl.4, method='imp', model='no
 summary(int.imp)
 ##########################################################################################
 ##########################################################################################
-
 
 save.image(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))

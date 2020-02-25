@@ -52,26 +52,30 @@ summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="
 lod <- summary(sone.perms)[[2]]
 qtl <- summary(sone,lod)
 
-hk.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+hk.qtl.2 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 
-hk.qtl <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl, method = "hk", model='binary',incl.markers=T)
+hk.qtl.2 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.2, method = "hk", model='binary',incl.markers=T)
 
-int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl, method='hk', model='binary',
+int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl.2, method='hk', model='binary',
                  formula=y~Q1+Q2, maxit=1000)
 
-add_Q3_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl, method="hk", model="binary",
+add_Q3_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl.2, method="hk", model="binary",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1*Q2+Q3)
 
 add <- summary(add_Q3_hk)
 ind <- which.max(add$lod)
 
-hk.qtl.3 <-  addtoqtl(cross, qtl = hk.qtl, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
+hk.qtl.3 <-  addtoqtl(cross, qtl = hk.qtl.2, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
 
 hk.qtl.3 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.3, method = "hk", model='normal',incl.markers=T)
 
 int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl.3, method='hk', model='binary',
                  formula=y~Q1*Q2+Q3, maxit=1000)
+
+fit_hk_3int <- fitqtl(cross, pheno.col=4, method="hk", model="binary", qtl = hk.qtl.3,
+                covar=NULL, formula = y~Q1*Q2+Q3, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
 
 summary(int.hk)
 
@@ -79,11 +83,13 @@ add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl.3, method="hk", model="bina
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1*Q2+Q3+Q4)
 
-summary(add_Q4_hk)
+add <- summary(add_Q4_hk)
+ind <- which.max(add$lod)
 
-fit_hk_3int <- fitqtl(cross, pheno.col=4, method="hk", model="binary", qtl = hk.qtl.3,
-                covar=NULL, formula = y~Q1*Q2+Q3, dropone=TRUE, get.ests=T,
-                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+hk.qtl.4 <-  addtoqtl(cross, qtl = hk.qtl.3, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
+hk.qtl.4 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.4, method = "hk", model='normal',incl.markers=T)
+
+
 
 summary(fit_hk_3int)
 
