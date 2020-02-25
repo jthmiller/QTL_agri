@@ -35,9 +35,12 @@ varhk=$(sbatch --mem=10G -p low --array=1-50 -t 6:00:00 -J "PERM.HK.NBH" $bashsc
 varmr=$(sbatch --mem=10G -p low --array=1-50 -t 6:00:00 -J "PERM.MR.NBH" $bashsc/05_perms.sh "${args[@]}" 'mr' | cut -f4 -d' ')
 
 args=( '--vanilla' 'NBH' '1' '1' 'normal' 'imp' )
-varim=$(sbatch --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.IMP.NBH" $bashsc/05_perms.sh "${args[@]}" | cut -f4 -d' ')
+varim=$(sbatch --mem=10G -p high --array=1-50 -t 6:00:00 -J "PERM.IMP.NBH" $bashsc/05_perms.sh "${args[@]}" | cut -f4 -d' ')
 
-Rscript $perms/07_bin_em_scan2.R --vanilla "${1}" "${2}"
+Rscript $perms/06_combine_permutations.R --vanilla 'NBH' "_all_perms_bin_em.rsave"
+Rscript $perms/06_combine_permutations.R --vanilla 'NBH' "_all_perms_bin_hk.rsave"
+Rscript $perms/06_combine_permutations.R --vanilla 'NBH' "_all_perms_bin_mr.rsave"
+Rscript $perms/06_combine_permutations.R --vanilla 'NBH' "_all_perms_bin_imp.rsave"
 ################################################################################
 
 ### TWO LOCUS SCAN $1=population $2=number of cores to use

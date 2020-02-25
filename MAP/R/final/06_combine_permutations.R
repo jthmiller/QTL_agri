@@ -3,8 +3,8 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.m
 library('qtl')
 library('snow')
 
-permname <- '_all_perms_bin_em.rsave'
-
+##permname <- '_all_perms_bin_em.rsave'
+permname <- commandArgs(TRUE)[2]
 
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
