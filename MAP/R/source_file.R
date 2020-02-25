@@ -1580,7 +1580,7 @@ thin_by_distortion <- function(cross_in = cross30, dist = 1){
  newpos <- lapply(map,function(X) { setNames(as.numeric(gsub(".*:","",names(X)))/100000,names(X))  } )
  newpos <- lapply(newpos, function(X){  class(X) <- 'A'; X } )
  attr(newpos,'class') <- 'map'
- ##attr(newpos[[chr]], "loglik") <- attr(map[[chr]], "loglik")
+
  names(newpos) <- chr
  cross_in <- replace.map(cross_in, newpos)
  print(summary(pull.map(cross_in)))

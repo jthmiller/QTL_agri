@@ -11,7 +11,7 @@ fl <- file.path(mpath,fl)
 ################################################################################
 ## put chromosomes together
 ###############################################################################
-
+sd <- 1
 arg <- paste0(pop,'_',sd,'_impute_tsp_?[0-9]*.csv')
 file_list <- list.files(mpath, arg)
 
@@ -53,6 +53,8 @@ gnos.u <- unname(data.frame(lapply(gnos, as.character),row.names=NULL,stringsAsF
 colnames(headers.u) <- colnames(gnos.u) <- headers.u[1,]
 to_write <- rbind(headers.u,gnos.u)
 
+fl <- paste0(pop,'_imp.mapped.tsp.csv')
+fl <- file.path(mpath,fl)
 write.table(to_write, fl, sep=',',row.names=F,quote=F,col.names = F)
 
 cross <- read.cross(
@@ -74,7 +76,8 @@ par(mfrow=c(3,1))
  plot(c(1,length(X)),c(0,max(Y)),type="n", xlab=paste('chr',i), ylab='physical position')
   points(X,Y, pch = 19, cex = 0.25)
 dev.off()
-##############################################################################
+################################################################################
+
 if(pop == 'NBH') {
  mfl <- paste0(pop,'_markernames.tsv')
  mfl <- file.path(mpath,mfl)

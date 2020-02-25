@@ -102,6 +102,7 @@ maxdist <- maxdist[order(as.numeric(maxdist[,3])),]
 maxdist <- data.frame(maxdist, stringsAsFactors = F)
 
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
+######################################################################
 
 ##### HEATMAP ######################################################################
 csq.pval.hm <- data.matrix(-log10(csq.pval))
@@ -109,6 +110,47 @@ plot_test('heatmap_dist_elr',height=3000,width=3000)
 heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
 dev.off()
 ######################################################################
+
+######################################################################
+### WHITHOUT DISTORTED 17
+csq.pval.2 <- csq.pval
+mars <- markernames(rf, 17)
+csq.pval.2[mars,] <- NA
+csq.pval.2[,mars] <- NA
+rf.plots.2 <- rf.plots
+rf.plots.2$rf[ ,mars] <- NA
+rf.plots.2$rf[mars, ] <- NA
+
+### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR
+maxdist2 <- lapply(chrnames(cross)[-17], function(i) {
+  mars <- markernames(rf, i)
+  a <- which(csq.pval.2[mars,] == min(csq.pval.2[mars,], na.rm = T), arr.ind=T)
+  b <- markernames(rf)[a[,'col']][1]
+  a <- rownames(a)[1]
+  cbind(a, b, -log10(csq.pval.2[cbind(a,b)]))
+})
+maxdist2 <- do.call(rbind,maxdist2)
+maxdist2 <- maxdist2[order(as.numeric(maxdist2[,3])),]
+maxdist2 <- data.frame(maxdist2, stringsAsFactors = F)
+
+##### HEATMAP ######################################################################
+csq.pval.hm <- data.matrix(-log10(csq.pval.2))
+plot_test('heatmap_dist_elr',height=3000,width=3000)
+heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
+dev.off()
+######################################################################
+######################################################################
+
+
+
+
+
+
+
+
+
+
+
 
 
 

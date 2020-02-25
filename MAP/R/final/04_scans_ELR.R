@@ -8,7 +8,8 @@ cores <- as.numeric(commandArgs(TRUE)[2])
 
 ################################################################################
 ################################################################################
-fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
+#fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
+fl <- 'ELR_7457_imputed_high_confidence_tsp_mapped.csv'
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 cross$pheno <- as.data.frame(cross$pheno)
@@ -17,11 +18,10 @@ attr(cross$geno[["X"]], 'class') <- 'X'
 cross$pheno$pheno_norm <- nqrank(cross$pheno$Pheno)
 ################################################################################
 
-error <- 1e-04
-error <- 0.01
+##error <- 1e-04
+error <- 0.001
 cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", stepwidth="fixed")
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
-
 
 ################################################################################
 ## COVARIATES
@@ -47,17 +47,14 @@ summary(scanone(cross,pheno.col=4, model="bin", method="em",addcovar=g.dist))
 
 #### HK ##########################################################################################
 sone <- scanone(cross, pheno.col=4, model="binary", method="hk")
-sone.perms <- scanone(cross,pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
+sone.perms <- scanone(cross, pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
 summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="bayesint")
 lod <- summary(sone.perms)[[2]]
 qtl <- summary(sone,lod)
-qtl
 
 hk.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-hk.qtl <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl, method = "hk", model='binary',incl.markers=T)
 
-int.hk.sex <- addint(cross, pheno.col = 4, qtl = hk.qtl, method='hk', model='binary',
-                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2, maxit=1000)
+hk.qtl <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl, method = "hk", model='binary',incl.markers=T)
 
 int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl, method='hk', model='binary',
                  formula=y~Q1+Q2, maxit=1000)
@@ -66,16 +63,17 @@ add_Q3_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl, method="hk", model="binary
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1*Q2+Q3)
 
-add <- summary(add_Q4_hk)
+add <- summary(add_Q3_hk)
+ind <- which.max(add$lod)
 
-hk.qtl.3 <-  addtoqtl(cross, qtl = hk.qtl, chr = as.character(add[22,'chr']), pos =  add[22,'pos'])
+hk.qtl.3 <-  addtoqtl(cross, qtl = hk.qtl, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
 
 hk.qtl.3 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.3, method = "hk", model='normal',incl.markers=T)
 
 int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl.3, method='hk', model='binary',
                  formula=y~Q1*Q2+Q3, maxit=1000)
 
-summary(inthk)
+summary(int.hk)
 
 add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl.3, method="hk", model="binary",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
@@ -104,18 +102,16 @@ fit_hk_3int.sex <- fitqtl(cross, pheno.col=4, method="hk", model="binary", qtl =
                 run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE, covar = as.data.frame(cross$pheno$sex))
 
 summary(fit_hk_3int.sex)
-##########################################################################################
+################################################################################
 
-
-
-
+################################################################################
+################################################################################
 #### HK NORMAL #################################################################
 sone <- scanone(cross, pheno.col = 5, model="normal", method="hk")
 sone.perms <- scanone(cross, pheno.col = 5, model="normal", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
 summary(sone, alpha=0.1, lodcolumn = 1, pvalues=T, perms=sone.perms, ci.function="bayesint")
 lod <- summary(sone.perms)[[2]]
 qtl <- summary(sone,lod)
-qtl
 
 hk.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 hk.qtl <- refineqtl(cross, pheno.col = 5, qtl=hk.qtl, method = "hk", model='normal',incl.markers=T)
@@ -238,6 +234,7 @@ summary(int.imp)
 ##########################################################################################
 ##########################################################################################
 
+hk.norm.out <- summary(fit_hk_3int.sex)
 imp.norm.out <- summary(fit_imp_5int)
 
 save.image(file.path(mpath,paste0(pop,'_imputed.rsave')))
@@ -246,4 +243,4 @@ full.bin.em.step <- stepwiseqtl(cross, model='normal', method = "imp", pheno.col
  incl.markers=T, qtl=imp.qtl.4, additive.only = T,  scan.pairs = T, max.qtl=8)
 
 
-save.image(file.path(mpath,paste0(pop,'_imputed.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))

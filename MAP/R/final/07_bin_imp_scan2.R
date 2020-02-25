@@ -24,13 +24,12 @@ cross$pheno$pheno_norm <- nqrank(cross$pheno$Pheno)
 ################################################################################
 
 ################################################################################
-bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
+bin.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
  clean.output=T, clean.nmar=50, clean.distance=50, maxit=1000, incl.markers=T,
  assumeCondIndep=T, n.cluster=cores, use="complete.obs")
 ################################################################################
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan2_bin_imp.rsave')))
 ################################################################################
-
 ### summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")

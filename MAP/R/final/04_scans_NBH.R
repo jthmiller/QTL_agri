@@ -7,6 +7,8 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 cores <- as.numeric(commandArgs(TRUE)[2])
 ################################################################################
 
+mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp_mapped')
+filename <- file.path(mpath,mapfile)
 ################################################################################
 fl <- paste0(pop,'_imp.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
@@ -20,6 +22,7 @@ cross <- read.cross(
 cross$pheno <- as.data.frame(cross$pheno)
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 attr(cross$geno[["X"]], 'class') <- 'X'
+cross$pheno$pheno_norm <- nqrank(cross$pheno$Pheno)
 ################################################################################
 
 error <- 1e-04
@@ -44,256 +47,199 @@ g.em <- cbind(as.numeric(g==1), as.numeric(g==2))
 summary(scanone(cross,pheno.col=4, model="bin", method="em",addcovar=g))
 ################################################################################
 
-
-save.image(file.path(mpath,paste0(pop,'_imputed.rsave')))
-
 ################################################################################
-
-
+save.image(file.path(mpath,paste0(pop,'scan1_imputed.rsave')))
+################################################################################
 
 #### HK ##########################################################################################
 sone <- scanone(cross, pheno.col=4, model="binary", method="hk")
-sone.perms <- scanone(cross,pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores)
+sone.perms <- scanone(cross, pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
 summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="bayesint")
 lod <- summary(sone.perms)[[2]]
 qtl <- summary(sone,lod)
-qtl
 
-add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+hk.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 
-add.qtl1 <- refineqtl(cross, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary',incl.markers=T)
+hk.qtl <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl, method = "hk", model='binary',incl.markers=T)
 
-int.em.sex <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
+int.hk.sex <- addint(cross, pheno.col = 4, qtl = hk.qtl, method='hk', model='binary',
                  covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2, maxit=1000)
 
-int.em <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
-                 formula=y~Q1+Q2, maxit=10000)
+int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl, method='hk', model='binary',
+                 formula=y~Q1+Q2, maxit=1000)
 
-add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+add_Q3_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl, method="hk", model="binary",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1*Q2+Q3)
+
+add <- summary(add_Q4_hk)
+
+hk.qtl.3 <-  addtoqtl(cross, qtl = hk.qtl, chr = as.character(add[22,'chr']), pos =  add[22,'pos'])
+
+hk.qtl.3 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.3, method = "hk", model='normal',incl.markers=T)
+
+int.hk <- addint(cross, pheno.col = 4, qtl = hk.qtl.3, method='hk', model='binary',
+                 formula=y~Q1*Q2+Q3, maxit=1000)
+
+summary(inthk)
+
+add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl.3, method="hk", model="binary",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1*Q2+Q3+Q4)
+
+summary(add_Q4_hk)
+
+fit_hk_3int <- fitqtl(cross, pheno.col=4, method="hk", model="binary", qtl = hk.qtl.3,
+                covar=NULL, formula = y~Q1*Q2+Q3, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+
+summary(fit_hk_3int)
+
+add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl.3, method="hk", model="binary",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1*Q2+Q3+Q4, covar = as.data.frame(cross$pheno$sex))
+
+add <- summary(add_Q4_hk)
+
+hk.qtl.3 <-  addtoqtl(cross, qtl = hk.qtl.3, chr = as.character(add[16,'chr']), pos =  add[16,'pos'])
+
+hk.qtl.3 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.3, method = "hk", model='normal',incl.markers=T)
+
+fit_hk_3int.sex <- fitqtl(cross, pheno.col=4, method="hk", model="binary", qtl = hk.qtl.3,
+                formula = y~Q1*Q2+Q3+Q4, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE, covar = as.data.frame(cross$pheno$sex))
+
+summary(fit_hk_3int.sex)
+################################################################################
+
+################################################################################
+################################################################################
+#### HK NORMAL #################################################################
+sone <- scanone(cross, pheno.col = 5, model="normal", method="hk")
+sone.perms <- scanone(cross, pheno.col = 5, model="normal", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.em)
+summary(sone, alpha=0.1, lodcolumn = 1, pvalues=T, perms=sone.perms, ci.function="bayesint")
+lod <- summary(sone.perms)[[2]]
+qtl <- summary(sone,lod)
+
+hk.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+hk.qtl <- refineqtl(cross, pheno.col = 5, qtl=hk.qtl, method = "hk", model='normal',incl.markers=T)
+
+int.hk <- addint(cross, pheno.col = 5, qtl = hk.qtl, method='hk', model='normal',
+                 formula=y~Q1+Q2, maxit=1000)
+
+summary(int.hk)
+
+add_Q3_hk <- addqtl(cross, pheno.col = 5, qtl = hk.qtl, method="hk", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1*Q2+Q3)
+
+summary(add_Q3_hk)
+
+fit_hk_2int <- fitqtl(cross, pheno.col = 5, method="hk", model="normal", qtl = hk.qtl,
+                covar=NULL, formula = y~Q1*Q2, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+
+summary(fit_hk_2int)
+
+add_Q3_hk.sex <- addqtl(cross, pheno.col = 5, qtl = hk.qtl, method="hk", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1*Q2+Q3, covar = as.data.frame(cross$pheno$sex))
+
+summary(add_Q3_hk.sex)
+##########################################################################################
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
+#### IMP ##########################################################################################
+imp <- scanone(cross, pheno.col = 5, model="normal", method="imp")
+imp.perms <- scanone(cross,pheno.col = 5, model="normal", method="imp", n.perm=100, n.cluster=cores, addcovar=g.imp)
+summary(imp, alpha=0.1, lodcolumn = 1, pvalues=T, perms=imp.perms, ci.function="bayesint")
+
+lod <- summary(imp.perms)[[2]]
+qtl <- summary(imp)[c(13,18),]
+qtl
+
+imp.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
+
+imp.qtl <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl, method = "imp", model='normal',incl.markers=T)
+
+int.em.sex <- addint(cross, pheno.col = 5, qtl = imp.qtl, method='imp', model='normal',
+                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2, maxit=1000)
+summary(int.em.sex)
+
+int.em <- addint(cross, pheno.col = 5, qtl = imp.qtl, method='imp', model='normal',
+                 formula=y~Q1+Q2, maxit=1000)
+summary(int.em)
+
+add_Q3_imp <- addqtl(cross, pheno.col = 5, qtl = imp.qtl, method="imp", model="normal",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1+Q2+Q3)
 
-add_Q1_Int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
-                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
-                       formula = y~Q1*Q3+Q2)
+add <- summary(imp)[23,]
 
-add_Q2_Int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
-                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
-                       formula = y~Q1+Q2*Q3)
+imp.qtl.3 <-  addtoqtl(cross, qtl = imp.qtl, chr = as.character(add[23,'chr']), pos =  add[23,'pos'])
 
-add_Q3_Int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
-                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
-                       formula = y~Q1+Q2+Q3*Q4)
-################################################################################
+imp.qtl.3 <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl.3, method = "imp", model='normal',incl.markers=T)
 
+fit_imp_3int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.3,
+                covar=NULL, formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
 
+summary(fit_imp_3int)
 
-
-
-
-
-
-
-sone <- scanone(cross,pheno.col=4, model="binary", method="mr")
-sone.perms <- scanone(cross,pheno.col=4, model="binary", method="mr", n.perm=10000, n.cluster=cores)
-summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="bayesint")
-lod <- summary(sone.perms)[[2]]
-qtl <- summary(sone,lod)
-
-add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-
-add.qtl1 <- refineqtl(cross, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary',
-                      incl.markers=F)
-
-int.em <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
-                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
-
-add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
-                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
+add_Q4_imp <- addqtl(cross, pheno.col = 5, qtl = imp.qtl.3, method="imp", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1+Q2+Q3+Q4)
 
-add_Q4_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
-                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
-                       formula = y~Q1*Q3+Q2+Q4)
+add <- summary(add_Q4_imp)
+
+imp.qtl.3 <-  addtoqtl(cross, qtl = imp.qtl.3, chr = as.character(add[2,'chr']), pos =  add[2,'pos'])
+imp.qtl.3 <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl.3, method = "imp", model='normal',incl.markers=T)
+
+fit_imp_3int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.3,
+                covar=NULL, formula=y~Q1+Q2+Q3+Q4, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
+
+summary(fit_imp_3int)
+
+int.imp <- addint(cross, pheno.col = 5, qtl = imp.qtl.3, method='imp', model='normal',
+                 formula=y~Q1+Q2+Q3+Q4, maxit=1000)
+
+summary(int.imp)
+
+fit_imp_3int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.3,
+                covar=NULL, formula=y~Q1+Q2*Q3+Q4, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
+
+summary(fit_imp_3int)
+
+add_Q4_imp <- addqtl(cross, pheno.col = 5, qtl = imp.qtl.3, method="imp", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula=y~Q1+Q2*Q3+Q4)
+
+summary(add_Q4_imp)
+
+add_Q4_imp.sex <- addqtl(cross, pheno.col = 5, qtl = imp.qtl.3, method="imp", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula=y~Q1+Q2*Q3+Q4, covar = as.data.frame(cross$pheno$sex))
+
+summary(add_Q4_imp.sex)
+
+add <- summary(add_Q4_imp)
+imp.qtl.4 <-  addtoqtl(cross, qtl = imp.qtl.3, chr = as.character(add[24,'chr']), pos =  add[24,'pos'])
+imp.qtl.4 <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl.4, method = "imp", model='normal',incl.markers=T)
+
+fit_imp_5int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.4,
+                covar=NULL, formula=y~Q1+Q2*Q3+Q4+Q5, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
+summary(fit_imp_5int)
+
+int.imp <- addint(cross, pheno.col = 5, qtl = imp.qtl.4, method='imp', model='normal',
+                 formula=y~Q1+Q2*Q3+Q4+Q5, maxit=1000)
+summary(int.imp)
+##########################################################################################
+##########################################################################################
 
 
-###### EM
-##cross.grid.fixed <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.01, map.function="kosambi", stepwidth="fixed")
-cross.grid.fixed <- sim.geno(cross,n.draws=160, step=1, off.end=1, error.prob=0.01, map.function="kosambi", stepwidth="fixed")
-cross.grid.fixed <- reduce2grid(cross.grid.fixed)
-sone.grid <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="imp")
-
-sone.grid.perms <- scanone(cross.grid.fixed, pheno.col=4, model="binary", method="imp", n.perm=1000, n.cluster=1)
-
-lod <- summary(sone.grid.perms)[[2]]
-qtl <- summary(sone.grid,lod)
-
-add.qtl1 <- makeqtl(cross.grid.fixed, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-
-add.qtl1 <- refineqtl(cross.grid.fixed, pheno.col = 4, qtl=add.qtl1, method = "em", model='binary',
-                      incl.markers=F)
-
-int.em <- addint(cross.grid.fixed, pheno.col = 4, qtl = add.qtl1, method='em', model='binary',
-                 covar=data.frame(cross.grid.fixed$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
-
-add_Q4_em <- addqtl(cross.grid.fixed, pheno.col=4, qtl = add.qtl1, method="em", model="binary",
-                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
-                    formula = y~Q1+Q2+Q3+Q4)
-
-add_Q4_wInts <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="em", model="binary",
-                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000, incl.markers=F,
-                       formula = y~Q1*Q3+Q2+Q4)
-#
-#int.em <- addint(cross, qtl = add.qtl1, formula=y~Q1+Q2+Q3+Q4, method='hk', model='binary')
-
-################################################################################
-
-fit_hk_3int <- fitqtl(cross, pheno.col=4, method="hk", model="binary", qtl = add.qtl1,
-                covar=NULL, formula=y~Q1+Q2+Q3+Q1:Q3, dropone=TRUE, get.ests=T,
-                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE, run.checks=F)
-
-################################################################################
-
-
-################################################################################
-AHR.qtl <- makeqtl(cross, chr=1, pos=0, what="prob")
-
-add_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="binary",
-            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=10000,
-            formula = y~Q1+Q2)
-
-int_Q2_AHR <- addqtl(cross, pheno.col=4, qtl = AHR.qtl, method="hk", model="binary",
-            incl.markers=F, verbose=FALSE, tol=1e-4, maxit=10000,
-            formula = y~Q1*Q2)
-
-plot_test('only_AHR_qtl.png',width=1000)
- plot(no_qtl_hk, add_Q2_AHR, int_Q2_AHR)
-dev.off()
-################################################################################
-
-#### EM ########################################################################
-no_qtl_em <- scanone(cross, pheno.col=4, method="em", model="binary", maxit=10000)
-
-add.perms <- scanone(cross, pheno.col=4, method="em", model="binary", n.perm = 10000, n.cluster=6, perm.Xsp=T)
-
-lod <- summary(add.perms)[1]
-
-qtl <- summary(no_qtl_em,lod)
-
-Q3 <- makeqtl(cross, chr=qtl[['chr']][c(1,3)], pos=qtl[['pos']][c(1,3)], what="draws")
-
-################################################################################
-
-#### IMP #######################################################################
-cross <- sim.geno(cross, stepwidth="fixed", step=1,  error.prob=erp, off.end=1, map.function="kosambi", n.draws=1000)
-
-fit_3_em <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-  covar=NULL, formula=y~Q1+Q2, dropone=TRUE, get.ests=T,
-  run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
-
-fit_3_em_int <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-  covar=NULL, formula=y~Q1+Q2+Q3+Q1:Q3, dropone=TRUE, get.ests=T,
-  run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
-################################################################################
-
-
-##### IMP ######################################################################
-##### To fit imp, must use em to scan for first QTL  (not offered rQTL)
-no_qtl_im <- scanone(cross, pheno.col=4, method="imp", model="binary")
-
-imp_perms <- scanone(cross, pheno.col=4, method="imp", model="binary", n.perm = 10000, n.cluster=6)
-
-lod <- summary(imp_perms)[1]
-
-qtl <- summary(no_qtl_im, lod)
-
-Q3 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
-
-Q3 <- refineqtl(cross, pheno.col = 4, qtl=Q3, method = "imp", model='binary',
-                incl.markers=F)
-
-int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
-                  covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
-
-fit_3_imp <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-                    formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T, covar=data.frame(cross$pheno$sex),
-                    run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
-
-scan_3_imp <- scanqtl(cross, pheno.col=4,method="imp", model="binary",
-                      chr=as.numeric(qtl[['chr']]), pos=as.numeric(qtl[['pos']]),
-                      covar=data.frame(cross$pheno$sex), formula=y~Q1*Q3+Q2,
-                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=10000,
-                      forceXcovar=FALSE)
-################################################################################
-
-##### MR #######################################################################
-no_qtl_mr <- scanone(cross, pheno.col=4, method="mr", model="binary")
-no_qtl_mram <- scanone(cross, pheno.col=5, method="mr-argmax", model="normal")
-no_qtl_mrim <- scanone(cross, pheno.col=5, method="mr-imp")
-cbind(summary(no_qtl_mr),am=summary(no_qtl_mram)$lod,im=summary(no_qtl_mrim)$lod)
-
-mr_perms <- scanone(cross, pheno.col=4, method="mr", model="binary", n.perm = 10000, n.cluster=6)
-
-lod <- summary(mr_perms)[1]
-
-qtl <- summary(no_qtl_mr, lod)
-
-Q3mr <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
-
-################################################################################
-
-int.imp <- addint(cross, pheno.col = 4, qtl = Q3, method='imp', model='binary',
-                  covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3, maxit=10000)
-
-fit_3_imp <- fitqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-                    formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T, covar=data.frame(cross$pheno$sex),
-                    run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
-
-scan_3_imp <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-                      covar=data.frame(cross$pheno$sex), formula=y~Q1+Q2+Q3,
-                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
-                      forceXcovar=FALSE)
-
-scan_3_imp_wo_sex <- scanqtl(cross, pheno.col=4, method="imp", model="binary", qtl = Q3,
-                      formula=y~Q1+Q2+Q3,
-                      incl.markers=FALSE, verbose=TRUE, tol=1e-4, maxit=1000,
-                      forceXcovar=FALSE)
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=4, mname1="2@89.0", mname2="18@47.1", var.flag="pooled")
-dev.off()
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=4, mname2="2@89.0", mname1="18@47.1", var.flag="group")
-dev.off()
-
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=1, mname2="2@89.0", mname1="18@47.1", var.flag="pooled")
-dev.off()
-
-geno.crosstab(cross, mname2=find.marker(cross,2,89.0), mname1=find.marker(cross,18,47.1), eliminate.zeros=F)
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=1, mname2="2@89.0", mname1="18@47.1", var.flag="group", ylim=c(0,5))
-dev.off()
-
-find.psuedo
-2 102.67
-
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=1, mname2="c2.loc102", mname1="18@47.1", var.flag="group")
-dev.off()
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=4, mname2="c2.loc102", var.flag="group")
-dev.off()
-
-plot_test('qtl2_18')
-effectplot(cross, pheno.col=1, mname2="2@89.0", var.flag="group")
-dev.off()
-
-geno.crosstab(cross, mname2="2@89.0", mname1="18@47.1", eliminate.zeros=F)
-
-save.image('~/saveR.rsave')
+save.image(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
