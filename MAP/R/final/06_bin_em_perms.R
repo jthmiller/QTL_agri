@@ -43,26 +43,26 @@ if(pop == 'NBH'){
 }
 ################################################################################
 
-bin.em.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
+perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
  clean.output=T, clean.nmar=50, clean.distance=50, maxit=100,
  assumeCondIndep=T, n.cluster=cores, n.perm=perm_count, perm.Xsp=F,
  verbose=2, batchsize=batch, addcovar=g)
 
-bin.em.perms.pens <- calc.penalties(bin.em.perms.2, alpha=0.1)
+pens <- calc.penalties(perms.2, alpha=0.1)
 
-bin.em.perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "em",
+perms.1 <- scanone(cross, pheno.col=4, model='binary', method = "em",
  n.perm = 10, n.cluster=cores)
 
-lod <- summary(bin.em.perms.1)[1]
+lod <- summary(perms.1)[1]
 
-assign(paste0("bin.em.perms.2.",arraynum), bin.em.perms.2)
-assign(paste0("bin.em.perms.1.",arraynum), bin.em.perms.1)
+assign(paste0("perms.2.",arraynum), perms.2)
+assign(paste0("perms.1.",arraynum), perms.1)
 
-summary(bin.em.perms.2)
-summary(bin.em.perms.pens)
-print(bin.em.perms.pens)
+summary(perms.2)
+summary(pens)
+print(pens)
 print(paste('done with', perm_count, 'scan 2 permutations'))
-print(summary(bin.em.perms.1))
+print(summary(perms.1))
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,arraynum,'_scan_perms_bin_em.rsave')))
