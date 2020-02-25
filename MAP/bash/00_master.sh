@@ -30,14 +30,14 @@ sbatch -J "ELR" $bashsc/03_write_map_cross.sh 'ELR'
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 args=( '--vanilla' 'NBH' '1' '1' 'binary' )
-varem=$(sbatch --mem=10G -p low --array=1-2 -t 3:00:00 -J "PERM.EM.NBH" $bashsc/05_perms.sh "${args[@]}" 'em' | cut -f4 -d' ')
+varem=$(sbatch --mem=10G -p low --array=1-100 -t 3:00:00 -J "PERM.EM.NBH" $bashsc/05_perms.sh "${args[@]}" 'em' | cut -f4 -d' ')
 varhk=$(sbatch --mem=10G -p low --array=1-2 -t 3:00:00 -J "PERM.HK.NBH" $bashsc/05_perms.sh "${args[@]}" 'hk' | cut -f4 -d' ')
 varmr=$(sbatch --mem=10G -p low --array=1-2 -t 3:00:00 -J "PERM.MR.NBH" $bashsc/05_perms.sh "${args[@]}" 'mr' | cut -f4 -d' ')
 
 args=( '--vanilla' 'NBH' '1' '1' 'normal' 'imp' )
 varim=$(sbatch --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.IMP.NBH" $bashsc/05_perms.sh "${args[@]}" | cut -f4 -d' ')
 
-
+Rscript $perms/07_bin_em_scan2.R --vanilla "${1}" "${2}"
 ################################################################################
 
 ### TWO LOCUS SCAN $1=population $2=number of cores to use
