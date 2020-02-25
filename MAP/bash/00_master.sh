@@ -39,21 +39,21 @@ bashsc="$HOME/QTL_agri/MAP/bash"
 
 varem=$(sbatch \
  --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.EM.NBH" \
- $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'em' 'binary' \
+ $bashsc/06_perms.sh '--vanilla' 'NBH' '1' '1' 'em' 'binary' \
  | cut -f4 -d' ')
 
 varhk=$(sbatch \
- --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.hk.NBH" \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.HK.NBH" \
  $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'hk' 'binary' \
  | cut -f4 -d' ')
 
 varmr=$(sbatch \
- --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.mr.NBH" \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.MR.NBH" \
  $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'mr' 'binary' \
  | cut -f4 -d' ')
 
 varim=$(sbatch \
- --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.mr.NBH" \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.IMP.NBH" \
  $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'imp' 'normal' \
  | cut -f4 -d' ')
 ################################################################################
