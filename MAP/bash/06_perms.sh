@@ -2,8 +2,8 @@
 #SBATCH -t 48:00:00
 #SBATCH -p high
 #SBATCH --mem=30G
-#SBATCH --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/perms/em_perm%x_%a.out
-#SBATCH --error=/home/jmiller1/QTL_agri/MAP/bash/slurms/perms/em_perm%x_%a.error
+#SBATCH --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/perms/%x_%a.out
+#SBATCH --error=/home/jmiller1/QTL_agri/MAP/bash/slurms/perms/%x_%a.error
 
 perms="$HOME/QTL_agri/MAP/R/final"
 
