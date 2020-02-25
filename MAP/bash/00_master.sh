@@ -41,10 +41,10 @@ varim=$(sbatch --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.IMP.NBH" $bashs
 
 ### TWO LOCUS SCAN $1=population $2=number of cores to use
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "EMB.NBH" -p med -t 48:00:00 $bashsc/07_bin_em_scan2.sh 'NBH' 22
-sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/07_bin_imp_scan2.sh 'NBH' 22
-sbatch -J "MRB.NBH" -p high -t 48:00:00 $bashsc/07_bin_mr_scan2.sh 'NBH' 22
-sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/07_norm_imp_scan2.sh 'NBH' 22
+sbatch -J "EMB.NBH" -p low -t 13:00:00 $bashsc/07_bin_em_scan2.sh 'NBH' 22
+sbatch -J "BIMP.NBH" -p low -t 13:00:00 $bashsc/07_bin_imp_scan2.sh 'NBH' 22
+sbatch -J "MRB.NBH" -p low -t 13:00:00 $bashsc/07_bin_mr_scan2.sh 'NBH' 22
+sbatch -J "NIMP.NBH" -p low -t 13:00:00 $bashsc/07_norm_imp_scan2.sh 'NBH' 22
 #################################################################################
 
 ### BIN HK STEPWISE QTL

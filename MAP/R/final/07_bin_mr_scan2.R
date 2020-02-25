@@ -39,7 +39,7 @@ if(pop == 'NBH'){
 ################################################################################
 
 bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="mr",
- clean.output=T, clean.nmar=50, clean.distance=50, maxit=1000,
+ clean.output=T, clean.nmar=50, clean.distance=50, maxit=100,
  assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
 
 ################################################################################
