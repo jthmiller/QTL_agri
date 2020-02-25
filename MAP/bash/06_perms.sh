@@ -16,6 +16,6 @@ Rscript $perms/06_perms.R "${1}" "${2}" "${3}" "${4}" "${5}" "${6}" "${SLURM_ARR
 #pop <- as.numeric(commandArgs(TRUE)[2])
 #perm_count <- as.numeric(commandArgs(TRUE)[3])
 #cores <- as.numeric(commandArgs(TRUE)[4])
-#method <- as.numeric(commandArgs(TRUE)[5])
-#model <- as.numeric(commandArgs(TRUE)[6])
+#model <- as.numeric(commandArgs(TRUE)[5])
+#method <- as.numeric(commandArgs(TRUE)[6])
 #arraynum <- as.numeric(commandArgs(TRUE)[7])
