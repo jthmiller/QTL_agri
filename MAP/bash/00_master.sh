@@ -34,7 +34,6 @@ var1=$(sbatch \
  $bashsc/06_bin_mr_perms.sh "--vanilla" 'NBH' '1' '1' \
  | cut -f4 -d' ')
 
-
 bashsc="$HOME/QTL_agri/MAP/bash"
 var1=$(sbatch \
  --mem=10G -p high --array=1-2 -t 3:00:00 \
@@ -45,7 +44,7 @@ var1=$(sbatch \
 bashsc="$HOME/QTL_agri/MAP/bash"
 var1=$(sbatch \
  --mem=10G -p high --array=1-2 -t 3:00:00 \
- -J "PERM.IMP.NBH" \
+ -J "PERM.EM.NBH" \
  $bashsc/06_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' \
  | cut -f4 -d' ')
 
