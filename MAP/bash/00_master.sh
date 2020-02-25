@@ -38,33 +38,23 @@ batch <- round(nind(cross)/2)
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 varem=$(sbatch \
- --mem=10G -p high --array=1-2 -t 3:00:00 \
- -J "PERM.EM.NBH" \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.EM.NBH" \
  $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'em' 'binary' \
  | cut -f4 -d' ')
 
-
-
-
-
-
-
-varim=$(sbatch \
- --mem=10G -p low --array=1-100 -t 3:00:00 \
- -J "PERM.IMP.NBH" \
- $bashsc/06_bin_imp_perms.sh "--vanilla" 'NBH' '1' '1' \
+varhk=$(sbatch \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.hk.NBH" \
+ $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'hk' 'binary' \
  | cut -f4 -d' ')
 
 varmr=$(sbatch \
- --mem=10G -p low --array=1-100 -t 3:00:00 \
- -J "PERM.MRB.NBH" \
- $bashsc/06_bin_mr_perms.sh "--vanilla" 'NBH' '1' '1' \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.mr.NBH" \
+ $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'mr' 'binary' \
  | cut -f4 -d' ')
 
 varim=$(sbatch \
- --mem=10G -p low --array=1-100 -t 3:00:00 \
- -J "PERM.IMP.NBH" \
- $bashsc/06_norm_imp_perms.sh "--vanilla" 'NBH' '1' '1' \
+ --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.mr.NBH" \
+ $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'imp' 'normal' \
  | cut -f4 -d' ')
 ################################################################################
 
