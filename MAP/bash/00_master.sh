@@ -27,13 +27,13 @@ sbatch -J "ELR" $bashsc/03_write_map_cross.sh 'ELR'
 
 ################################################################################
 ### SCAN2 PERMS
+vanilla <- as.numeric(commandArgs(TRUE)[1])
+pop <- as.numeric(commandArgs(TRUE)[2])
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 cores <- as.numeric(commandArgs(TRUE)[4])
-arraynum <- as.numeric(commandArgs(TRUE)[5])
-method <- as.numeric(commandArgs(TRUE)[6])
-model <- as.numeric(commandArgs(TRUE)[7])
-batch <- round(nind(cross)/2)
-
+method <- as.numeric(commandArgs(TRUE)[5])
+model <- as.numeric(commandArgs(TRUE)[6])
+arraynum <- as.numeric(commandArgs(TRUE)[7])
 
 bashsc="$HOME/QTL_agri/MAP/bash"
 
