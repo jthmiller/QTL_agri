@@ -18,9 +18,10 @@ vanilla <- as.numeric(commandArgs(TRUE)[1])
 pop <- commandArgs(TRUE)[2]
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 cores <- as.numeric(commandArgs(TRUE)[4])
-method <- commandArgs(TRUE)[5]
-model <- commandArgs(TRUE)[6]
+model <- commandArgs(TRUE)[5]
+method <- commandArgs(TRUE)[6]
 arraynum <- as.numeric(commandArgs(TRUE)[7])
+
 batch <- round(nind(cross)/2)
 
 print(commandArgs(TRUE))
