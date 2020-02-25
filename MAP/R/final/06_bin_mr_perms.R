@@ -11,14 +11,8 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 #fl <- file.path(mpath,fl)
 
 ################################################################################
-##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
+load(file.path(mpath,paste0(pop,'_imputed.rsave')))
 ################################################################################
-
-#fl <- file.path(paste0(pop,'_downsampled.csv'))
-#cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
-mapfile <- 'NBH_2172_imputed_high_confidence_tsp_mapped.csv'
-filename <- file.path(mpath,mapfile)
 
 perm_count <- as.numeric(commandArgs(TRUE)[3])
 arraynum <- as.numeric(commandArgs(TRUE)[5])
@@ -28,22 +22,14 @@ batch <- round(nind(cross)/2)
 print(commandArgs(TRUE))
 print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
 set.seed(arraynum)
-
+print(paste(cores,'cores'))
 ################################################################################
 
-print(paste(cores,'cores'))
-erp <- 0.0025
 sex.phen <- pull.pheno(cross, "sex")
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
 attr(cross$geno[["X"]], 'class') <- 'X'
 
-##################################################################################
-##if(pop == 'ELR'){
-## cross <- subset(cross, chr=c(1:4,6:17,19:24))
-##} else {
-## cross <- subset(cross, chr=c(1,3:4,6:24))
-##}
-##################################################################################
+################################################################################
 
 bin.mr.perms.2 <- scantwo(cross, pheno.col=4, model="binary", method="mr",
  clean.output=T, clean.nmar=50, clean.distance=50, maxit=1000,

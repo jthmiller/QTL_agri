@@ -28,8 +28,16 @@ cl <- makeCluster(5)
 registerDoParallel(cl)
 
 ################################################################################
+fl <- paste0(pop,'_imp.mapped.tsp.csv')
+fl <- file.path(mpath,mapfile)
 
-cross <- read.cross(file=mapfile , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross2 <- read.cross(
+ file = fl,
+ format = "csv", genotypes=c("1","2","3"),
+ estimate.map = FALSE
+)
+
+################################################################################
 
 loglik <- err <- c(0.0001, 0.001, 0.01, 0.05)
 
@@ -59,9 +67,9 @@ direc <- sapply(1:24,function(i) {
  cor(pos,map, use="complete.obs")
 })
 
-if(any(cor(pos,map, use="complete.obs") < 0) cross <- flip.order(cross,which(direc < 0))
+if(any(direc < 0) cross <- flip.order(cross,which(direc < 0))
 
-mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp_mapped')
+mapfile <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
 

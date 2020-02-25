@@ -5,9 +5,8 @@ library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 cores <- as.numeric(commandArgs(TRUE)[2])
-
 ################################################################################
-##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
+
 ################################################################################
 fl <- paste0(pop,'_imp.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
@@ -19,8 +18,81 @@ cross <- read.cross(
 )
 
 cross$pheno <- as.data.frame(cross$pheno)
+names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
+attr(cross$geno[["X"]], 'class') <- 'X'
 ################################################################################
-## cross <- subset(cross, chr=c(1:4,6:24))
+
+error <- 1e-04
+cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", stepwidth="fixed")
+cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
+################################################################################
+
+################################################################################
+## COVARIATES
+cov <- ifelse(pop == 'ELR',18,2)
+
+imp <- summary(scanone(cross, pheno.col=4, model="normal", method="imp"))[cov,]
+mar.imp <- find.marker(cross, imp$chr, imp$chr)
+g <- pull.geno(fill.geno(cross))[,mar.imp]
+g.imp <- cbind(as.numeric(g==1), as.numeric(g==2))
+summary(scanone(cross,pheno.col=4, model="normal", method="imp",addcovar=g))
+
+em <- summary(scanone(cross, pheno.col=4, model="bin", method="em"))[cov,]
+mar.em <- find.marker(cross, em$chr, em$chr)
+g <- pull.geno(fill.geno(cross))[,mar.em]
+g.em <- cbind(as.numeric(g==1), as.numeric(g==2))
+summary(scanone(cross,pheno.col=4, model="bin", method="em",addcovar=g))
+################################################################################
+
+
+save.image(file.path(mpath,paste0(pop,'_imputed.rsave')))
+
+################################################################################
+
+
+
+#### HK ##########################################################################################
+sone <- scanone(cross, pheno.col=4, model="binary", method="hk")
+sone.perms <- scanone(cross,pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores)
+summary(sone, alpha=0.1, lodcolumn=1, pvalues=T, perms=sone.perms, ci.function="bayesint")
+lod <- summary(sone.perms)[[2]]
+qtl <- summary(sone,lod)
+qtl
+
+add.qtl1 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+
+add.qtl1 <- refineqtl(cross, pheno.col = 4, qtl=add.qtl1, method = "hk", model='binary',incl.markers=T)
+
+int.em.sex <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
+                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2, maxit=1000)
+
+int.em <- addint(cross, pheno.col = 4, qtl = add.qtl1, method='hk', model='binary',
+                 formula=y~Q1+Q2, maxit=10000)
+
+add_Q4_hk <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1+Q2+Q3)
+
+add_Q1_Int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                       formula = y~Q1*Q3+Q2)
+
+add_Q2_Int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
+                       formula = y~Q1+Q2*Q3)
+
+add_Q3_Int <- addqtl(cross, pheno.col=4, qtl = add.qtl1, method="hk", model="binary",
+                       incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
+                       formula = y~Q1+Q2+Q3*Q4)
+################################################################################
+
+
+
+
+
+
+
+
 
 sone <- scanone(cross,pheno.col=4, model="binary", method="mr")
 sone.perms <- scanone(cross,pheno.col=4, model="binary", method="mr", n.perm=10000, n.cluster=cores)

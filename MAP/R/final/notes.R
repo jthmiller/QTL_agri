@@ -88,3 +88,24 @@ effectplot(cross,pheno.col=1,mname2='2:27757494',mname1='7:31714010')
 dev.off()
 
 geno.crosstab(cross,'7:31714010','2:27757494')
+
+geno.crosstab(cross,'17:29007925','5:3014891')
+geno.crosstab(cross,'8:37635736','17:7480177')
+
+14:28023254 19:16701029
+22:10368582  14:1719508
+
+
+get_genes(chr,pos,ngens=2)
+get_genes(17,29007925,ngens=10)
+get_genes(17,7480177,ngens=10)
+get_genes(8,37635736,ngens=10)
+get_genes(5,3014891,ngens=10)
+
+### MOST DISTORTED MARKER ON 17
+17:29007925 17:29388433 17:14629450
+
+geno.crosstab(cross,'17:14629450','24:2123083')
+
+
+### ELR 2 and 13 appear linked

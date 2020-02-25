@@ -1,22 +1,26 @@
 #!/bin/R
 pop <- 'NBH'
+pop <- 'ELR'
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
-cores <- as.numeric(commandArgs(TRUE)[2])
 
+cores <- as.numeric(commandArgs(TRUE)[2])
+cores <- 20
+library(doParallel)
+cl <- makeCluster(cores)
+registerDoParallel(cl)
 ################################################################################
 ##load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
 ################################################################################
-fl <- paste0(pop,'_imp.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
 
-cross <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
+## ELR
+fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
+cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+#############################################
+
+## NBH
 ## HIGH CONFID IMPUTED
 mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp')
 filename <- file.path(mpath,mapfile)
@@ -26,25 +30,19 @@ cross <- read.cross(
  estimate.map = FALSE
 )
 
-
-## DOWNSAMPLED
-#fl <- file.path(paste0(pop,'_downsampled.csv'))
-#cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#cross$pheno <- as.data.frame(cross$pheno)
-################################################################################
-
-cross <- cross11
-
+#############################################
 ahr_genes <- get_AHR(cross)
 gt <- geno.table(cross)
 ahr_genes$segdist <- -log10(gt[ahr_genes$close_marker,'P.value'])
 ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
+#############################################
 
+cross <- est.rf(cross, maxit=100, tol=1e-6)
 
 #############################################
 ### test 2 locus interaction seg distortion
 ##rf <- subset(cross, chr = c(1:4,6:24))
-rf <- est.rf(cross, maxit=1000, tol=1e-6)
+rf <- cross
 
 probs <- c(0.0625,0.125,0.25)
 gts <- c('AA','AB','BB')
@@ -75,9 +73,6 @@ csq <- function(mara, marb) {
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
 
 ### WITH PARALELLE #########################################
-library(doParallel)
-cl <- makeCluster(20)
-registerDoParallel(cl)
 csq.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq.each(marb)
 csq.pval <- do.call(rbind,csq.pval)
 colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
@@ -108,12 +103,14 @@ maxdist <- data.frame(maxdist, stringsAsFactors = F)
 
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 
-##### HEATMAP
+##### HEATMAP ######################################################################
 csq.pval.hm <- data.matrix(-log10(csq.pval))
-
-plot_test('heatmap_dist',height=3000,width=3000)
+plot_test('heatmap_dist_elr',height=3000,width=3000)
 heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
 dev.off()
+######################################################################
+
+
 
 
 ahr_genes_sub <- ahr_genes_sub[which(ahr_genes_sub$PATH == 'AHR'),]
@@ -134,8 +131,10 @@ points(1:length(gt[,1]), -log10(gt$P.value), col=as.factor(gt$chr), pch=19, cex=
 dev.off()
 
 
+diag(rf.plots$rf) <- NA
+
 plot_test('CHRxCHR_LOD_scores',height=1000,width=1000)
-plotRF(rf.plots,zmax=8,col.scheme="redblue")
+plotRF(rf.plots,zmax=4,col.scheme="redblue")
 dev.off()
 
 
