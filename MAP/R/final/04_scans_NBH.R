@@ -77,14 +77,14 @@ hk.qtl.4 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
 hk.qtl.4 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.4, method = "hk", model='binary',incl.markers=T)
 
 int.hk.4 <- addint(cross, pheno.col = 4, qtl = hk.qtl.4, method='hk', model='binary',
-                 formula=y~Q1+Q2+Q3+Q4, maxit=10000)
- 
+                 formula=y~Q1+Q2+Q3+Q4, maxit=1000)
+
 add_Q5_hk <- addqtl(cross, pheno.col=4, qtl = hk.qtl.4, method="hk", model="binary",
-                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1+Q2+Q3+Q4+Q5)
 
 add_Q5_hkint <- addqtl(cross, pheno.col=4, qtl = hk.qtl.4, method="hk", model="binary",
-                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
                     formula = y~Q1*Q3+Q2+Q4+Q5)
 
 add <- summary(add_Q5_hk)
