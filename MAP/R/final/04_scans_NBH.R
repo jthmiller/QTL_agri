@@ -92,7 +92,7 @@ ind <- which.max(add$lod)
 
 hk.qtl.5 <-  addtoqtl(cross, qtl = hk.qtl.4, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
 
-hk.qtl.5 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.5, method = "hk", model='normal',incl.markers=T)
+hk.qtl.5 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.5, method = "hk", model='binary',incl.markers=T)
 
 int.hk.5 <- addint(cross, pheno.col = 4, qtl = hk.qtl.5, method='hk', model='binary',
                  formula=y~Q1+Q2+Q3+Q4+Q5, maxit=1000)
@@ -148,23 +148,33 @@ fit_hk_4int <- fitqtl(cross, pheno.col = 5, method="hk", model="normal", qtl = h
                 covar=NULL, formula = y~Q1*Q3+Q2+Q4, dropone=TRUE, get.ests=T,
                 run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
 
-summary(fit_hk_4int)
+hk_4int_normal_out <- summary(fit_hk_4int)
 
 add_Q5_hk <- addqtl(cross, pheno.col = 5, qtl = hk.qtl.4, method="hk", model="normal",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
                     formula = y~Q1+Q2+Q3+Q4+Q5)
 
+add_Q5_hk <- addqtl(cross, pheno.col = 5, qtl = hk.qtl.4, method="hk", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
+                    formula = y~Q1*Q3+Q2+Q4+Q5)
+
 add <- summary(add_Q5_hk)
 ind <- which.max(add$lod)
 
+hk.qtl.5 <-  addtoqtl(cross, qtl = hk.qtl.4, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
+hk.qtl.5 <- refineqtl(cross, pheno.col = 4, qtl=hk.qtl.5, method = "hk", model='normal',incl.markers=T)
 
-summary(fit_hk_2int)
+fit_hk_5int <- fitqtl(cross, pheno.col = 5, method="hk", model="normal", qtl = hk.qtl.5,
+                covar=NULL, formula = y~Q1*Q3+Q2+Q4+Q5, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
 
-add_Q3_hk.sex <- addqtl(cross, pheno.col = 5, qtl = hk.qtl, method="hk", model="normal",
-                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
-                    formula = y~Q1*Q2+Q3, covar = as.data.frame(cross$pheno$sex))
+fit_hk_5int_normal <- summary(fit_hk_5int)
 
-summary(add_Q3_hk.sex)
+add_Q6_hk <- addqtl(cross, pheno.col = 5, qtl = hk.qtl.5, method="hk", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=10000,
+                    formula = y~Q1*Q3+Q2+Q4+Q5+Q6)
+
+summary(add_Q6_hk)
 ##########################################################################################
 
 ##########################################################################################
@@ -176,36 +186,63 @@ imp.perms <- scanone(cross,pheno.col = 5, model="normal", method="imp", n.perm=1
 summary(imp, alpha=0.1, lodcolumn = 1, pvalues=T, perms=imp.perms, ci.function="bayesint")
 
 lod <- summary(imp.perms)[[2]]
-qtl <- summary(imp)[c(13,18),]
+qtl <- summary(imp)[c(1,2,8,13,18,24),]
+qtl <- summary(imp,lod)
 qtl
 
-imp.qtl <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
+imp.qtl.4 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="draws")
 
-imp.qtl <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl, method = "imp", model='normal',incl.markers=T)
+imp.qtl.4 <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl.4, method = "imp", model='normal',incl.markers=T)
 
-int.em.sex <- addint(cross, pheno.col = 5, qtl = imp.qtl, method='imp', model='normal',
-                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2, maxit=1000)
-summary(int.em.sex)
+int.imp <- addint(cross, pheno.col = 5, qtl = imp.qtl.4, method='imp', model='normal',
+                 covar=data.frame(cross$pheno$sex) ,formula=y~Q1+Q2+Q3+Q4+Q5+Q6, maxit=1000)
 
-int.em <- addint(cross, pheno.col = 5, qtl = imp.qtl, method='imp', model='normal',
-                 formula=y~Q1+Q2, maxit=1000)
-summary(int.em)
-
-add_Q3_imp <- addqtl(cross, pheno.col = 5, qtl = imp.qtl, method="imp", model="normal",
-                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
-                    formula = y~Q1+Q2+Q3)
-
-add <- summary(imp)[23,]
-
-imp.qtl.3 <-  addtoqtl(cross, qtl = imp.qtl, chr = as.character(add[23,'chr']), pos =  add[23,'pos'])
-
-imp.qtl.3 <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl.3, method = "imp", model='normal',incl.markers=T)
-
-fit_imp_3int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.3,
-                covar=NULL, formula=y~Q1+Q2+Q3, dropone=TRUE, get.ests=T,
+fit_imp_int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.4,
+                covar=NULL, formula=y~Q1*Q6+Q2*Q5+Q3+Q4, dropone=TRUE, get.ests=T,
                 run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
 
+summary(fit_imp_int)
+
+add_Q5_imp <- addqtl(cross, pheno.col = 5, qtl = imp.qtl.4, method="imp", model="normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula=y~Q1*Q6+Q2*Q5+Q3+Q4+Q7)
+
+add <- summary(add_Q5_imp)
+ind <- which.max(add$lod)
+
+imp.qtl.5 <-  addtoqtl(cross, qtl = imp.qtl.4, chr = as.character(add[ind,'chr']), pos =  add[ind,'pos'])
+
+imp.qtl.5 <- refineqtl(cross, pheno.col = 5, qtl=imp.qtl.5, method = "imp", model='normal',incl.markers=T)
+
+fit_imp_5 <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.5,
+                covar=NULL, formula = y~Q1*Q3+Q2+Q4+Q5, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
+
+summary(fit_imp_5)
+
+int.imp.5 <- addint(cross, pheno.col = 5, qtl = imp.qtl.5, method='imp', model='normal',
+                   formula = y~Q1*Q3+Q2+Q4+Q5, maxit=10000)
+summary(int.imp.5)
+
+fit_imp_3int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.3,
+                covar=NULL, formula=y~Q1*Q3+Q2, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
 summary(fit_imp_3int)
+
+fit_imp_4int <- fitqtl(cross, pheno.col = 5, method="imp", model="normal", qtl = imp.qtl.4,
+                covar=NULL, formula=y~Q1*Q3+Q2*Q4, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=10000, forceXcovar=FALSE)
+
+summary(fit_imp_4int)
+
+### INTERACTIONS
+## 2 and 8
+## 18 and 24
+
+int.imp.5 <- addint(cross, pheno.col = 5, qtl = imp.qtl.5, method='imp', model='normal',
+                   formula = y~Q1+Q3+Q2+Q4+Q5, maxit=10000)
+
+
 
 add_Q4_imp <- addqtl(cross, pheno.col = 5, qtl = imp.qtl.3, method="imp", model="normal",
                     incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
