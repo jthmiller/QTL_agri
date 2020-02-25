@@ -36,10 +36,17 @@ if(pop == 'NBH'){
 ################################################################################
 
 ################################################################################
-bin.em.2 <- scantwo(cross, pheno.col=4, model="binary", method="em",
- clean.output=T, clean.nmar=50, clean.distance=50, maxit=1000, incl.markers=T,
+bin.em.2.cov <- scantwo(cross, pheno.col=4, model="binary", method="em",
+ clean.output=T, clean.nmar=10, clean.distance=50, maxit=1000, incl.markers=T,
  assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
 ################################################################################
+
+################################################################################
+bin.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="em",
+ clean.output=T, clean.nmar=10, clean.distance=50, maxit = 1000, incl.markers=T,
+ assumeCondIndep=T, n.cluster=cores, use="complete.obs")
+################################################################################
+
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
@@ -52,5 +59,5 @@ plot(bin.em.2,col.scheme = "redblue",contours=T, zlim = c(5,5))
 dev.off()
 
 plot_test('lod',width=2000,heigh=2000)
-plot(bin.em.2,col.scheme = "redblue",contours=c(5,5), zlim = c(5,5))
+plot(bin.em.2,col.scheme = "redblue", contours=c(15,5), zlim = c(18,16))
 dev.off()
