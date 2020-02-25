@@ -10,7 +10,7 @@ perms="$HOME/QTL_agri/MAP/R/final"
 ## 04b_bin_em_perms.sh --vanilla pop perm_count cores arraynum
 # sbatch -J "NBH_PBE" -p high -t 48:00:00 $bashsc/04b_bin_em_perms.sh "--vanilla" 'NBH' 12 1
 
-Rscript $perms/06_bin_em_perms.R "${1}" "${2}" "${3}" "${4}" "${SLURM_ARRAY_TASK_ID}" "${6}" "${7}"
+Rscript $perms/06_perms.R "${1}" "${2}" "${3}" "${4}" "${SLURM_ARRAY_TASK_ID}" "${6}" "${7}"
 
 #vanilla <- as.numeric(commandArgs(TRUE)[1])
 #pop <- as.numeric(commandArgs(TRUE)[2])

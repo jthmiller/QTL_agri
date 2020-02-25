@@ -27,12 +27,20 @@ sbatch -J "ELR" $bashsc/03_write_map_cross.sh 'ELR'
 
 ################################################################################
 ### SCAN2 PERMS
+perm_count <- as.numeric(commandArgs(TRUE)[3])
+cores <- as.numeric(commandArgs(TRUE)[4])
+arraynum <- as.numeric(commandArgs(TRUE)[5])
+method <- as.numeric(commandArgs(TRUE)[6])
+model <- as.numeric(commandArgs(TRUE)[7])
+batch <- round(nind(cross)/2)
+
+
 bashsc="$HOME/QTL_agri/MAP/bash"
 
 varem=$(sbatch \
  --mem=10G -p low --array=1-100 -t 3:00:00 \
  -J "PERM.EM.NBH" \
- $bashsc/06_bin_em_perms.sh "--vanilla" 'NBH' '1' '1' \
+ $bashsc/06_perms.sh "--vanilla" 'NBH' '1' '1' 'em' 'binary' \
  | cut -f4 -d' ')
 
 varim=$(sbatch \
