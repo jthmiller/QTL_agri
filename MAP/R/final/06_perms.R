@@ -28,6 +28,10 @@ print(commandArgs(TRUE))
 print(paste('pop =',pop,', perm = ',perm_count,', cores =', cores,', array =',arraynum))
 set.seed(arraynum)
 print(paste(cores,'cores'))
+
+if(model == 'binary') pheno.col <- 4
+if(model == 'normal') pheno.col <- 5
+
 ################################################################################
 
 sex.phen <- pull.pheno(cross, "sex")
@@ -48,14 +52,14 @@ if(pop == 'NBH'){
 }
 ################################################################################
 
-perms.2 <- scantwo(cross, pheno.col=4, model=model, method = method,
+perms.2 <- scantwo(cross, pheno.col = pheno.col, model=model, method = method,
  clean.output=T, clean.nmar=50, clean.distance=50, maxit=100,
  assumeCondIndep=T, n.cluster=cores, n.perm=perm_count, perm.Xsp=F,
  verbose=2, batchsize=batch, addcovar=g)
 
 pens <- calc.penalties(perms.2, alpha=0.1)
 
-perms.1 <- scanone(cross, pheno.col=4, model=model, method = method,
+perms.1 <- scanone(cross, pheno.col = pheno.col, model=model, method = method,
  n.perm = 10, n.cluster=cores)
 
 lod <- summary(perms.1)[1]

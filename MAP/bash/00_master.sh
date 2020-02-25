@@ -29,26 +29,19 @@ sbatch -J "ELR" $bashsc/03_write_map_cross.sh 'ELR'
 ### SCAN2 PERMS
 bashsc="$HOME/QTL_agri/MAP/bash"
 
-
-args=( '--vanilla' 'NBH' '1' '1' 'em' 'binary' )
-ls "${args[@]}"
-
-
-
 args=( '--vanilla' 'NBH' '1' '1' 'binary' )
-varem=$(sbatch --mem=10G -p high --array=3-4 -t 3:00:00 -J "PERM.EM.NBH" $bashsc/06_perms.sh "${args[@]}" 'em' | cut -f4 -d' ')
-varhk=$(sbatch --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.HK.NBH" $bashsc/06_perms.sh "${args[@]}" 'hk' | cut -f4 -d' ')
-varhk=$(sbatch --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.MR.NBH" $bashsc/06_perms.sh "${args[@]}" 'mr' | cut -f4 -d' ')
+varem=$(sbatch --mem=10G -p low --array=1-2 -t 3:00:00 -J "PERM.EM.NBH" $bashsc/06_perms.sh "${args[@]}" 'em' | cut -f4 -d' ')
+varhk=$(sbatch --mem=10G -p low --array=1-2 -t 3:00:00 -J "PERM.HK.NBH" $bashsc/06_perms.sh "${args[@]}" 'hk' | cut -f4 -d' ')
+varmr=$(sbatch --mem=10G -p low --array=1-2 -t 3:00:00 -J "PERM.MR.NBH" $bashsc/06_perms.sh "${args[@]}" 'mr' | cut -f4 -d' ')
 
 args=( '--vanilla' 'NBH' '1' '1' 'normal' 'imp' )
 varim=$(sbatch --mem=10G -p high --array=1-2 -t 3:00:00 -J "PERM.IMP.NBH" $bashsc/06_perms.sh "${args[@]}" | cut -f4 -d' ')
-
 
 ################################################################################
 
 ### TWO LOCUS SCAN $1=population $2=number of cores to use
 bashsc="$HOME/QTL_agri/MAP/bash"
-sbatch -J "EMB.NBH" -p high -t 48:00:00 $bashsc/07_bin_em_scan2.sh 'NBH' 22
+sbatch -J "EMB.NBH" -p med -t 48:00:00 $bashsc/07_bin_em_scan2.sh 'NBH' 22
 sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/07_bin_imp_scan2.sh 'NBH' 22
 sbatch -J "MRB.NBH" -p high -t 48:00:00 $bashsc/07_bin_mr_scan2.sh 'NBH' 22
 sbatch -J "NIMP.NBH" -p high -t 48:00:00 $bashsc/07_norm_imp_scan2.sh 'NBH' 22
