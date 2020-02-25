@@ -7,4 +7,4 @@
 
 perms="$HOME/QTL_agri/MAP/R/final"
 
-Rscript $perms/04_bin_mr_scan2.R --vanilla "${1}" "${2}"
+Rscript $perms/07_bin_mr_scan2.R --vanilla "${1}" "${2}"

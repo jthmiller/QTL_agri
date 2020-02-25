@@ -11,7 +11,26 @@
 
 ### CHR2 most often has distorted 2 locus interactions
 
+## MANUAL MODEL
+## 2:27373969, 55.63432
+## 18:20723840, 53.1464
+plot_test('dsf')
+effectplot(cross,pheno.col=5,mname2='2:27373969',mname1='18:20723840')
+dev.off()
 
+plot_test('dsf')
+effectplot(cross,pheno.col=4,mname2='2:36080762',mname1='18:20723840')
+dev.off()
+
+plot_test('dsf')
+effectplot(cross,pheno.col=4,mname2='2:36080762',mname1='18:17874376')
+dev.off()
+
+plot_test('dsf')
+effectplot(cross,pheno.col=4,mname2='2:27373969',mname1='18:17874376')
+dev.off()
+
+18:17874376
 
 plot_test('dsf')
 plotPXG(cross,pheno.col=4,c('2:34937180','24:6767161'))
@@ -107,5 +126,9 @@ get_genes(5,3014891,ngens=10)
 
 geno.crosstab(cross,'17:14629450','24:2123083')
 
+## MANUAL MODEL
+## 2:27373969, 55.63432
+## 18:20723840, 53.1464
+geno.crosstab(cross,'2:36080762','2:27373969')
 
 ### ELR 2 and 13 appear linked
