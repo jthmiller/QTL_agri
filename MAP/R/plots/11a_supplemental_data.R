@@ -1,7 +1,7 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
 pop <- 'ELR'
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 library("ggridges")
 library("plyr")
 library("scales")
@@ -13,35 +13,38 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 ##load(file.path(mpath,'08_phys_plots_pos.rsave'))
 ####################################################################################
-fl <- paste0('ELR.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
-cross_ELR <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
-cross_ELR$pheno$pheno_norm <- round(nqrank(cross_ELR$pheno$Pheno),5)
-#gt.elr <- geno.table(cross_ELR)
-
-fl <- paste0('NBH.mapped.tsp.csv')
-fl <- file.path(mpath,fl)
-cross_NBH <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
-cross_NBH$pheno$pheno_norm <- round(nqrank(cross_NBH$pheno$Pheno))
-
+#fl <- paste0('ELR.mapped.tsp.csv')
+#fl <- file.path(mpath,fl)
+#cross_ELR <- read.cross(
+# file = fl,
+# format = "csv", genotypes=c("1","2","3"),
+# estimate.map = FALSE
+#)
+#cross_ELR$pheno$pheno_norm <- round(nqrank(cross_ELR$pheno$Pheno),5)
+##gt.elr <- geno.table(cross_ELR)
+#
+#fl <- paste0('NBH.mapped.tsp.csv')
+#fl <- file.path(mpath,fl)
+#cross_NBH <- read.cross(
+# file = fl,
+# format = "csv", genotypes=c("1","2","3"),
+# estimate.map = FALSE
+#)
+#cross_NBH$pheno$pheno_norm <- round(nqrank(cross_NBH$pheno$Pheno))
+#
 #gt.nbh <- geno.table(cross_NBH)
 ################################################################################
 ################################################################################
+pop <- 'NBH'
+load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+cross_NBH <- cross
+################################################################################
+pop <- 'ELR'
+load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+cross_ELR <- cross
 ################################################################################
 
-cross_NBH <- sim.geno(cross_NBH, step=1, error.prob=0.0025, off.end=5, map.function="kosambi", n.draws=160)
-cross_ELR <- sim.geno(cross_ELR, step=1, error.prob=0.0025, off.end=5, map.function="kosambi", n.draws=160)
-
-cross_NBH <- calc.genoprob(cross_NBH, step=1, error.prob=0.0025, off.end=5, map.function="kosambi")
-cross_ELR <- calc.genoprob(cross_ELR, step=1, error.prob=0.0025, off.end=5, map.function="kosambi")
+################################################################################
 
 scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
 scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
@@ -51,10 +54,10 @@ scan_elr <- scanone(cross_ELR, method = "mr", model = "binary", pheno.col = 4)
 ################################################################################
 ################################################################################
 
-nbh_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross_NBH)[[X]], 1)} ))
-dwnsmpl_NBH <- pull.markers(cross_NBH, nbh_marks)
-elr_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross_ELR)[[X]], 1)} ))
-dwnsmpl_ELR <- pull.markers(cross_ELR, elr_marks)
+#nbh_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross_NBH)[[X]], 1)} ))
+#dwnsmpl_NBH <- pull.markers(cross_NBH, nbh_marks)
+#elr_marks <- unlist(lapply(1:24,function(X) { pickMarkerSubset(pull.map(cross_ELR)[[X]], 1)} ))
+#dwnsmpl_ELR <- pull.markers(cross_ELR, elr_marks)
 
 ################################################################################
 ################################################################################
@@ -87,6 +90,11 @@ cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
 
 ################################################
 
+names(cross_NBH$geno) <- ifelse(names(cross_NBH$geno) == "X","5",names(cross_NBH$geno))
+attr(cross_NBH$geno[["5"]], 'class') <- 'A'
+names(cross_ELR$geno) <- ifelse(names(cross_ELR$geno) == "X","5",names(cross_ELR$geno))
+attr(cross_ELR$geno[["5"]], 'class') <- 'A'
+
 nbh_gens <- cnv.ahrs(cross_NBH, AHRdf = AHR.bed, EXP = F)
 elr_gens <- cnv.ahrs(cross_ELR, AHRdf = AHR.bed, EXP = F)
 ahr_nbh <- nbh_gens[which(nbh_gens$gene %in% cands),]
@@ -94,10 +102,10 @@ ahr_elr <- elr_gens[which(elr_gens$gene %in% cands),]
 
 ################################################
 
-nbh_gens_dwnsmpl <- cnv.ahrs(dwnsmpl_NBH, AHRdf = AHR.bed, EXP = F)
-elr_gens_dwnsmpl <- cnv.ahrs(dwnsmpl_ELR, AHRdf = AHR.bed, EXP = F)
-ahr_nbh_dwnsmpl <- nbh_gens[which(nbh_gens$gene %in% cands),]
-ahr_elr_dwnsmpl <- elr_gens[which(elr_gens$gene %in% cands),]
+#nbh_gens_dwnsmpl <- cnv.ahrs(dwnsmpl_NBH, AHRdf = AHR.bed, EXP = F)
+#elr_gens_dwnsmpl <- cnv.ahrs(dwnsmpl_ELR, AHRdf = AHR.bed, EXP = F)
+#ahr_nbh_dwnsmpl <- nbh_gens[which(nbh_gens$gene %in% cands),]
+#ahr_elr_dwnsmpl <- elr_gens[which(elr_gens$gene %in% cands),]
 
 ################################################################################
 ### ggplot popgen locations
@@ -144,8 +152,8 @@ pbs <- pbs[!is.na(as.numeric(pbs$chr)),]
 pbs$nbh_cm <- conv_popstat(cross_NBH, popgen=pbs, whichcol='mid',newname='nbh_cm')$nbh_cm
 pbs$elr_cm <- conv_popstat(cross_ELR, popgen=pbs, whichcol='mid',newname='elr_cm')$elr_cm
 
-pbs$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=pbs, whichcol='mid', newname='nbh_cm_dwnsmpl')$nbh_cm_dwnsmpl
-pbs$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=pbs, whichcol='mid', newname='elr_cm_dwnsmpl')$elr_cm_dwnsmpl
+#pbs$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=pbs, whichcol='mid', newname='nbh_cm_dwnsmpl')$nbh_cm_dwnsmpl
+#pbs$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=pbs, whichcol='mid', newname='elr_cm_dwnsmpl')$elr_cm_dwnsmpl
 ################################################################################
 
 pfst <- file.path(mpath, 'pfst.txt.ncbi.lifted')
@@ -157,8 +165,8 @@ pfst <- pfst[!is.na(as.numeric(pfst$chr)),]
 pfst$nbh_cm <- conv_popstat(cross_NBH, popgen=pfst, whichcol='mid',newname='nbh_cm')$nbh_cm
 pfst$elr_cm <- conv_popstat(cross_ELR, popgen=pfst, whichcol='mid',newname='elr_cm')$elr_cm
 
-pfst$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=pfst, whichcol='mid',newname='nbh_cm_dwnsmpl')$nbh_cm_dwnsmpl
-pfst$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=pfst, whichcol='mid',newname='elr_cm_dwnsmpl')$elr_cm_dwnsmpl
+#pfst$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=pfst, whichcol='mid',newname='nbh_cm_dwnsmpl')$nbh_cm_dwnsmpl
+#pfst$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=pfst, whichcol='mid',newname='elr_cm_dwnsmpl')$elr_cm_dwnsmpl
 ################################################################################
 
 taj <- file.path(mpath, 'tajstat.txt.ncbi.lifted')
@@ -170,8 +178,8 @@ taj <- taj[!is.na(as.numeric(taj$chr)),]
 taj$nbh_cm <- conv_popstat(cross_NBH, popgen=taj, whichcol='mid',newname='nbh_cm')$nbh_cm
 taj$elr_cm <- conv_popstat(cross_ELR, popgen=taj, whichcol='mid',newname='elr_cm')$elr_cm
 
-taj$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=taj, whichcol='mid',newname='nbh_cm_dwnsmpl')$nbh_cm_dwnsmpl
-taj$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=taj, whichcol='mid',newname='elr_cm_dwnsmpl')$elr_cm_dwnsmpl
+#taj$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=taj, whichcol='mid',newname='nbh_cm_dwnsmpl')$nbh_cm_dwnsmpl
+#taj$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=taj, whichcol='mid',newname='elr_cm_dwnsmpl')$elr_cm_dwnsmpl
 ################################################################################
 
 pi <- file.path(mpath, 'piper.txt.ncbi.lifted')
@@ -189,8 +197,8 @@ pi$ER.SH <- pi$ER - pi$SH
 pi$nbh_cm <- conv_popstat(cross_NBH, popgen=pi, whichcol='mid',newname='nbh_mp')$nbh_cm
 pi$elr_cm <- conv_popstat(cross_ELR, popgen=pi, whichcol='mid',newname='elr_mp')$elr_cm
 
-pi$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=pi, whichcol='mid',newname='nbh_mp')$nbh_cm_dwnsmpl
-pi$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=pi, whichcol='mid',newname='elr_mp')$elr_cm_dwnsmpl
+#pi$nbh_cm_dwnsmpl <- conv_popstat(dwnsmpl_NBH, popgen=pi, whichcol='mid',newname='nbh_mp')$nbh_cm_dwnsmpl
+#pi$elr_cm_dwnsmpl <- conv_popstat(dwnsmpl_ELR, popgen=pi, whichcol='mid',newname='elr_mp')$elr_cm_dwnsmpl
 ################################################################################
 ################################################################################
 

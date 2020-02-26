@@ -11,15 +11,15 @@ library('parallel')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-cores <- detectCores() - 2
-
-fl <- file.path(mpath,paste0(pop'.mapped.tsp.csv'))
-
-cross <- read.cross(
- file = fl,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
+##cores <- detectCores() - 2
+##
+##fl <- file.path(mpath,paste0(pop'.mapped.tsp.csv'))
+##
+##cross <- read.cross(
+## file = fl,
+## format = "csv", genotypes=c("1","2","3"),
+## estimate.map = FALSE
+##)
 ################################################################################
 ################################################################################
 

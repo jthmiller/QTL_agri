@@ -29,12 +29,14 @@ sbatch -J "ELR" $bashsc/03_write_map_cross.sh 'ELR'
 ### SCAN2 PERMS
 bashsc="$HOME/QTL_agri/MAP/bash"
 
-args=( '--vanilla' 'NBH' '1' '1' 'binary' )
+#args=( '--vanilla' 'NBH' '1' '1' 'binary' )
+args=( '--vanilla' 'ELR' '1' '1' 'binary' )
 varem=$(sbatch --mem=10G -p low --array=1-50 -t 6:00:00 -J "PERM.EM.NBH" $bashsc/05_perms.sh "${args[@]}" 'em' | cut -f4 -d' ')
 varhk=$(sbatch --mem=10G -p low --array=1-50 -t 6:00:00 -J "PERM.HK.NBH" $bashsc/05_perms.sh "${args[@]}" 'hk' | cut -f4 -d' ')
 varmr=$(sbatch --mem=10G -p low --array=1-50 -t 6:00:00 -J "PERM.MR.NBH" $bashsc/05_perms.sh "${args[@]}" 'mr' | cut -f4 -d' ')
 
-args=( '--vanilla' 'NBH' '1' '1' 'normal' 'imp' )
+#args=( '--vanilla' 'NBH' '1' '1' 'normal' 'imp' )
+args=( '--vanilla' 'ELR' '1' '1' 'normal' 'imp' )
 varim=$(sbatch --mem=10G -p low --array=1-50 -t 6:00:00 -J "PERM.IMP.NBH" $bashsc/05_perms.sh "${args[@]}" | cut -f4 -d' ')
 
 Rscript $perms/06_combine_permutations.R --vanilla 'NBH' "_all_perms_bin_em.rsave"
@@ -49,6 +51,11 @@ sbatch -J "EMB.NBH" -p low -t 13:00:00 $bashsc/07_bin_em_scan2.sh 'NBH' 22
 sbatch -J "MRB.NBH" -p low -t 13:00:00 $bashsc/07_bin_mr_scan2.sh 'NBH' 22
 sbatch -J "EMN.NBH" -p low -t 13:00:00 $bashsc/07_norm_em_scan2.sh 'NBH' 22
 sbatch -J "NIMP.NBH" -p low -t 13:00:00 $bashsc/07_norm_imp_scan2.sh 'NBH' 22
+
+sbatch -J "EMB.ELR" -p low -t 13:00:00 $bashsc/07_bin_em_scan2.sh 'ELR' 22
+sbatch -J "MRB.ELR" -p low -t 13:00:00 $bashsc/07_bin_mr_scan2.sh 'ELR' 22
+sbatch -J "EMN.ELR" -p low -t 13:00:00 $bashsc/07_norm_em_scan2.sh 'ELR' 22
+sbatch -J "NIMP.ELR" -p low -t 13:00:00 $bashsc/07_norm_imp_scan2.sh 'ELR' 22
 #################################################################################
 
 ### BIN HK STEPWISE QTL

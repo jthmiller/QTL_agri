@@ -14,5 +14,11 @@ plot(bin.em.2,col.scheme = "redblue", contours=c(16,5), zlim = c(20,18))
 dev.off()
 
 plot_test('lod',width=2000,heigh=2000)
-plot(bin.imp.2,col.scheme = "redblue", contours=c(16,5), zlim = c(20,18))
+plot(bin.imp.2,col.scheme = "redblue", contours=c(5), zlim = c(20,15))
 dev.off()
+
+plot_test('lod',width=2000,heigh=2000)
+plot(bin.imp.2, col.scheme = "redblue", contours = T)
+dev.off()
+
+summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")

@@ -1,7 +1,7 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
 pop <- 'NBH'
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 library("ggridges")
 library("plyr")
 library("scales")
@@ -27,45 +27,35 @@ cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
 
 #load(file.path(mpath,'supplemental_plot_env.rsave'))
 #cross <- cross_NBH
-cross <- cross_ELR
+#cross <- cross_ELR
 
 ################################################################################
 ################################################################################
 
-erp <- 0.0025
-
-cross <- jittermap(cross)
-
-cross <- sim.geno(cross, step=0.5, error.prob=erp, off.end=5,
- map.function="kosambi", n.draws=100, stepwidth="fixed")
-
-cross <- calc.genoprob(cross, step=0.5, error.prob=erp, off.end=5,
- map.function="kosambi", stepwidth="fixed")
-
-norm <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
-bin <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
+norm <- scanone(cross, pheno.col = 5, model='normal', method = "imp")
+bin <- scanone(cross, pheno.col = 4, method = "em", model = "binary")
 gt <- geno.table(cross)
 map <- pull.map(cross)
 map_sum <- summary(pull.map(cross))
 
 ################################################################################
+cross_grid <- subset(cross,chr=c(1:4,6:24))
+cross_grid <- reduce2grid(cross_grid)
 
-cross_grid <- reduce2grid(cross)
-
-bin_grid <- scanone(cross_grid, method = "em", model = "binary", pheno.col = 4)
-norm_grid <- scanone(cross_grid, method = "imp", model = "normal", pheno.col = 5)
-gt_grid <- geno.table(cross_grid)
-map_grid <- pull.map(cross_grid)
-map_grid_sum <- summary(pull.map(cross_grid))
+bin_grid <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
+norm_grid <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
+gt_grid <- geno.table(cross)
+map_grid <- pull.map(cross)
+map_grid_sum <- summary(pull.map(cross))
 
 ################################################################################
 ################################################################################
 
 col <- c("slateblue", "violetred", "green3")
 cross2 <- convert2cross2(cross)
-map2 <- insert_pseudomarkers(cross2$gmap, step=0.5)
-pr2 <- calc_genoprob(cross2, map2, error_prob=0.0025, cores=cores)
-bin2 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores)
+map <- insert_pseudomarkers(cross2$gmap, step=0.5)
+pr <- calc_genoprob(cross2, map2, error_prob=0.0025, cores=cores)
+bin2<- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores)
 
 ################################################################################
 ################################################################################
@@ -83,12 +73,13 @@ if(pop == 'ELR') { rank <- elr.rank ; ahr <- ahr_elr ; statname <- popname <- 'E
 ab <- ahr[which(ahr$chr==ch),'pos1']
 ################################################################################
 ################################################################################
-stat <- 'pfst' ; statname <- 'ER.KC'
+stat <- 'pfst' ; statname <- 'BI.NBH'
 stat <- 'pbst'
+stat <- 'pfst' ; statname <- 'ER.KC'
 ################################################################################
 ################################################################################
-pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5,height=6)
-mat<-matrix(c(1:7),7,1, byrow=T)
+pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist2.pdf"), width=4.5,height=6)
+mat < -matrix(c(1:7),7,1, byrow=T)
 
 layout(mat, widths=1, heights= c(0.1, 0.1, 0.025, 0.1, 0.1, 0.1, 0.05))
 par(mar=c(0.5,2.25,0,1)+0.1, oma = c(1, 1, 0, 1))

@@ -1661,6 +1661,71 @@ po <- function(cross,nme){
  dev.off()
 }
 ################################################################################
+
+plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm"),...){
+
+ for (chr in chs){
+
+  c2eff <- scan1coef(pr[,as.character(chr)], crs$pheno[,model])
+
+  plot(c2eff, map[as.character(chr)], columns=1:3, col=col, ylim=c(0,1), cex.axis = 2,main=main,...)
+
+    if(any( chr %in% ahr$chr )) {
+      indx <- which(ahr$chr %in% chr)
+      abline(v=as.numeric(ahr[indx,'pos1']), col='red',lwd=0.5)
+      #xleft, ybottom, xright, ytop,
+
+    }
+    #if(any( chr %in% popgen$chr )) {
+    #  indx <- which(popgen$chr %in% chr)
+    #  abline(v=as.numeric(popgen[indx,'pos1']), col='red')
+    #}
+
+
+  last_coef <- unclass(c2eff)[nrow(c2eff),] # pull out last coefficients
+
+  for(i in seq(along=last_coef))
+    axis(side=4, at=last_coef[i], names(last_coef)[i], tick=FALSE, col.axis=col[i])
+  }
+
+}
+
+
+################################################################################
+################################################################################
+
+plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name,...){
+
+ for (chr in chrs){
+
+  xl <- summary(pull.map(crs))[chr,'length']
+  ind <- which(stat$chr == chr)
+
+  Y <- stat[ind,colnm]
+  X <- stat[ind,map]/1000000
+##  plot(X, Y, col='blue', cex.axis = 2, ylim = ylimo, xlim = c(0,xl), main=paste('CHR',chr), cex.main=2)
+
+  plot(X, Y, col='black',type="n",xlim=c(0,max(X)), ylim = ylimo, main=NULL,
+   xlab='physical position', ylab=stat_name, xaxs="i",yaxs="i", mgp = c(1, 0.5, 0),...)
+
+    if(any( chr %in% ahr$chr )) {
+      indx <- which(ahr$chr %in% chr)
+      #rect(ahr[indx,ahr_clm]/1000000,ylimo[1],ahr[indx,'stp']/1000000,ylimo[2],lwd=0.5,col=alpha('lightgrey',.5))
+      abline(v=as.numeric(ahr[indx,ahr_clm])/1000000,
+       col='red',lwd=0.5)
+    }
+
+    if(any( chr %in% popgen$chr )) {
+      indx <- which(popgen$chr %in% chr)
+      rect(popgen[indx,'start']/1000000,ylimo[1],popgen[indx,'end']/1000000,ylimo[2],
+       border = NA,lwd=0,col=alpha('lightgrey',.5))
+
+      #abline(v=as.numeric(popgen[indx,rank_clm])/1000000, col='grey',lwd=2)
+    }
+  points(X, Y, col='black',...)
+ }
+}
+
 ################################################################################
 misg <- function(X,perc) { nind(cross) * perc }
 ################################################################################
