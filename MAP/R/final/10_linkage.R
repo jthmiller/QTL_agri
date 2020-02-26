@@ -1,33 +1,18 @@
 #!/bin/R
+mpath <- '/home/jmiller1/QTL_agri/data'
 pop <- 'NBH'
-pop <- 'ELR'
+#pop <- 'ELR'
+
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
-mpath <- '/home/jmiller1/QTL_agri/data'
 
-cores <- as.numeric(commandArgs(TRUE)[2])
-cores <- 20
-library(doParallel)
-cl <- makeCluster(cores)
-registerDoParallel(cl)
 ################################################################################
+load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ################################################################################
 
-## ELR
-fl <- 'ELR_imp.mapped.tsp.csv'
-cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#############################################
-
-## NBH
-## HIGH CONFID IMPUTED
-mapfile <- paste0(pop,'_',sum(nmar(cross10)),'_imputed_high_confidence_tsp')
-filename <- file.path(mpath,mapfile)
-cross <- read.cross(
- file = filename,
- format = "csv", genotypes=c("1","2","3"),
- estimate.map = FALSE
-)
+names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
+attr(cross$geno[["5"]], 'class') <- 'A'
 
 #############################################
 ahr_genes <- get_AHR(cross)
@@ -72,6 +57,11 @@ csq <- function(mara, marb) {
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
 
 ### WITH PARALELLE #########################################
+#cores <- as.numeric(commandArgs(TRUE)[2])
+cores <- 20
+library(doParallel)
+cl <- makeCluster(cores)
+registerDoParallel(cl)
 csq.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq.each(marb)
 csq.pval <- do.call(rbind,csq.pval)
 colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)

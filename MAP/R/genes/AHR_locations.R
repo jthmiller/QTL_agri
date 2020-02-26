@@ -19,6 +19,24 @@ cross <- read.cross(
  estimate.map = FALSE
 )
 
+#chr10 23926932 23951650 XM_012876030.1  LOC105935564    aryl hydrocarbon receptor nuclear translocator-like protein 1
+#NW_012234311.1 1350282 1390498 XM_012867564.1   arntl   aryl hydrocarbon receptor nuclear translocator-like%2C transcript variant X1
+#NW_012225110.1 22934 115575 XM_012856879.1      exception=annotated by transcript or proteomic data     aryl-hydrocarbon receptor nuclear translocator 2
+
+## chr10 0 0 arntl
+
+mpath <- '/home/jmiller1/QTL_Map_Raw/popgen/plinkfiles/ind.pops'
+fl <- 'NBH.um.unmapped.f2.csvr'
+################################################################################
+## read in the QTL cross
+cross <- read.cross(file = file.path(mpath, fl),
+format = "csvr", geno = c(1:3), estimate.map = FALSE)
+################################################################################
+
+nw <- grep('NW_012225110',markernames(cross), value = T)
+nw <- pull.markers(cross, nw)
+
+
 ###############
 AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
 colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
@@ -60,7 +78,22 @@ get_genes <- function(chr,pos,ngens=2){
  dis <- whole_chrom[near,'mid'] - pos
  cbind(whole_chrom[near,],dis)
 }
+## get_genes(16,14500000,10)
 ###############
+get_genes(14,24000000,10)
+
+24375514
+23817781
+23622472
+
+get_genes(14,24375514,5)
+get_genes(14,23817781,5)
+get_genes(14,23622472,5)
+
+
+mean(c(24366514,24384514))
+mean(c(23810281,23825281))
+mean(c(23610472,23634472))
 
 PLOT ALLELE (AND GENOTYPE) BALLANCE ACROSS EACH CHROMOSOME
 

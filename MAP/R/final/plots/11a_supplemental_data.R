@@ -44,6 +44,11 @@ load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 cross_ELR <- cross
 ################################################################################
 
+names(cross_NBH$geno) <- ifelse(names(cross_NBH$geno) == "X","5",names(cross_NBH$geno))
+attr(cross_NBH$geno[["5"]], 'class') <- 'A'
+names(cross_ELR$geno) <- ifelse(names(cross_ELR$geno) == "X","5",names(cross_ELR$geno))
+attr(cross_ELR$geno[["5"]], 'class') <- 'A'
+
 ################################################################################
 
 scan_nbh <- scanone(cross_NBH, method = "mr", model = "binary", pheno.col = 4)
@@ -90,10 +95,6 @@ cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
 
 ################################################
 
-names(cross_NBH$geno) <- ifelse(names(cross_NBH$geno) == "X","5",names(cross_NBH$geno))
-attr(cross_NBH$geno[["5"]], 'class') <- 'A'
-names(cross_ELR$geno) <- ifelse(names(cross_ELR$geno) == "X","5",names(cross_ELR$geno))
-attr(cross_ELR$geno[["5"]], 'class') <- 'A'
 
 nbh_gens <- cnv.ahrs(cross_NBH, AHRdf = AHR.bed, EXP = F)
 elr_gens <- cnv.ahrs(cross_ELR, AHRdf = AHR.bed, EXP = F)
@@ -207,9 +208,7 @@ pi$elr_cm <- conv_popstat(cross_ELR, popgen=pi, whichcol='mid',newname='elr_mp')
 ################################################################################
 ## Correlate lod and segregation distortion
 
-elr_c2eff <- lapply(1:24,function(X) {
- scan1coef(elr_pr[,as.character(X)], elr$pheno[,"bin"])
-})
+elr_c2eff <- lapply(c(1:4,6:24),function(X) { scan1coef(elr_pr[ ,as.character(X)], elr$pheno[,"bin"]) })
 elr_c2eff <- do.call(rbind,elr_c2eff)
 elr_seg <- geno.table(cross_ELR)[rownames(elr_c2eff),'P.value']
 

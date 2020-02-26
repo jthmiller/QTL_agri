@@ -1,8 +1,14 @@
 
 
-#chr10 23926932 23951650 XM_012876030.1  LOC105935564    aryl hydrocarbon receptor nuclear translocator-like protein 1
-#NW_012234311.1 1350282 1390498 XM_012867564.1   arntl   aryl hydrocarbon receptor nuclear translocator-like%2C transcript variant X1
-#NW_012225110.1 22934 115575 XM_012856879.1      exception=annotated by transcript or proteomic data     aryl-hydrocarbon receptor nuclear translocator 2
+
+26326053 26382053
+
+get_genes(6,26326053,5)
+get_genes(5,mean(c(16000000,21000000)),30)
+
+get_genes(5,16000000,50)
+get_genes(5,mean(c(14817605,16605791)),20)
+
 
 ## ON CHR 10
 ## NW_012234311.1:1152974 (arntl)
