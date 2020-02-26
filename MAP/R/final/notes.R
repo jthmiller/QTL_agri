@@ -157,3 +157,57 @@ dev.off()
 plot_test('sdf')
 effectplot(cross,pheno.col=1,mname2=a,mname1='13:24456390')
 dev.off()
+
+
+################################################################################
+### NOTES FROM FIGURES (SEGDIST)
+### ELR
+CHR1 - D/F/NSF peaks at both ends (at aHR2a). Lod tops out at 2 here.
+CHR2 - D/F/NSF at AIP
+CHR3 - Narrow div and fst outlier at 19 MB
+CHR4 -
+CHR5 - Wide d/f doutlier at 16 and 18 MB
+CHR6 - Narrow d/f outlier centered over max lod (only lod 2 or so)
+CHR7 - none
+CHR8 - Wide d/f doutlier at 18 MB, but lod is minimized there. Lod peak ~38 MB
+CHR9 - A N/S fst peak, but not much else
+CHR10 - NSF peak at 4 MB
+CHR11 - NONE
+CHR12 - NONE
+CHR13 - LOD maximized at sensetive background 1 MB
+CHR14 - Wide D/F/NSF at 22-24 MB. No phen LOD
+CHR15 - NSF indicatess possible deletion at 1-2 MB
+CHR16 - Wide D/F at 13-15 MB. No lod
+CHR17 - None
+CHR18 - DIVERSITY DOESNT CHANGE AT AHRb position
+CHR19 - NONE
+CHR20 - FNS outlier (no div change) at 34 MB
+CHR21 -
+CHR22 - D/F/FNS outlier at 19 MB
+CHR23 - FNS outlier at 3 MB, Deletion? at 24 MB
+CHR24 -
+
+CHR1
+CHR2
+CHR3
+CHR4
+CHR5
+CHR6
+CHR7
+CHR8
+CHR9
+CHR10
+CHR11
+CHR12
+CHR13
+CHR14
+CHR15
+CHR16
+CHR17
+CHR18
+CHR19
+CHR20
+CHR21
+CHR22
+CHR23
+CHR24

@@ -117,7 +117,7 @@ plot_test('heat', width = 1000, height = 1000)
 dev.off()
 
 plot_test('terrain', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(20,10), col.scheme = "terrain", contours=T)
+ plot(norm.em.2, zlim = c(20,10), col.scheme = "terrain", contours=T)
 dev.off()
 
 plot_test('topo', width = 1000, height = 1000)

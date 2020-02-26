@@ -49,4 +49,4 @@ norm.imp.2.cov <- scantwo(cross, pheno.col=5, model="normal", method="imp",
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_norm_imp.rsave')))
 ################################################################################
-### summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")
+### summary(norm.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")

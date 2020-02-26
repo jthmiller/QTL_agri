@@ -5,7 +5,7 @@ library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 cores <- as.numeric(commandArgs(TRUE)[2])
-
+cores <- 20
 ################################################################################
 ################################################################################
 #fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
@@ -23,26 +23,114 @@ error <- 0.001
 cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", stepwidth="fixed")
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
 
-################################################################################
-## COVARIATES
-cov <- ifelse(pop == 'ELR',18,2)
+### HK
+sone <- scanone(cross, pheno.col=4, model="binary", method="hk")
+sone.perms <- scanone(cross, pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores)
+lod <- summary(sone.perms)[[2]]
+qtl <- summary(sone,lod)
 
-imp <- summary(scanone(cross, pheno.col=4, model="normal", method="imp"))[cov,]
-mar.imp <- find.marker(cross, imp$chr, imp$pos)
-g <- pull.geno(fill.geno(cross))[,mar.imp]
-g.imp <- cbind(as.numeric(g==1), as.numeric(g==2))
-summary(scanone(cross,pheno.col=4, model="normal", method="imp",addcovar=g.imp))
+### MAKE COVARIATES
 
-em <- summary(scanone(cross, pheno.col=4, model="bin", method="em"))[cov,]
-mar.em <- find.marker(cross, em$chr, em$pos)
-g <- pull.geno(fill.geno(cross))[,mar.em]
-g.em <- cbind(as.numeric(g==1), as.numeric(g==2))
-summary(scanone(cross,pheno.col=4, model="bin", method="em",addcovar=g.em))
+ mar <- find.marker(cross,qtl$chr[2],qtl$pos[2])
+ g.add <- pull.geno(fill.geno(cross))[,mar]
+ g.add <- data.frame(cbind(as.numeric(g.add == 1), as.numeric(g.add == 2)))
 
-mar.dist <- '17:14629450'
-g.dist <- pull.geno(fill.geno(cross))[,'17:14629450']
-g.dist <- cbind(as.numeric(g.dist==1), as.numeric(g.dist==2))
-summary(scanone(cross,pheno.col=4, model="bin", method="em",addcovar=g.dist))
+ mar <- find.marker(cross,qtl$chr[1],qtl$pos[1])
+ g.int <- pull.geno(fill.geno(cross))[,mar]
+ g.int <- data.frame(cbind(as.numeric(g.int == 1), as.numeric(g.int == 2)))
+
+
+sone.int1 <- scanone(cross, pheno.col=5, model="normal", method="hk", intcovar=g.add)
+sone.int2 <- scanone(cross, pheno.col=5, model="normal", method="hk", intcovar=g.int)
+sone.add1 <- scanone(cross, pheno.col=5, model="normal", method="hk", addcovar=g.add)
+sone.add2 <- scanone(cross, pheno.col=5, model="normal", method="hk", addcovar=g.int)
+sone.1 <- scanone(cross, pheno.col=5, model="normal", method="hk", intcovar=g.add, addcovar=g.int)
+sone.2 <- scanone(cross, pheno.col=5, model="normal", method="hk", intcovar=g.int, addcovar=g.add)
+
+add1 <- summary(sone.int1)[which.max(summary(sone.int1)$lod),]
+add2 <- summary(sone.int2)[which.max(summary(sone.int2)$lod),]
+int1 <- summary(sone.1)[which.max(summary(sone.1)$lod),]
+int2 <- summary(sone.2)[which.max(summary(sone.2)$lod),]
+
+qtl <- rbind(add1,add2,int1,int2)
+
+hk.qtl.4 <- makeqtl(cross, chr=qtl[['chr']], pos=qtl[['pos']], what="prob")
+hk.qtl.5 <-  addtoqtl(cross, qtl = hk.qtl.4, chr = 15, pos =  8.82)
+
+int.hk <- addint(cross, pheno.col = 5, qtl = hk.qtl.5, method='hk', model='normal', formula=y~Q1+Q2+Q3+Q4+Q5, maxit=1000)
+## 13*18
+## 18*23
+
+fit_hk_5int <- fitqtl(cross, pheno.col=1, method="hk", model="normal", qtl = hk.qtl.5,
+                covar=NULL, formula = y~Q1+Q2*Q5+Q3+Q4, dropone=TRUE, get.ests=T,
+                run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
+
+
+##hk.qtl.5 <- refineqtl(cross, pheno.col = 5, qtl=hk.qtl.5, method = "hk", model='normal',incl.markers=T)
+
+
+add_Q5_hk <- addqtl(cross, pheno.col = 5, qtl = hk.qtl.4, method = "hk", model = "normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1+Q2+Q3:Q4+Q5)
+
+add_Q5_hk <- addqtl(cross, pheno.col = 5, qtl = hk.qtl.4, method = "hk", model = "normal",
+                    incl.markers=T, verbose=FALSE, tol=1e-4, maxit=1000,
+                    formula = y~Q1+Q2*Q5)
+
+
+mar <- find.marker(cross,qtl.int$chr[1],qtl.int$pos[1])
+g.int2 <- pull.geno(fill.geno(cross))[,mar]
+g.int2 <- data.frame(cbind(as.numeric(g.int2 == 1), as.numeric(g.int2 == 2)))
+
+
+
+
+sone.int1 <- scanone(cross, pheno.col=5, model="normal", method="hk", intcovar=g.int)
+sone.int1.perms <- scanone(cross, pheno.col=5, model="normal", method="hk", n.perm=1000, n.cluster=cores, intcovar=g.int)
+lod <- summary(sone.int1.perms)[[2]]
+qtl.int2 <- summary(sone.int1,lod)
+
+sone.int2 <- scanone(cross, pheno.col=5, model="normal", method="hk", intcovar=g.int)
+sone.int2.perms <- scanone(cross, pheno.col=5, model="normal", method="hk", n.perm=1000, n.cluster=cores, intcovar=g.int)
+lod <- summary(sone.int2.perms)[[2]]
+qtl.int2 <- summary(sone.int2,lod)
+
+mara <- find.marker(cross,2,58.55)
+g.add <- pull.geno(fill.geno(cross))[,mara]
+g.add <- data.frame(cbind(as.numeric(g.add == 1), as.numeric(g.add == 2)))
+
+marb <- find.marker(cross,13,30.5)
+g.int <- pull.geno(fill.geno(cross))[,marb]
+g.int <- data.frame(cbind(as.numeric(g.int == 1), as.numeric(g.int == 2)))
+
+sone.int.add <- scanone(cross, pheno.col=5, model="normal", method="hk", addcovar=g.add, intcovar=g.int)
+sone.int.add.perms <- scanone(cross, pheno.col=5, model="normal", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.add, intcovar=g.int)
+lod <- summary(sone.int.add.perms)[[2]]
+qtl.int <- summary(sone.int.add,lod)
+
+sone.add <- scanone(cross, pheno.col=5, model="normal", method="hk", addcovar=g.add)
+sone.add.perms <- scanone(cross, pheno.col=5, model="normal", method="hk", n.perm=1000, n.cluster=cores, addcovar=g.add)
+lod <- summary(sone.add.perms)[[2]]
+qtl.add <- summary(sone.add,lod)
+
+sone <- scanone(cross, pheno.col=5, model="normal", method="hk")
+sone.perms <- scanone(cross, pheno.col=5, model="normal", method="hk", n.perm=1000, n.cluster=cores)
+lod <- summary(sone.perms)[[2]]
+qtl <- summary(sone,lod)
+
+qtl5 <- rbind(qtl.int,qtl)
+
+qtl5 <- qtl
+hk.qtl.5 <- makeqtl(cross, chr=qtl5[['chr']], pos=qtl5[['pos']], what="prob")
+hk.qtl.5 <-  addtoqtl(cross, qtl = hk.qtl.5, chr = 13, pos =  30.5)
+
+
+
+
+
+
+
+
 ################################################################################
 
 #### HK ##########################################################################################
