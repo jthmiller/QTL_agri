@@ -53,11 +53,3 @@ save.image(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 ################################################################################
 
 ### summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")
-
-plot_test('lod',width=2000,heigh=2000)
-plot(bin.em.2,col.scheme = "redblue",contours=T, zlim = c(5,5))
-dev.off()
-
-plot_test('lod',width=2000,heigh=2000)
-plot(bin.em.2,col.scheme = "redblue", contours=c(15,5), zlim = c(18,16))
-dev.off()

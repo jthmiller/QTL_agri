@@ -36,12 +36,17 @@ if(pop == 'NBH'){
 ################################################################################
 
 ################################################################################
-bin.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
+norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
+ clean.output=T, clean.nmar=50, clean.distance=50, maxit=100, incl.markers=T,
+ assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
+################################################################################
+
+norm.imp.2.cov <- scantwo(cross, pheno.col=5, model="normal", method="imp",
  clean.output=T, clean.nmar=50, clean.distance=50, maxit=100, incl.markers=T,
  assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
 ################################################################################
 
 ################################################################################
-save.image(file.path(mpath,paste0(pop,'_scan2_bin_imp.rsave')))
+save.image(file.path(mpath,paste0(pop,'_scan2_norm_imp.rsave')))
 ################################################################################
 ### summary(bin.em.2, thresholds=c(0, Inf, 5, Inf, Inf), what="int")
