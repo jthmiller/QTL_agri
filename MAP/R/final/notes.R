@@ -138,3 +138,22 @@ geno.crosstab(cross,'17:14629450','24:2123083')
 geno.crosstab(cross,'2:36080762','2:27373969')
 
 ### ELR 2 and 13 appear linked
+
+### NBH 2 and 13 have highest lod effect
+c2 :c13 52.88 30.54    26.62    6.04    8.89  17.724 -2.8542
+cX:c24  7.84 13.9     9.79    5.82    6.88   2.910  -1.065
+
+b <- find.marker(cross,13,30.5)
+
+a <- find.marker(cross,2,52.88)
+
+geno.crosstab(cross,a,b)
+
+
+plot_test('sdf')
+effectplot(cross,pheno.col=4,mname2=a,mname1=b, ylim=c(0,1))
+dev.off()
+
+plot_test('sdf')
+effectplot(cross,pheno.col=1,mname2=a,mname1='13:24456390')
+dev.off()

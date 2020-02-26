@@ -25,6 +25,41 @@ libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 library(scales)
 
+################################################################################
+load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+################################################################################
+pulls <- markernames(cross)
+
+
+mpath <- '/home/jmiller1/QTL_Map_Raw/popgen/plinkfiles/ind.pops'
+fl <- 'NBH.um.unmapped.f2.csvr'
+################################################################################
+## read in the QTL cross
+cross.all <- read.cross(file = file.path(mpath, fl),
+format = "csvr", geno = c(1:3), estimate.map = FALSE)
+################################################################################
+nw_marks <- grep('NW',markernames(cross.all), value = T)
+
+assign_nw <- pull.markers(cross.all,c(nw_marks,pulls))
+
+
+#### THIS PVALUE APPEARS TO RETAIN EVEN DISTRIBUTION
+gt <- geno.table(assign_nw)
+toss <- rownames(gt[which(gt[,'P.value'] < 1.0e-3),])
+assign_nw <- drop.markers(assign_nw,toss)
+assign_nw <- est.rf(assign_nw)
+
+
+RF <- 0.05
+LOD <- 16
+cross_NW <- formLinkageGroups(assign_nw, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+cross_NW2 <- subset(cross_NW,chr= names(which(nmar(cross_NW) > 4)))
+nw_chr <- grep('NW_',markernames(cross_NW2), value = T)
+
+nw <- file.path(mpath,'NBH_nw_test.tsv')
+write.table(nw_chr,nw)
+
+
 ### READ IN THE CROSS
 fl <- paste0(pop,'_filtered_unphased_NW.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
@@ -35,57 +70,62 @@ mfl <- file.path(mpath,'NBH_low_confid.tsv')
 low_confid <- as.character(read.table(mfl)[,1])
 high_confid <- as.character(read.table(mfh)[,1])
 
-nw_marks <- grep('NW_',markernames(cross), value = T)
-nw_chr <- grep('NW_',chrnames(cross), value = T)
-chr_marks <- markernames(cross,1:24)
 
-#### HIGH CONFIDENCE MARKERS ONLY
-cross <- pull.markers(cross,high_confid)
+cross <- pull.markers(cross.all,c(high_confid,nw_chr))
+
+
+#nw_marks <- grep('NW_',markernames(cross), value = T)
+#nw_chr <- grep('NW_',chrnames(cross), value = T)
+#chr_marks <- markernames(cross,1:24)
+#
+##### HIGH CONFIDENCE MARKERS ONLY
+#cross <- pull.markers(cross,high_confid)
 
 #### THIS PVALUE APPEARS TO RETAIN EVEN DISTRIBUTION
 gt <- geno.table(cross)
-toss <- rownames(gt[which(gt[,'P.value'] < 5.5e-4),])
+toss <- rownames(gt[which(gt[,'P.value'] < 1.0e-3),])
 cross <- drop.markers(cross,toss)
+
 
 ### THIN TO LEAST DISTORTED PER KB
 #cross <- thin_by_distortion(cross,10)
 #cross <- thin_by_distortion(cross,100)
 
-cross <- thin_by_distortion(cross,50)
+## cross <- thin_by_distortion(cross,50)
 
 ################################################################################
 ### ASSIGN UNMAPPED SCAFFOLDS TO GROUPS
 
 ### Get mean LOD of each unmapped scaffold and the CHRs
 
-#nw_chr <- grep('NW_',chrnames(cross), value = T)
-#chr <- 1:24
-#
-#cross <- est.rf(cross)
-#
-#ldm <- function(nw) {
-# sapply(chr,function(z){ mean(pull.rf(cross, what='lod')[markernames(cross,nw),markernames(cross,z)]) })
-#}
+nw_chr <- grep('NW_',chrnames(cross), value = T)
+chr <- 1:24
 
-##library(doParallel)
-##cl <- makeCluster(20)
-##registerDoParallel(cl)
-##ld <- foreach(nw = nw_chr, .inorder = F, .packages = libs2load) %dopar% ldm(nw)
-##ld <- do.call(rbind,ld)
-##rownames(ld) <- nw_chr
-##reassign <- apply(ld,1,which.max)
-##
-##nw_marks_assign <- sapply(names(reassign),markernames,cross = cross)
-##nw_length <- sapply(nw_marks_assign,length)
-##nw_marks_assign <- as.character(unlist(nw_marks_assign))
-##nw_ch <- rep(as.numeric(reassign), times = as.numeric(nw_length))
-##nw_pos <- 1:length(nw_ch)
-##nw_old <- gsub(":.*","",nw_marks_assign)
-##
-##### REASSING THE UNMAPPED MARKERS
-##move <- data.frame(cbind(nw_old,nw_marks_assign,nw_ch,nw_pos), stringsAsFactors=F)
-##movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
-##write.table(move,movefl)
+cross <- est.rf(cross)
+
+ldm <- function(nw) {
+ sapply(chr,function(z){ mean(pull.rf(cross, what='lod')[markernames(cross,nw),markernames(cross,z)]) })
+}
+
+#library(doParallel)
+#cl <- makeCluster(20)
+#registerDoParallel(cl)
+#ld <- foreach(nw = nw_chr, .inorder = F, .packages = libs2load) %dopar% ldm(nw)
+#ld <- do.call(rbind,ld)
+#rownames(ld) <- nw_chr
+#reassign <- apply(ld,1,which.max)
+#
+#nw_marks_assign <- sapply(names(reassign),markernames,cross = cross)
+#nw_length <- sapply(nw_marks_assign,length)
+#nw_marks_assign <- as.character(unlist(nw_marks_assign))
+#nw_ch <- rep(as.numeric(reassign), times = as.numeric(nw_length))
+#nw_pos <- 1:length(nw_ch)
+#nw_old <- gsub(":.*","",nw_marks_assign)
+#
+#### REASSING THE UNMAPPED MARKERS
+#move <- data.frame(cbind(nw_old,nw_marks_assign,nw_ch,nw_pos), stringsAsFactors=F)
+#movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
+#write.table(move,movefl)
 
 ### READ THE UNMAPPED MARKER TABLE
 movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
@@ -113,7 +153,7 @@ cross4 <- drop.markers(cross3,drop)
 
 
 
-
+cross_13 <- formLinkageGroups(subset(cross,chr=13), max.rf = 0.05, min.lod = 15, reorgMarkers = TRUE)
 
 
 

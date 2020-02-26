@@ -37,13 +37,13 @@ if(pop == 'NBH'){
 
 ################################################################################
 norm.imp.2 <- scantwo(cross, pheno.col=5, model="normal", method="imp",
- clean.output=T, clean.nmar=50, clean.distance=50, maxit=100, incl.markers=T,
- assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
+ clean.output=T, clean.nmar=10, clean.distance=10, maxit=100, incl.markers=T,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g)
 ################################################################################
 
 norm.imp.2.cov <- scantwo(cross, pheno.col=5, model="normal", method="imp",
- clean.output=T, clean.nmar=50, clean.distance=50, maxit=100, incl.markers=T,
- assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
+ clean.output=T, clean.nmar=10, clean.distance=10, maxit=100, incl.markers=T,
+ assumeCondIndep=T, n.cluster=cores, addcovar=g)
 ################################################################################
 
 ################################################################################

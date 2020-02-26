@@ -1,7 +1,7 @@
 #!/bin/R
 mpath <- '/home/jmiller1/QTL_agri/data'
-pop <- 'NBH'
-#pop <- 'ELR'
+#pop <- 'NBH'
+pop <- 'ELR'
 
 library('qtl')
 library('snow')
@@ -56,7 +56,7 @@ csq <- function(mara, marb) {
 
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
 
-### WITH PARALELLE #########################################
+### WITH PARALLEL #########################################
 #cores <- as.numeric(commandArgs(TRUE)[2])
 cores <- 20
 library(doParallel)
@@ -76,6 +76,58 @@ for (i in chrnames(cross)){
  csq.pval[mars,mars] <- NA
  rf.plots$rf[mars,mars] <- NA
 }
+
+### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
+load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
+
+
+
+
+
+
+
+
+
+
+plot_test('sdf')
+plot(bin.mr.2)
+dev.off()
+
+
+
+plot_test('sdf', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
+dev.off()
+
+ col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
+
+
+plot_test('sdf', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
+dev.off()
+
+
+
+plot_test('gray', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "gray", contours=T)
+dev.off()
+
+plot_test('heat', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "heat", contours=T)
+dev.off()
+
+plot_test('terrain', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(20,10), col.scheme = "terrain", contours=T)
+dev.off()
+
+plot_test('topo', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "topo", contours=T)
+dev.off()
+
+
+
+summary(bin.imp.2, thresholds=c(0, Inf, 5.5, Inf, Inf), what="int")
+
 
 ########################################
 ### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR

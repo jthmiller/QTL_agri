@@ -25,16 +25,8 @@ cross <- read.cross(
 
 ## chr10 0 0 arntl
 
-mpath <- '/home/jmiller1/QTL_Map_Raw/popgen/plinkfiles/ind.pops'
-fl <- 'NBH.um.unmapped.f2.csvr'
-################################################################################
-## read in the QTL cross
-cross <- read.cross(file = file.path(mpath, fl),
-format = "csvr", geno = c(1:3), estimate.map = FALSE)
-################################################################################
 
-nw <- grep('NW_012225110',markernames(cross), value = T)
-nw <- pull.markers(cross, nw)
+
 
 
 ###############

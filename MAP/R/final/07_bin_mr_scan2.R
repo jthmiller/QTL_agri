@@ -38,9 +38,13 @@ if(pop == 'NBH'){
 
 ################################################################################
 
-bin.mr.2 <- scantwo(cross, pheno.col=4, model="binary", method="mr",
- clean.output=T, clean.nmar=50, clean.distance=50, maxit=100,
+bin.mr.2.cov <- scantwo(cross, pheno.col=4, model="binary", method="mr",
+ clean.output=T, clean.nmar=10, clean.distance=10, maxit=1000,
  assumeCondIndep=T, n.cluster=cores, use="complete.obs", addcovar=g)
+
+bin.mr.2 <- scantwo(cross, pheno.col=4, model="binary", method="mr",
+ clean.output=T, clean.nmar=10, clean.distance=10, maxit=1000,
+ assumeCondIndep=T, n.cluster=cores, use="complete.obs")
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
