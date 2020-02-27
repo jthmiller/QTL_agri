@@ -12,27 +12,22 @@ fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
 
 ################################################################################
-load(file.path(mpath,paste0(pop,'_norm_imp.rsave')))
+load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ################################################################################
 
+
+cross <- switchAlleles(cross, markernames(cross,c(2,13)))
 ################################################################################
 ## Read cross
 
-load(file.path(mpath,paste0(pop,'_downsampled.rsave')))
-
-cross <- fill.geno(cross, method="argmax", error.prob=0.002, map.function="kosambi", min.prob=0.95)
-
-cross2 <- argmax.geno(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
-
-cross <- calc.genoprob(cross, step=1, off.end=1, error.prob=0.002, map.function="kosambi", stepwidth="fixed")
-
-markers <- colnames(pull.argmaxgeno(cross))
+#cross2 <- fill.geno(cross, method="argmax", error.prob=0.001, map.function="kosambi", min.prob=0.95)
+#cross2 <- argmax.geno(cross2, step=1, off.end=1, error.prob=0.001, map.function="kosambi", stepwidth="fixed")
+#markers <- colnames(pull.argmaxgeno(cross2))
 
 ################################################################################
 
 ##cross <- fill.geno(cross, method="no_dbl_XO", error.prob=0.002, map.function="kosambi", min.prob=0.95)
 ##
-bin.em <- scanone(cross, pheno.col=4, model='binary', method = "em")
 ##
 ##markers <- mapply(
 ##  function(crs=cross,X,Y){ find.marker(crs,X,Y) },
@@ -44,11 +39,15 @@ bin.em <- scanone(cross, pheno.col=4, model='binary', method = "em")
 
 ################################################################################
 
+markers <- markernames(cross)
+bin.em <- scanone(cross, pheno.col=4, model='binary', method = "em")
+
 sens <- as.character(cross$pheno$ID[which(cross$pheno$ID %in% pheno_ind(cross,1))])
 tol <- as.character(cross$pheno$ID[which(cross$pheno$ID %in% pheno_ind(cross,0))])
 
-gts <- pull.argmaxgeno(cross)[,markers]
+gts <- pull.geno(cross)[,markers]
 rownames(gts) <- as.character(cross$pheno$ID)
+
 
 #################################################################################
 #gt_sens <- factor(gts[sens,mark],levels=c(NA,1,2,3),exclude = NULL)
@@ -75,23 +74,23 @@ prop_sens <- mapply( function(prop,total){ return(table(prop) / total) }, gt_sen
 names(prop_sens) <- markers
 
 #### NAMES FOR PLOTS
-##pop_chr <- as.list(paste('CHR',gsub(":.*","",names(gt_sens)),'QTL genotype'))
-##names(pop_chr) <- markers
+pop_chr <- as.list(paste('CHR',gsub(":.*","",names(gt_sens)),'QTL genotype'))
+names(pop_chr) <- markers
 
 #loc_name <- as.list(c('AIP (CHR 2)','ARNT (CHR 8)','ARNT (CHR 13)','AHRb (CHR 18)','QTLa (CHR 24)','QTLb (CHR 24)'))
 #names(loc_name) <- markers
 
-#chr <- names(gt_sens)
-#chr <- ifelse(duplicated(chr),paste0(chr,'.',sum(duplicated(chr))),chr)
-#names(chr) <- markers
+chr <- names(gt_sens)
+chr <- ifelse(duplicated(chr),paste0(chr,'.',sum(duplicated(chr))),chr)
+names(chr) <- markers
 ################################################################################
 
-single <- function(mark, pop = 'NBH'){
+single <- function(mark, pop = 'ELR'){
 
  ydir <- prop_sens[[mark]]
  ytot <- prop_total[[mark]]
  chromo <- pop_chr[[mark]]
- mainL <- loc_name[[mark]]
+ mainL <- pop_chr[[mark]]
  chrL <- pop_chr[[mark]]
 
  pdfL <- paste0("/home/jmiller1/public_html/", pop, chr[mark],".pdf")
@@ -122,13 +121,11 @@ single <- function(mark, pop = 'NBH'){
 dev.off()
 }
 
-
-sapply(markers,single,pop = 'NBH')
-
+## sapply(amarker,single,pop = 'ELR')
 ################################################################################
 ## single plot AIP
 
-cex_single <- c(.25,.5,.25) * 94
+cex_single <- c(.25,.5,.25) * nind(cross)
 xdir <- c(1,2,3)
 ydir <- tol_18
 
@@ -182,9 +179,9 @@ intxs.bin <- function(loc_a, loc_b, popchr, locbN, main){
  ydir <- sensit/total
 
 cexs_hom <- c(0.25^2,0.5^2,0.25^2)
-cexs_hom <- cexs_hom * 94
+cexs_hom <- cexs_hom * nind(cross)
 cexs_het <- c(0.25*0.5,0.5^2,0.25*0.5)
-cexs_het <- cexs_het * 94
+cexs_het <- cexs_het * nind(cross)
 
 pdf(paste0("/home/jmiller1/public_html/",popchr,".pdf"), width=10)
  plot(c(0.65,3.35), c(-0.1,1.1),
@@ -219,6 +216,28 @@ pdf(paste0("/home/jmiller1/public_html/",popchr,".pdf"), width=10)
 dev.off()
 }
 ################################################################################
+aip_incompat <- find.marker(cross,2,80.59)
+arnt_incompat <- find.marker(cross,13,39.42)
+
+
+### SINGLE
+##sapply(markers,single,pop = 'NBH')
+##sapply(mark, single, pop = 'ELR')
+single(loc_a,pop = 'ELR')
+single(loc_b,pop = 'ELR')
+
+loc_a <- find.marker(cross,2,80.59)
+loc_b <- find.marker(cross,13,39.42)
+
+intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
+
+
+
+geno.crosstab(cross,loc_a,loc_b)
+loc_a <- '2:35401205'
+loc_b <- '13:22410721'
+intxs.bin(loc_a,loc_b, popchr = 'ELR 13x2',locbN = 'locbN', main = 'main')
+
 
 loc_a <- find.pseudomarker(cross,2,110, where = 'prob')
 loc_b <- find.pseudomarker(cross,21,80, where = 'prob')

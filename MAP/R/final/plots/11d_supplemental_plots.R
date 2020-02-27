@@ -3,7 +3,7 @@
 
 
 
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 library("ggridges")
 library("plyr")
 library("scales")

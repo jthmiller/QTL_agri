@@ -83,6 +83,8 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
 ################################################################################
 pop <- 'ELR'
 
+pop <- 'NBH'
+
 plogen_data <- function(pop){
 
  source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
@@ -129,10 +131,11 @@ plogen_data <- function(pop){
  AHR.bed$stp <- as.numeric(AHR.bed$stp)
  AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
  AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
- AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
- cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
- # add arnts (forgot to scan for them)
 
+
+ # add arnts (forgot to scan for them)
+ # ahr_genes <- get_AHR(cross)
+ cands <- c("AHR1","aip","ARNT","ARNT2","ahrr","ahr1b","AHR2b")
  ################################################
 
  cross_gens <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
@@ -141,6 +144,7 @@ plogen_data <- function(pop){
  ################################################################################
  ### ggplot popgen locations
  if(pop == 'ELR') pops <- 'ER'
+ if(pop == 'NBH') pops <- 'NBH'
  cross.popgen <- read.table(file.path(mpath,paste0("outliers",pops,".txt.ncbi.lifted")), sep = "\t", header = T)
 
  ################################################################################

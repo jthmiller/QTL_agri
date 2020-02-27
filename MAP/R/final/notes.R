@@ -204,6 +204,21 @@ geno.crosstab(cross,'2:28101458','13:1369425')
 
 
 
+pop <- 'NBH'
+library('qtl')
+library('snow')
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
+mpath <- '/home/jmiller1/QTL_agri/data'
+cores <- 6
+load(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
+
+
+geno.crosstab(cross,'2:33640721','13:14492248')
+
+#### NBH INCOMPATABILITY AT 13 v 2
+#### WHAT ELSE IS 13 incompatable with?
+c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
+################################################################################
 
 
 ##### HEATMAP ######################################################################

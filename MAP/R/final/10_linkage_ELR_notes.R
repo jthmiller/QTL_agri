@@ -1,6 +1,5 @@
 #!/bin/R
 mpath <- '/home/jmiller1/QTL_agri/data'
-#pop <- 'NBH'
 pop <- 'ELR'
 
 library('qtl')
@@ -21,68 +20,12 @@ ahr_genes$segdist <- -log10(gt[ahr_genes$close_marker,'P.value'])
 ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
 #############################################
 
-cross <- est.rf(cross, maxit=100, tol=1e-6)
-
-#############################################
-### test 2 locus interaction seg distortion
-##rf <- subset(cross, chr = c(1:4,6:24))
-rf <- cross
-
-probs <- c(0.0625,0.125,0.25)
-gts <- c('AA','AB','BB')
-
-homs <- c('AA','BB')
-hets <- 'AB'
-
-tr.table <- matrix(NA, ncol=3, nrow=3)
-rownames(tr.table) <- colnames(tr.table) <- gts
-
-tr.table[homs,homs] <- 0.0625
-tr.table[hets,homs] <- 0.125
-tr.table[homs,hets] <- 0.125
-tr.table[hets,hets] <- 0.25
-
-gtf <- c('AA','AB','BB')
-gt_gt <- cbind(rep(gtf,3),c(rep('AA',3),rep('AB',3),rep('BB',3)))
-gt_names <- paste0(gt_gt[,1],gt_gt[,2])
-gt_probs <- setNames(tr.table[gt_gt], gt_names)
-
-rf.gts <- pull.geno(rf)
-
-csq <- function(mara, marb) {
- test <- factor(paste0(factor(mara, labels = gtf), factor(marb, labels = gtf)), levels = gt_names)
- chisq.test(table(test), p = gt_probs)$p.value
-}
-
-csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
-
-### WITH PARALLEL #########################################
-#cores <- as.numeric(commandArgs(TRUE)[2])
-cores <- 20
-library(doParallel)
-cl <- makeCluster(cores)
-registerDoParallel(cl)
-csq.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq.each(marb)
-csq.pval <- do.call(rbind,csq.pval)
-colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
-csq.pval.bk <- csq.pval
-#############################################################
-
-rf.plots <- rf
-
-## Set within chromosomes to zero #####
-for (i in chrnames(cross)){
- mars <- markernames(rf, i)
- csq.pval[mars,mars] <- NA
- rf.plots$rf[mars,mars] <- NA
-}
-
-### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
-load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
+################ INCOMPATABILITY ##############################################
+geno.crosstab(cross,'2:35401205','13:22410721')
 
 
-
-
+#### THESE LOCI IN NBH
+c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
 
 
 

@@ -1070,37 +1070,7 @@ cnv.premap <- function(cross2, tomap) {
   brp.newmap
 
 }
-cnv.ahrs <- function(cross2, AHRdf, EXP) {
-  mapo <- convert2cross2(cross2)
-  mapo$pmap <- mapo$gmap
 
-  mapo$pmap <- lapply(mapo$pmap, function(X) {
-    return(as.numeric(gsub("[0-9]+:", "", names(X))))
-  })
-  for (i in chrnames(mapo)) {
-    names(mapo$pmap[[i]]) <- names(mapo$gmap[[i]])
-  }
-  AHR.list <- split(AHRdf, AHRdf$chrom)
-  AHR.pos1 <- lapply(AHR.list, "[[", 2)
-  AHR.pos2 <- lapply(AHR.list, "[[", 3)
-  AHR.pos1 <- lapply(AHR.pos1, as.numeric)
-  AHR.pos2 <- lapply(AHR.pos2, as.numeric)
-  pos1 <- interp_map(AHR.pos1, mapo$pmap, mapo$gmap)
-  pos2 <- interp_map(AHR.pos2, mapo$pmap, mapo$gmap)
-  AHR.list <- mapply(cbind, AHR.list, pos1 = pos1, SIMPLIFY = FALSE)
-  AHR.list <- mapply(cbind, AHR.list, pos = pos2, SIMPLIFY = FALSE)
-  ah.gens <- ldply(AHR.list, data.frame, .id = NULL)
-  ah.gens$chrom <- factor(ah.gens$chrom, levels = chrnames(mapo))
-  colnames(ah.gens)[1] <- "chr"
-  # ah.gens$lod <- rep_len(c(-1:-10), length(ah.gens[,1]))
-  ah.gens$lod <- 0
-  if (EXP == F) {
-    ah.gens <- ah.gens[which(!ah.gens$gene == "EXPRESSED"), ]
-  }
-  ah.gens <- ah.gens[!grepl("*many*", ah.gens$gene), ]
-  ah.gens <- ah.gens[!grepl("*many*", ah.gens$gene), ]
-  return(ah.gens)
-}
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
                       conf.interval=.95, .drop=TRUE) {
     library(plyr)
@@ -1617,6 +1587,41 @@ get_marks <- function(chr,pos,cross_in = cross){
 }
 
 ################################################################################
+cnv.ahrs <- function(cross2, AHRdf, EXP) {
+
+  cross2 <- drop.markers(cross2,grep("NW",markernames(cross2), value=T))
+  mapo <- convert2cross2(cross2)
+  mapo$pmap <- mapo$gmap
+  mapo$pmap <- lapply(mapo$pmap, function(X) {
+    return(as.numeric(gsub("[0-9]+:", "", names(X))))
+  })
+
+  for (i in chrnames(mapo)) {
+    names(mapo$pmap[[i]]) <- names(mapo$gmap[[i]])
+  }
+
+  AHR.list <- split(AHRdf, AHRdf$chrom)
+  AHR.pos1 <- lapply(AHR.list, "[[", 2)
+  AHR.pos2 <- lapply(AHR.list, "[[", 3)
+  AHR.pos1 <- lapply(AHR.pos1, as.numeric)
+  AHR.pos2 <- lapply(AHR.pos2, as.numeric)
+  pos1 <- interp_map(AHR.pos1, mapo$pmap, mapo$gmap)
+  pos2 <- interp_map(AHR.pos2, mapo$pmap, mapo$gmap)
+  AHR.list <- mapply(cbind, AHR.list, pos1 = pos1, SIMPLIFY = FALSE)
+  AHR.list <- mapply(cbind, AHR.list, pos = pos2, SIMPLIFY = FALSE)
+  ah.gens <- ldply(AHR.list, data.frame, .id = NULL)
+  ah.gens$chrom <- factor(ah.gens$chrom, levels = chrnames(mapo))
+  colnames(ah.gens)[1] <- "chr"
+  # ah.gens$lod <- rep_len(c(-1:-10), length(ah.gens[,1]))
+  ah.gens$lod <- 0
+  if (EXP == F) {
+    ah.gens <- ah.gens[which(!ah.gens$gene == "EXPRESSED"), ]
+  }
+  ah.gens <- ah.gens[!grepl("*many*", ah.gens$gene), ]
+  ah.gens <- ah.gens[!grepl("*many*", ah.gens$gene), ]
+  return(ah.gens)
+}
+################################################################################
 get_AHR <- function(cross){
  AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
  colnames(AHR.bed) <- c("chrom", "str", "stp", "gene")
@@ -1627,7 +1632,7 @@ get_AHR <- function(cross){
  AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
  AHR.bed$gene <- gsub(":158640", "", AHR.bed$gene)
  AHR.bed <- AHR.bed[!AHR.bed$chr == 5,]
- source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
+ #source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
  ahr_genes <- cnv.ahrs(cross, AHRdf = AHR.bed, EXP = F)
  ahr_genes$mid_phy <- apply(ahr_genes[,c('str','stp')],1,mean,na.rm=T)
  ahr_genes$close_marker <- mapply(get_marks,chr=ahr_genes$chr ,pos=ahr_genes$mid_phy)
