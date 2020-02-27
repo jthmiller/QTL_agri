@@ -11,7 +11,7 @@ format = "csvr", geno = c(1:3), estimate.map = FALSE)
 
 ################################################################################
 mpath <- '/home/jmiller1/QTL_agri/data'
-libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales")
+libs2load<-c('devtools','qtl',"ASMap","qtlTools","TSP","TSPmap","scales","doParallel")
 suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 
@@ -129,9 +129,7 @@ par(mfrow=c(3,1))
 dev.off()
 ################################################################################
 
-crossbk <- cross
-cross <- crossbk
-### DROP DISTORTED UNMAPPED (later shown to retain necc markers)
+### DROP DISTORTED UNMAPPED (later shown to retain good markers)
 
 gt <- geno.table(cross)
 toss <- rownames(gt[which(gt[,'P.value'] < 3.16e-4),])
@@ -145,9 +143,8 @@ cross <- drop.markers(cross,toss.sub)
 ################################################################################
 ## TAKE THE LEAST DISTORTED MARKER FROM EACH READ (best marker per 500bp)
 
-#cross <- thin_by_distortion(cross,1)
-#cross1 <- cross
 cross <- thin_by_distortion(cross,5)
+
 ################################################################################
 
 ### WRITE THE ABOVE CROSS OBJECT
@@ -198,8 +195,9 @@ nw_old <- gsub(":.*","",nw_marks_assign)
 move <- data.frame(cbind(nw_old,nw_marks_assign,nw_ch,nw_pos), stringsAsFactors=F)
 movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
 write.table(move,movefl)
+################################################################################
 
-
+################################################################################
 ### READ IN THE CROSS
 fl <- paste0(pop,'_filtered_unphased_NW.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
@@ -210,8 +208,6 @@ move <- read.table(movefl, stringsAsFactors = F, header=T, sep = " ")
 move <- move[which(move$nw_marks_assign %in% markernames(cross)),]
 
 ### ASSIGN UNMAPPED MARKERS
-crossbk <- cross
-
 for (i in 1:length(move[,1])){
  cross <<- movemarker(cross, marker = move[i,'nw_marks_assign'], newchr = move[i,'nw_ch'], newpos = as.numeric(move[i,'nw_pos']))
  print(i)
@@ -224,36 +220,92 @@ mapfile <- paste0(pop,'_filtered_unphased_NW_moved')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
 
-
-
-crossz <- est.rf(cross)
-crossz <- tspOrder(cross = crossz, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
-
-
-
-
-
-
-
  ### MAKE LOW/NO RECOMB GROUPS FOR CLEANUP #####################################
  ## high LOD initial check phase ###############################################
-library(doParallel)
-cl <- makeCluster(5)
-registerDoParallel(cl)
+badmarks <- function(X){
+ crossX <- est.rf(subset(cross,chr=X))
+ RF <- 10/nind(crossX)
+ LOD <- 14
+ crossX <- formLinkageGroups(crossX, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
 
- badmarks <- function(X){
-  crossX <- est.rf(subset(cross,chr=X))
-  RF <- 3/nind(crossX)
-  LOD <- 12
-  crossX <- formLinkageGroups(crossX, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ linked1 <- markernames(crossX,chr=1)
+ linked2 <- markernames(crossX,chr=2)
+ #### REMOVE NON AB AB ###################################################
 
-  #### REMOVE NON AB AB ###################################################
-  dist <- sapply(chrnames(crossX), function(X) { mean(-log10(geno.table(crossX, chr=X)$P.value)) })
+ dist <- sapply(chrnames(crossX), function(X) { mean(-log10(geno.table(crossX, chr=X)$P.value)) })
+
+ if(any(dist > 4)){
   drops <- names(which(dist > 4))
-  markernames(crossX,chr=drops)
+  drops <- markernames(crossX,chr=drops)
+  list(linked1,linked2,drops)
+ } else { list(linked1,linked2,drops=NA) }
 }
 
+cl <- makeCluster(20)
+registerDoParallel(cl)
 drops <- foreach(X = 1:24, .inorder = F, .packages = libs2load) %dopar% badmarks(X)
-cross <- drop.markers(cross,unlist(drops))
+
+
+high <- unlist(lapply(drops,"[[",1))
+low <- unlist(lapply(drops,"[[",2))
+
+
+cross.sub <- pull.markers(cross,c(unlist(high),unlist(low)))
+nw_chr <- grep('NW_',chrnames(cross.sub), value = T)
+
+cross.sub <- drop.markers(cross,nw_chr)
+cross.sub <- est.rf(cross.sub, maxit=1000, tol=1e-6)
+cross.sub <- tspOrder(cross = cross.sub, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+cross.sub <- removeDoubleXO(cross.sub)
+mis <- misg(cross.sub,0.10)
+drop <- names(which(colSums(is.na(pull.geno(cross.sub))) > mis))
+cross.sub <- drop.markers(cross.sub,drop)
+keep <- markernames(cross.sub)
+
+cross1 <- pull.markers(cross,c(keep,nw_chr))
+cross1 <- tspOrder(cross = cross1, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+cross1 <- removeDoubleXO(cross1)
+mis <- misg(cross1,0.10)
+drop <- names(which(colSums(is.na(pull.geno(cross1))) > mis))
+cross1 <- drop.markers(cross1,drop)
+cross1 <- tspOrder(cross = cross1, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
 ################################################################################
+drop <- c('15:21481705','20:16313414','22:8254649','24:3192380')
+cross1 <- drop.markers(cross1,drop)
+plotit(cross1)
+################################################################################
+
+### WRITE MAP
+mapfile <- paste0(pop,'_',sum(nmar(cross1)),'_noimpute_NW_remapped_tsp')
+filename <- file.path(mpath,mapfile)
+write.cross(cross1,filestem=filename,format="csv")
+################################################################################
+
+################################################################################
+### FIX GENOTYPING ERRORS WITH GENOPROB
+cross2 <- fill.geno(cross1, method="maxmarginal", error.prob = 0.05, min.prob=0.95)
+mis <- misg(cross2,0.10)
+drop <- names(which(colSums(is.na(pull.geno(cross2))) > mis))
+cross3 <- drop.markers(cross2,drop)
+
+cross4 <- est.rf(cross3)
+cross4 <- tspOrder(cross = cross4, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+cross4 <- fill.geno(cross4, method="no_dbl_XO", error.prob = 0.01, min.prob=0.99)
+
+
+crs <- formLinkageGroups(cross4, max.rf = 0.15, min.lod = 15, reorgMarkers = TRUE)
+drop <- rownames(geno.table(crs,chr=25:nchr(crs)))
+cross5 <- drop.markers(cross4,drop)
+cross5 <- tspOrder(cross = cross5, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+
+### WRITE IMPUTED AND CORRECTED MAP
+mapfile <- paste0(pop,'_',sum(nmar(cross5)),'_imputed_NW_tsp')
+filename <- file.path(mpath,mapfile)
+write.cross(cross5,filestem=filename,format="csv")
+################################################################################
+################################################################################
+
+
+
 ################################################################################

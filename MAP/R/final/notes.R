@@ -159,6 +159,60 @@ effectplot(cross,pheno.col=1,mname2=a,mname1='13:24456390')
 dev.off()
 
 
+geno.crosstab(cross,'2:36080762','2:27373969')
+
+geno.crosstab(cross,'2:29113987','13:22410721')
+
+
+cross_s <- switchAlleles(cross_s, markernames(cross_s,2))
+geno.crosstab(cross,'2:29113987','13:22410721')
+
+cross_s <- switchAlleles(cross_s,markernames(cross_s,2))
+plot_test('sdf')
+effectplot(cross_s,pheno.col=5,mname2=qtl2,mname1='13:24113176', ylim=c(0,5))
+dev.off()
+
+sone <- scanone(cross_s, pheno.col=4, model="normal", method="hk")
+summary(sone)
+
+qtl2 <- '2:29113987'
+rn13 <- '13:22410721'
+rn2 <- '2:33578802'
+
+aip <- '2:27502173'
+arnt <- '13:24472329'
+hsp <- '13:23536332'
+tmtc2a <- '13:10592117'
+
+13:21347307  13       2 20 43 15      0      0 0.4815384
+13:22410721  13       0 20 45 15      0      0 0.3916056
+13:21996131  13       3 20 42 15
+
+markernames(cross,2)
+
+which.max(-log10(csq.pval['13:22410721',markernames(cross,2)]))
+
+geno.crosstab(cross,'2:35401205','13:22410721')
+
+geno.crosstab(cross,'2:23727548','13:22410721')
+
+sort(-log10(csq.pval['13:22410721',markernames(cross,2)]))
+
+sort(-log10(csq.pval['2:28101458',markernames(cross,13)]))
+
+geno.crosstab(cross,'2:28101458','13:1369425')
+
+
+
+
+
+##### HEATMAP ######################################################################
+csq.pval.hm <- data.matrix(-log10(csq.pval[markernames(cross,2),markernames(cross,13)]))
+plot_test('heatmap_dist_elr',height=1000,width=1000)
+heatmap(csq.pval.hm)
+dev.off()
+######################################################################
+
 ################################################################################
 ### NOTES FROM FIGURES (SEGDIST)
 ### ELR
