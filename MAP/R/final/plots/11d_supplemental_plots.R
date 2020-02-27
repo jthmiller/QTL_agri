@@ -1,5 +1,8 @@
 #!/bin/R
 ### first run combine pops for multi-pop cross objects
+
+
+
 source("/home/jmiller1/QTL_agri/MAP/control_file.R")
 library("ggridges")
 library("plyr")
@@ -11,36 +14,12 @@ library('parallel')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-##cores <- detectCores() - 2
-##
-##fl <- file.path(mpath,paste0(pop'.mapped.tsp.csv'))
-##
-##cross <- read.cross(
-## file = fl,
-## format = "csv", genotypes=c("1","2","3"),
-## estimate.map = FALSE
-##)
-################################################################################
-################################################################################
-
-#load(file.path(mpath,'supplemental_plot_env.rsave'))
-cross <- cross_NBH
-#cross <- cross_ELR
-#cross$pheno$pheno_norm <- round(nqrank(cross$pheno$Pheno),5)
+load(file.path(mpath,paste0(pop,'_supplemental_plot_env.rsave')))
 
 ################################################################################
 ################################################################################
 
-erp <- 0.0025
-
-cross <- jittermap(cross)
-
-cross <- sim.geno(cross, step=0.5, error.prob=erp, off.end=5,
- map.function="kosambi", n.draws=100, stepwidth="fixed")
-
-cross <- calc.genoprob(cross, step=0.5, error.prob=erp, off.end=5,
- map.function="kosambi", stepwidth="fixed")
-
+erp <- 0.001
 norm <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
 bin <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
 gt <- geno.table(cross)
@@ -49,13 +28,13 @@ map_sum <- summary(pull.map(cross))
 
 ################################################################################
 
-cross_grid <- reduce2grid(cross)
-
-bin_grid <- scanone(cross_grid, method = "em", model = "binary", pheno.col = 4)
-norm_grid <- scanone(cross_grid, method = "imp", model = "normal", pheno.col = 5)
-gt_grid <- geno.table(cross_grid)
-map_grid <- pull.map(cross_grid)
-map_grid_sum <- summary(pull.map(cross_grid))
+##cross_grid <- reduce2grid(cross)
+##
+##bin_grid <- scanone(cross_grid, method = "em", model = "binary", pheno.col = 4)
+##norm_grid <- scanone(cross_grid, method = "imp", model = "normal", pheno.col = 5)
+##gt_grid <- geno.table(cross_grid)
+##map_grid <- pull.map(cross_grid)
+##map_grid_sum <- summary(pull.map(cross_grid))
 
 ################################################################################
 ################################################################################
@@ -67,13 +46,17 @@ pr2 <- calc_genoprob(cross2, map2, error_prob=0.0025, cores=cores)
 bin2 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores)
 
 ################################################################################
-if(pop == 'NBH') { rank <- nbh.rank ; ahr <- ahr_nbh ;  pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH'}
-if(pop == 'ELR') { rank <- elr.rank ; ahr <- ahr_elr ;  pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC'}
+
+rank <- pop.rank
+
+if(pop == 'NBH') pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH'
+if(pop == 'ELR') pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC'
 ################################################################################
 #bottom, left, top and right
 #location the labels (i.e. xlab and ylab in plot), the second the tick-mark labels, and third the tick marks
 stat <- 'pfst'
-for (ch in 1:24){
+
+plogen <- function(ch, stat){
 
  pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5,height=6)
  mat<-matrix(c(1:8),8,1, byrow=T)
@@ -93,7 +76,7 @@ for (ch in 1:24){
  plot_pgen(
   crs = cross, chrs=ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
   ahr = ahr, ahr_clm= 'stp',  colnm = pfstNSname, popgen = rank,
-  rank_clm='end', ylimo=c(-0.025,0.8), stat_name='pfst NxS', pch=16,
+  rank_clm='end', ylimo=c(-0.025, 1), stat_name='pfst NxS', pch=16,
   cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75, xaxt="n"
  )
 
@@ -101,7 +84,7 @@ for (ch in 1:24){
   plot_pgen(
    crs = cross, chrs=ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
    ahr = ahr, ahr_clm= 'stp',  colnm = pfstname, popgen = rank,
-   rank_clm='end', ylimo=c(-0.025,0.6), stat_name='pfst', pch=16,
+   rank_clm='end', ylimo=c(-0.025,1), stat_name='pfst', pch=16,
    cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75, xaxt="n"
   )
  } else {
@@ -138,7 +121,7 @@ for (ch in 1:24){
  )
 
  effectscan(
-  cross_grid, pheno.col=4, chr=ch, get.se=T, draw=TRUE,
+  cross, pheno.col=4, chr=ch, get.se=T, draw=TRUE,
   gap=25, mtick="line",add.legend=F, alternate.chrid=T, ylim=c(-0.5,0.5),
   xlim=c(0,len), main=NULL,ylab='Effect Est. (+/- 1 SE)', xaxs="i",, xaxt="n",
   cex.axis = 0.75, cex.lab= 0.75, cex.main = 0.75, mgp = c(1.5, 0.5, 0)
@@ -155,4 +138,11 @@ for (ch in 1:24){
  dev.off()
 }
 ################################################################################
+
+plogen_data('ELR')
+sapply(1:24,plogen, stat = 'pfst')
+
+plogen_data('NBH')
+sapply(1:24,plogen, stat = 'pfst')
+
 ################################################################################
