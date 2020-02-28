@@ -81,24 +81,22 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
 ################################################################################
 
 ################################################################################
-pop <- 'ELR'
-
 pop <- 'NBH'
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
+library("ggridges")
+library("plyr")
+library("scales")
+library("ggrepel")
+library('qtl')
+library('RColorBrewer')
+library('parallel')
+mpath <- '/home/jmiller1/QTL_agri/data'
+setwd(mpath)
 
-plogen_data <- function(pop){
+load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
- source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
- library("ggridges")
- library("plyr")
- library("scales")
- library("ggrepel")
- library('qtl')
- library('RColorBrewer')
- ################################################################################
- mpath <- '/home/jmiller1/QTL_agri/data'
- setwd(mpath)
 
- load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+plogen_data <- function(...){
 
  ################################################################################
 
@@ -227,6 +225,10 @@ plogen_data <- function(pop){
  seg <- geno.table(cross)[rownames(c2eff),'P.value']
 
  ################################################################################
- save.image(file.path(mpath,paste0(pop,'_supplemental_plot_env.rsave')))
+ ##save.image(file.path(mpath,paste0(pop,'_supplemental_plot_env.rsave')))
  ################################################################################
+
+ sapply(1:24, plogen, stat = 'pfst')
 }
+
+plogen_data(pop = 'NBH', cross = cross, mpath = mpath)

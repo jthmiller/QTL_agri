@@ -23,6 +23,23 @@ error <- 0.001
 cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", stepwidth="fixed")
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### HK
 sone <- scanone(cross, pheno.col=4, model="binary", method="hk")
 sone.perms <- scanone(cross, pheno.col=4, model="binary", method="hk", n.perm=1000, n.cluster=cores)

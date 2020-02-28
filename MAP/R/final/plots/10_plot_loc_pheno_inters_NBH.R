@@ -226,82 +226,22 @@ dev.off()
 }
 ################################################################################
 
+single(loc_a,pop = 'ELR')
+single(loc_b,pop = 'ELR')
+
+loc_a <- find.marker(cross,2,80.59)
+loc_b <- find.marker(cross,13,39.42)
+
+intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
+
 
 #### NBH INCOMPATABILITY AT 13 v 2
 #### WHAT ELSE IS 13 incompatable with?
 c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
 ################################################################################
 
-loc_b <- find.marker(cross,2,80.59)
-loc_a <- find.marker(cross,13,39.42)
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-
-
-loc_a <- find.pseudomarker(cross,2,110, where = 'prob')
-loc_b <- find.pseudomarker(cross,21,80, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-loc_a <- find.pseudomarker(cross,2,110, where = 'prob')
-loc_b <- find.pseudomarker(cross,22,56.4, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-loc_a <- find.pseudomarker(cross,8, 60.7, where = 'prob')
-loc_b <- find.pseudomarker(cross,19, 22.3, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-loc_a <- find.pseudomarker(cross,8,32.7, where = 'prob')
-loc_b <- find.pseudomarker(cross,21,45, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-loc_a <- find.pseudomarker(cross,17,51.5, where = 'prob')
-loc_b <- find.pseudomarker(cross,24,72.1, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-> summary(bin.em.2,perms=perms,alphas=0.1, pvalues=F, what='int')
-         pos1 pos2 lod.full lod.fv1 lod.int lod.add lod.av1
-c2 :c21 110.0 80.0     17.6 -0.0194   17.57    0.00 -17.586
-c2 :c22 110.0 56.4     16.8 -0.7959    8.53    8.26  -9.325
-c8 :c19  60.7 22.3     14.5  8.3141    9.83    4.69  -1.521
-c8 :c21  32.7 45.0     14.9  8.7378    8.46    6.48   0.274
-c17:c24  51.5 72.1     15.1  7.5631    8.41    6.70  -0.846
-
-
-
-loc_a <- find.pseudomarker(cross,2,110, where = 'prob')
-loc_b <- find.pseudomarker(cross,21,79.97, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-loc_a <- find.pseudomarker(cross,2,110, where = 'prob')
-loc_b <- find.pseudomarker(cross,22,56.44, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-
-loc_a <- find.pseudomarker(cross,2,108, where = 'prob')
-loc_b <- find.pseudomarker(cross,18,38.06, where = 'prob')
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
+(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
+summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")
 ###########
 
 summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")
-
-c7 :c10  88.3 11.09    11.58  8.0286    7.59    3.99   0.435
-c13:c14  66.0  7.49     9.64  7.1322    7.54    2.11  -0.404
-c17:c24  51.5 72.08    15.11  7.5631    8.41    6.70  -0.846
-
-c6 :c19  15.0  1.29     9.64  7.5162    7.83    1.81  -0.313
-c8 :c19  60.7 22.3     14.5  8.3141    9.83    4.69  -1.521
-
-c11:c20  35.7 45.80    11.67  7.6469    7.77    3.90  -0.126
-
-c2 :c21 110.0 79.97    17.57 -0.0194   17.57    0.00 -17.586
-c8 :c21  32.7 44.97    14.94  8.7378    8.46    6.48   0.274
-
-c1 :c22  20.2  5.44    10.58  8.2239    7.75    2.83   0.470
-c2 :c22 110.0 56.44    16.79 -0.7959    8.53    8.26  -9.325
-
-c4 :c23  14.0 47.00     9.36  7.3094    7.68    1.68  -0.371
-c6 :c23   8.0 27.00    10.08  7.9554    7.64    2.44   0.319
-c9 :c23  53.0  4.00    10.75  9.2351    8.85    1.90   0.388
-c12:c23  52.7  8.0     10.5  7.5314    9.42    1.07  -1.885
-c20:c23  31.8 12.0     12.7  8.6475    9.48    3.20  -0.831

@@ -103,7 +103,7 @@ csq_mod <- function(mara, marb) {
 
 
 ### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
-load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
+load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 
 
 
@@ -151,7 +151,7 @@ dev.off()
 
 
 
-summary(bin.imp.2, thresholds=c(0, Inf, 5.5, Inf, Inf), what="int")
+summary(bin.em.2, thresholds=c(0, Inf, 5.5, Inf, Inf), what="int")
 
 
 ########################################

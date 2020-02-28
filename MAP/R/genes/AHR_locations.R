@@ -74,6 +74,10 @@ get_genes <- function(chr,pos,ngens=2){
 ###############
 get_genes(14,24000000,10)
 
+chr15
+pt <- mean(c(1361816,1398816))
+get_genes(15,pt,5)
+
 24375514
 23817781
 23622472

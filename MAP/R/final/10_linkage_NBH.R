@@ -81,7 +81,7 @@ load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 
 
 
-
+contours=T
 
 norm.em.2
 
@@ -107,17 +107,6 @@ dev.off()
 
 
 
-plot_test('gray', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "gray", contours=T)
-dev.off()
-
-plot_test('heat', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "heat", contours=T)
-dev.off()
-
-plot_test('terrain', width = 1000, height = 1000)
- plot(norm.em.2, zlim = c(20,10), col.scheme = "terrain", contours=T)
-dev.off()
 
 plot_test('topo', width = 1000, height = 1000)
  plot(norm.em.2, zmax = c(25,14), col.scheme = "topo", contours=T)

@@ -1,5 +1,26 @@
 
 
+## AHR x CYP1b1 + (incompatable AIP)
+## CYP1b1 uncoupled more important?
+### ELR (18 (ahr) is interacting with 15 (cyp1b1) (effect on phenotype)
+### ELR (2 (AIP) is incompatable with 13 (arnt) (interaction has no affect on phenotype, but may alter efffects of AIP)
+
+### NBH AIP x ARNT X AHR
+### NBH (2 (AIP) interacts with 13 (arnt) (effect on phenotype, but is this due to seg dist?)
+### NBH (18 does NOT appear to interact with 15
+###
+
+### THE OUTLIERS
+
+
+
+
+
+
+
+
+
+
 
 26326053 26382053
 
@@ -204,6 +225,9 @@ geno.crosstab(cross,'2:28101458','13:1369425')
 
 
 
+geno.crosstab(cross,'18:20492770','15:4202438')
+
+
 pop <- 'NBH'
 library('qtl')
 library('snow')
@@ -228,55 +252,72 @@ heatmap(csq.pval.hm)
 dev.off()
 ######################################################################
 
+ELR (popgen outliers, low/no LOD): 1,2
+ELR (popgen outliers, med LOD): 5,8,
+ELR (popgen outliers, hi LOD):
+
+WIDE: 1,2,5,8,14,16,22
+
+## AHR x CYP1b1 + (incompatable AIP)
+## CYP1b1 uncoupled more important?
+### ELR (18 (ahr) is interacting with 15 (cyp1b1) (effect on phenotype)
+### ELR (2 (AIP) is incompatable with 13 (arnt) (interaction has no affect on phenotype, but may alter efffects of AIP)
+
+### NBH AIP x ARNT X AHR
+### NBH (2 (AIP) interacts with 13 (arnt) (effect on phenotype, but is this due to seg dist?)
+### NBH (18 does NOT appear to interact with 15
+###
+
 ################################################################################
 ### NOTES FROM FIGURES (SEGDIST)
 ### ELR
-CHR1 - D/F/NSF peaks at both ends (at aHR2a). Lod tops out at 2 here.
-CHR2 - D/F/NSF at AIP
+**CHR1 - D/F/NSF peaks at both ends (at aHR2a). Lod tops out at 2 here.
+**CHR2 - D/F/NSF at AIP
 CHR3 - Narrow div and fst outlier at 19 MB
-CHR4 -
-CHR5 - Wide d/f doutlier at 16 and 18 MB
+CHR4 - NONE
+**CHR5 - Wide d/f doutlier at 16 and 18 MB
 CHR6 - Narrow d/f outlier centered over max lod (only lod 2 or so)
-CHR7 - none
-CHR8 - Wide d/f doutlier at 18 MB, but lod is minimized there. Lod peak ~38 MB
+CHR7 - NONE
+**CHR8 - Wide d/f doutlier at 18 MB, but lod is minimized there. Lod peak ~38 MB
 CHR9 - A N/S fst peak, but not much else
 CHR10 - NSF peak at 4 MB
 CHR11 - NONE
 CHR12 - NONE
-CHR13 - LOD maximized at sensetive background 1 MB
-CHR14 - Wide D/F/NSF at 22-24 MB. No phen LOD
+**CHR13 - LOD maximized at sensetive background 1 MB
+**CHR14 - Wide D/F/NSF at 22-24 MB. No phen LOD
 CHR15 - NSF indicatess possible deletion at 1-2 MB
 CHR16 - Wide D/F at 13-15 MB. No lod
 CHR17 - None
-CHR18 - DIVERSITY DOESNT CHANGE AT AHRb position
+**CHR18 - DIVERSITY DOESNT CHANGE AT AHRb position
 CHR19 - NONE
 CHR20 - FNS outlier (no div change) at 34 MB
-CHR21 -
-CHR22 - D/F/FNS outlier at 19 MB
+CHR21 - NONE - Possible FNS
+**CHR22 - Wide D/F/FNS outlier at 19 MB
 CHR23 - FNS outlier at 3 MB, Deletion? at 24 MB
-CHR24 -
+CHR24 - NONE
 
-CHR1
-CHR2
-CHR3
-CHR4
-CHR5
-CHR6
-CHR7
-CHR8
+## NBH
+**CHR1 - LOW LOD MAXIMIZED NEAR AHRa
+**CHR2 - WIDE F/D/FNS
+CHR3 - NONE
+CHR4 - NONE
+**CHR5 - THE WIDE OUTLIER PRESENT IN ELR IS NOT IN NBH
+CHR6 -
+CHR7 - SUSPICIOUS FST AND DELTA PI
+CHR8 - LESS PRONOUNCED INTERVAL THAN ELR
 CHR9
-CHR10
+CHR10 - SUSPICOUS FST and DELTA pi
 CHR11
 CHR12
-CHR13
-CHR14
+CHR13 - SOMEWHAT MAXIMIZED OVER ARNT
+CHR14 - POSSIBLE FST/D OUTLIERS
 CHR15
 CHR16
 CHR17
-CHR18
+CHR18 - FS, But diversity does not tank as it does with other outliers
 CHR19
 CHR20
 CHR21
-CHR22
-CHR23
-CHR24
+CHR22 - some possible outliers
+CHR23 - some good outliers
+CHR24 - nothing compelling

@@ -2,63 +2,42 @@
 ### first run combine pops for multi-pop cross objects
 
 
-
-source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
-library("ggridges")
-library("plyr")
-library("scales")
-library("ggrepel")
-library('qtl')
-library('RColorBrewer')
-library('parallel')
-mpath <- '/home/jmiller1/QTL_agri/data'
-setwd(mpath)
-
-load(file.path(mpath,paste0(pop,'_supplemental_plot_env.rsave')))
-
-################################################################################
-################################################################################
-
-erp <- 0.001
-norm <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
-bin <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
-gt <- geno.table(cross)
-map <- pull.map(cross)
-map_sum <- summary(pull.map(cross))
-
-################################################################################
-
-##cross_grid <- reduce2grid(cross)
-##
-##bin_grid <- scanone(cross_grid, method = "em", model = "binary", pheno.col = 4)
-##norm_grid <- scanone(cross_grid, method = "imp", model = "normal", pheno.col = 5)
-##gt_grid <- geno.table(cross_grid)
-##map_grid <- pull.map(cross_grid)
-##map_grid_sum <- summary(pull.map(cross_grid))
-
-################################################################################
-################################################################################
-
-col <- c("slateblue", "violetred", "green3")
-cross2 <- convert2cross2(cross)
-map2 <- insert_pseudomarkers(cross2$gmap, step=0.5)
-pr2 <- calc_genoprob(cross2, map2, error_prob=0.0025, cores=cores)
-bin2 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores)
-
-################################################################################
-
-rank <- pop.rank
-
-if(pop == 'NBH') pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH'
-if(pop == 'ELR') pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC'
 ################################################################################
 #bottom, left, top and right
 #location the labels (i.e. xlab and ylab in plot), the second the tick-mark labels, and third the tick marks
-stat <- 'pfst'
+
 
 plogen <- function(ch, stat){
 
- pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5,height=6)
+ ##load(file.path(mpath,paste0(pop,'_supplemental_plot_env.rsave')))
+
+ ################################################################################
+ ################################################################################
+ stat = 'pfst'
+ erp <- 0.001
+ norm <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
+ bin <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
+ gt <- geno.table(cross)
+ map <- pull.map(cross)
+ map_sum <- summary(pull.map(cross))
+
+ ################################################################################
+
+ col <- c("slateblue", "violetred", "green3")
+ cross2 <- convert2cross2(cross)
+ map2 <- insert_pseudomarkers(cross2$gmap, step=0.5)
+ pr2 <- calc_genoprob(cross2, map2, error_prob=0.0025, cores=cores)
+ bin2 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores)
+
+ ################################################################################
+
+ rank <- pop.rank
+
+ if(pop == 'NBH') pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH'
+ if(pop == 'ELR') pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC'
+
+################################################################################
+pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5,height=6)
  mat<-matrix(c(1:8),8,1, byrow=T)
  layout(mat, widths=1, heights= c(0.1, 0.1, 0.1, 0.025, 0.1, 0.1, 0.1, 0.05))
  par(mar=c(0.5,2.25,0,1)+0.1, oma = c(1, 1, 0, 1))
@@ -138,6 +117,13 @@ plogen <- function(ch, stat){
  dev.off()
 }
 ################################################################################
+
+pop <- 'NBH'
+plogen_data(pop,stat = 'pfst')
+
+plogen
+sapply(1:24, plogen, stat = 'pfst')
+
 
 plogen_data('ELR')
 sapply(1:24,plogen, stat = 'pfst')

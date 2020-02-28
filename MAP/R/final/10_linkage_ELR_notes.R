@@ -10,6 +10,8 @@ source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ################################################################################
 
+load(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
+
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
 attr(cross$geno[["5"]], 'class') <- 'A'
 
@@ -24,48 +26,37 @@ ahr_genes_sub <- ahr_genes[!is.na(ahr_genes$PATH),]
 geno.crosstab(cross,'2:35401205','13:22410721')
 
 
-#### THESE LOCI IN NBH
-c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
+#### THESE LOCI DIST IN NBH
+###c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
+#####################
+
+
+summary(norm.em.2, thresholds=c(0, Inf, 6, Inf, Inf), what="int")
 
 
 
+### CHR18 might be epis with chr15  1361816  1398816
+c15:c18  8.82  61.98    10.82    5.16    7.11   3.709 -1.94810
 
+c18 <- find.marker(cross,18,61.98)
+c15 <- find.marker(cross,15,8.82)
 
+geno.crosstab(cross,c18,c15)
 
-plot_test('sdf')
-plot(bin.mr.2)
+plot_test('norm_em_redblue_elr', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", gamma=0.8)
 dev.off()
 
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
+plot_test('norm_em_gray_elr', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "gray")
 dev.off()
 
- col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
-
-
-plot_test('gray', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "gray", contours=T)
-dev.off()
-
-plot_test('heat', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "heat", contours=T)
-dev.off()
-
-plot_test('terrain', width = 1000, height = 1000)
+plot_test('norm.em_terrain_elr', width = 1000, height = 1000)
  plot(norm.em.2, zlim = c(20,10), col.scheme = "terrain", contours=T)
 dev.off()
 
-plot_test('topo', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "topo", contours=T)
-dev.off()
+### col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
+
 
 
 
@@ -137,6 +128,20 @@ dev.off()
 
 
 
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
 
 
 ahr_genes_sub <- ahr_genes_sub[which(ahr_genes_sub$PATH == 'AHR'),]
