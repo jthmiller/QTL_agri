@@ -6,29 +6,34 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 
 library(circlize)
 
-##load(file.path(mpath,paste0(pop,'_scan2_bin_em_noCof.rsave')))
-#load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
-load(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
-
+load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
+load(file.path(mpath,paste0(pop,'_scan2_normal_mr.rsave')))
+load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
 ###############
-ahr_genes <- get_AHR(cross)
-
-nbh_gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
-elr_gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
-
-###############
-rf <- drop.markers(cross, grep('NW',markernames(cross), value=T))
-mars <- markernames(rf)
+ahr_genes <- get_AHR(rf)
+gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
 ###############
 
+
 ###############
-rf.df <- pull.rf(rf)
-rf.df <- rf.df[mars,mars]
-diag(rf.df) = 0
-rf.df[lower.tri(rf.df)] = 0
-###################
+map <- map2table(pull.map(cross))
+mars <- grep('NW',markernames(cross), invert=T,value=T)
+###############
+
+###############
+cross <- est.rf(cross)
+save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
+###############
+
+lod <- pull.rf(cross, what='lod')
+lod <- matrix(lod, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
+lod <- lod[mars,mars]
+
+rf <- pull.rf(cross)
+rf <- matrix(rf, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
+rf <- rf[mars,mars]
 
 ###############
 mar.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
@@ -37,25 +42,25 @@ mat.names <- gsub(":.*","",mat.names)
 ###############
 
 ###############
-lod.df <- pull.rf(rf, what='lod')
-lod_ab <- matrix(lod.df, nrow = sum(nmar(rf)), ncol = sum(nmar(rf)))
+lod_ab <- pull.rf(rf, what='lod')
+lod_ab <- matrix(lod.df, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
 rownames(lod_ab) <- markernames(rf)
 colnames(lod_ab) <- markernames(rf)
 
-mat = lod.df
-mat <- mat[mars,mars]
-diag(mat) = 0
-mat[lower.tri(mat)] = 0
-n = nrow(mat)
-rn = rownames(mat)
-
-diag(mat.names) = 0
-mat.names[lower.tri(mat.names)] = 0
-n = nrow(mat.names)
-
-rownames(mat.names) <- rownames(mat)
-colnames(mat.names) <- rownames(mat)
-rn = rownames(mat.names)
+#mat = lod.df
+#mat <- mat[mars,mars]
+#diag(mat) = 0
+#mat[lower.tri(mat)] = 0
+#n = nrow(mat)
+#rn = rownames(mat)
+#
+#diag(mat.names) = 0
+#mat.names[lower.tri(mat.names)] = 0
+#n = nrow(mat.names)
+#
+#rownames(mat.names) <- rownames(mat)
+#colnames(mat.names) <- rownames(mat)
+#rn = rownames(mat.names)
 ###############
 
 ###############
@@ -65,58 +70,28 @@ s1l[lower.tri(s1l, diag = T)] <- NA
 ###############
 
 ###############
-lod_phen <- norm.em.2$lod
-lod_phen[lower.tri(lod_phen, diag = T)] <- NA
-diag(lod_phen) = 0
-lod_phen[lower.tri(lod_phen)] = 0
+#lod_phen <- norm.mr.2$lod
+#lod_phen[lower.tri(lod_phen, diag = T)] <- NA
+#diag(lod_phen) = 0
+#lod_phen[lower.tri(lod_phen)] = 0
 
-lod_phen <- matrix(norm.em.2$lod, nrow = 7457, ncol = 7457)
+lod_phen <- matrix(norm.mr.2$lod, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
 rownames(lod_phen) <- markernames(cross)
 colnames(lod_phen) <- markernames(cross)
 
-###############
-
 ###########################################################################
 
-homozy <- data.matrix(-log10(csq_mod.pval[mars,mars]))
-#homozy[lower.tri(homozy, diag = T)] <- NA
-#diag(homozy) = 0
-#homozy[lower.tri(homozy)] = 0
+lod_hom <- data.matrix(-log10(csq_mod.pval[mars,mars]))
+lod_inc <- data.matrix(-log10(csq.pval[mars,mars]))
+lod_phen <- data.matrix(lod_phen[mars,mars])
+lod_ab <- data.matrix(lod_ab[mars,mars])
+rf.df <- data.matrix(rf.df[mars,mars])
 
-###########################################################################
-
-incompat <- data.matrix(-log10(csq.pval[mars,mars]))
-#incompat[lower.tri(incompat, diag = T)] <- NA
-#diag(incompat) = 0
-#incompat[lower.tri(incompat)] = 0
-
-###############
-map <- map2table(pull.map(rf))
-#
-#for (i in unique(bin.em.2$map$chr)){
-# mars <- which(bin.em.2$map$chr == i)
-# mat[mars,mars] <- 0
-#}
-###########################################################################
-
-#mat.dwn <- which(mat > 0 & mat < 100, arr.ind=T)
-#mar_b <- colnames(mat)[mat.dwn[,'col']]
-#mar_a <- rownames(mat.dwn)
-##lod_ab <- unlist(lod.df)
-#lod_ab <- mapply(function(x,y){ lod_ab[x,y, drop = T] }, mar_a, mar_b)
-#lod_p <- mapply(function(x,y){ lod_phen[x,y, drop = T] }, mar_a, mar_b)
-#rfs <- mapply(function(x,y){ rf.df[x,y, drop = T] }, mar_a, mar_b)
-#lod_homz <- mapply(function(x,y){ homozy[x,y, drop = T] }, mar_a, mar_b)
-#lod_inco <- mapply(function(x,y){ incompat[x,y, drop = T] }, mar_a, mar_b)
-
-
-
-
-lod_ab <- lod_ab[cbind(mar_a, mar_b), drop = T]
-#lod_p <- lod_phen[cbind( mar_a, mar_b), drop = T]
+ab <- lod_ab[cbind(mar_a, mar_b), drop = T]
+phen <- lod_phen[cbind( mar_a, mar_b), drop = T]
 rfs <- rf.df[cbind( mar_a, mar_b), drop = T]
-lod_homz <- homozy[cbind( mar_a, mar_b), drop = T]
-lod_inco <- incompat[cbind(mar_a, mar_b), drop = T]
+homz <- lod_hom[cbind( mar_a, mar_b), drop = T]
+inco <- lod_inc[cbind(mar_a, mar_b), drop = T]
 
 
 chr_a <- map[mar_a, c('chr','pos')]
@@ -124,13 +99,11 @@ chr_b <- map[mar_b, c('chr','pos')]
 
 ##links <- data.frame(cbind(chr_a,chr_b,lod_ab,lod_p,rfs),stringsAsFactors=F)
 
-links <- data.frame(cbind(chr_a,chr_b,lod_ab,rfs,lod_homz,lod_inco),stringsAsFactors=F)
+links <- data.frame(cbind(chr_a,chr_b,ab,rfs,homz,inco,phen),stringsAsFactors=F)
 
 ###########################################################################
 ##save.image(file.path(mpath,paste0(pop,'_circos_wo_Coef.rsave')))
 save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
-
-
 ###########################################################################
 ###########################################################################
 ###########################################################################
@@ -194,20 +167,25 @@ names(ab_tables) <- names(p_tables) <- names(rf_tables) <- chroms
 
 
 ################################################################################
-pop <- paste0(pop,'_wCoef')
+
+lod_hom[lower.tri(lod_hom, diag = T)] <- NA
+lod_inc[lower.tri(lod_inc, diag = T)] <- NA
+rfs[lower.tri(rfs, diag = T)] <- NA
+lod_phen[lower.tri(lod_phen, diag = T)] <- NA
+lod_ab[lower.tri(lod_ab, diag = T)] <- NA
+rf.df[lower.tri(rf.df, diag = T)] <- NA
+
+hoz <- quantile(lod_hom, 0.999, na.rm=T)
+inc <- quantile(lod_inc, 0.999, na.rm=T)
+rfq <- quantile(rfs, 0.9999, na.rm=T)
+phe <- quantile(lod_phen, 0.9999, na.rm=T)
+abq <- quantile(lod_ab, 0.9999, na.rm=T)
 
 
-
-hz <- quantile(links$lod_homz, 0.9999, na.rm=T)
-hi <- quantile(links$lod_inco, 0.9999, na.rm=T)
-
-low_p <- links[which(links$lod_homz > hz ),]
-low_p <- links[which(links$lod_inco > hi),]
-low_p <- links[which(links$lod_homz > hz | links$lod_inco > hi),]
-
-dim(low_p)
+toplot <- links[which(links$lod_homz > hz | links$lod_inco > hi),]
+dim(toplot)
 plot_test(paste0(pop,'circ_incompat'))
-pc(low_p)
+pc(toplot)
 dev.off()
 
 

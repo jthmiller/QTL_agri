@@ -59,6 +59,7 @@ sbatch -J "EMB.ELR" --mem=60G -p low -t 13:00:00 $bashsc/07_bin_em_scan2.sh 'ELR
 sbatch -J "MRB.ELR" --mem=60G -p low -t 13:00:00 $bashsc/07_bin_mr_scan2.sh 'ELR' 22
 sbatch -J "EMN.ELR" --mem=60G -p low -t 13:00:00 $bashsc/07_norm_em_scan2.sh 'ELR' 22
 sbatch -J "NIMP.ELR" --mem=60G -p low -t 13:00:00 $bashsc/07_norm_imp_scan2.sh 'ELR' 22
+sbatch -J "MRN.ELR" --mem=60G -p high -t 13:00:00 $bashsc/07_norm_mr_scan2.sh 'ELR' 22
 #################################################################################
 
 ### BIN HK STEPWISE QTL
