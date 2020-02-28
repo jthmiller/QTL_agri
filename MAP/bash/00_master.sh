@@ -48,9 +48,9 @@ Rscript $perms/06_combine_permutations.R --vanilla 'NBH' "_all_perms_bin_imp.rsa
 ### TWO LOCUS SCAN $1=population $2=number of cores to use
 bashsc="$HOME/QTL_agri/MAP/bash"
 sbatch -J "EMB.NBH" --mem=60G -p low -t 13:00:00 $bashsc/07_bin_em_scan2.sh 'NBH' 22
-sbatch -J "MRB.NBH" --mem=60G -p low -t 13:00:00 $bashsc/07_bin_mr_scan2.sh 'NBH' 22
+sbatch -J "MRB.NBH" --mem=60G -p high -t 13:00:00 $bashsc/07_bin_mr_scan2.sh 'NBH' 22
 sbatch -J "EMN.NBH" --mem=60G -p high -t 13:00:00 $bashsc/07_norm_em_scan2.sh 'NBH' 22
-sbatch -J "NIMP.NBH" --mem=60G -p low -t 13:00:00 $bashsc/07_norm_imp_scan2.sh 'NBH' 22
+sbatch -J "NIMP.NBH" --mem=60G -p med -t 13:00:00 $bashsc/07_norm_imp_scan2.sh 'NBH' 22
 
 perms="$HOME/QTL_agri/MAP/R/final"
 sbatch -J "EMB.ELR" --mem=60G -p low -t 13:00:00 $bashsc/07_bin_em_scan2.sh 'ELR' 22
