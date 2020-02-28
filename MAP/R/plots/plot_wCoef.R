@@ -19,6 +19,13 @@ nbh_gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
 elr_gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
 
 ###########################################################################
+mars <- markernames(cross)
+distp <- csq_mod.pval
+distp <- distp [mars,mars]
+diag(distp) = 0
+distp[lower.tri(distp)] = 0
+###########################################################################
+
 rf.df <- pull.rf(rf)
 rf.df <- rf.df[mars,mars]
 diag(rf.df) = 0
@@ -30,6 +37,15 @@ mar.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
 mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
 mat.names <- gsub(":.*","",mat.names)
 ###############
+
+###############
+mar.names <- matrix(mars, nrow = dim(distp)[1], ncol = dim(distp)[2])
+mat.names <- matrix(mars, nrow = dim(distp)[1], ncol = dim(distp)[2])
+mat.names <- gsub(":.*","",mat.names)
+###############
+
+
+
 
 ###############
 lod.df <- pull.rf(rf, what='lod')
@@ -73,6 +89,8 @@ for (i in unique(bin.em.2$map$chr)){
  mat[mars,mars] <- 0
 }
 ###########################################################################
+
+mat <- distp
 
 mat.dwn <- which(mat > 0 & mat < 100, arr.ind=T)
 mar_b <- colnames(mat)[mat.dwn[,'col']]

@@ -5,6 +5,6 @@
 #SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/imp_step_%x_%a.out
 #SBATCH  --error=/home/jmiller1/QTL_agri/MAP/bash/slurms/imp_step_%x_%a.err
 
-perms="$HOME/QTL_agri/MAP/R/final"
+perms="$HOME/QTL_agri/MAP/R/final/step"
 
 Rscript $perms/08_norm_imp_step.R --vanilla "${1}" "${2}" "${3}"

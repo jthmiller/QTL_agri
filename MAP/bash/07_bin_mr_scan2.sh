@@ -5,6 +5,6 @@
 #SBATCH  --output=/home/jmiller1/QTL_agri/MAP/bash/slurms/mr_scan2_%x_%a.out
 #SBATCH  --error=/home/jmiller1/QTL_agri/MAP/bash/slurms/mr_scan2_%x_%a.err
 
-perms="$HOME/QTL_agri/MAP/R/final"
+perms="$HOME/QTL_agri/MAP/R/final/scan2"
 
 Rscript $perms/07_bin_mr_scan2.R --vanilla "${1}" "${2}"

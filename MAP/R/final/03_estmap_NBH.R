@@ -60,10 +60,13 @@ print(paste('error lod =',erprob))
 erprob <- 1e-04
 par.est.map <- function(X) { est.map(cross, chr = X, error.prob=erprob, map.function="kosambi",maxit=1000, tol=1e-7, sex.sp=FALSE, verbose=FALSE) }
 
+### MAP #########################
 cl <- makeCluster(20)
 registerDoParallel(cl)
 maps <- foreach(X = 1:24, .inorder = T, .packages = libs2load) %dopar% par.est.map(X)
+##################################
 
+## Slow
 ## cross_map <-  est.map(cross, error.prob=erprob, map.function="kosambi",maxit=1000, tol=1e-7, sex.sp=FALSE, verbose=FALSE)
 
 maps <- lapply(maps,"[[",1)
