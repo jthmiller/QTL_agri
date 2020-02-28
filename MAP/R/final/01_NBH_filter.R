@@ -386,7 +386,6 @@ cross4 <- est.rf(cross3)
 cross4 <- tspOrder(cross = cross4, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
 cross4 <- fill.geno(cross4, method="no_dbl_XO", error.prob = 0.01, min.prob=0.99)
 
-
 crs <- formLinkageGroups(cross4, max.rf = 0.15, min.lod = 15, reorgMarkers = TRUE)
 drop <- rownames(geno.table(crs,chr=25:nchr(crs)))
 cross5 <- drop.markers(cross4,drop)

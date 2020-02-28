@@ -6,6 +6,7 @@ source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 cores <- 6
 ################################################################################
+fl <- "NBH_5755_imputed_NW_tsp.csv"
 
 fl <- "NBH_4822_imputed_high_confidence_tsp_mapped.csv"
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
@@ -22,6 +23,7 @@ cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", s
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
 
 ################################################################################
+
 
 
 

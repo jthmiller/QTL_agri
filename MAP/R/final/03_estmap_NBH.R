@@ -9,8 +9,8 @@ suppressMessages(sapply(libs2load, require, character.only = TRUE))
 
 library(doParallel)
 ################################################################################
-fl <- "NBH_4822_imputed_NW_tsp.csv"
-
+##fl <- "NBH_4822_imputed_NW_tsp.csv"
+fl <- "NBH_5755_imputed_NW_tsp.csv"
 cross <- read.cross(file=fl , format = "csv", dir=mpath,
  genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 

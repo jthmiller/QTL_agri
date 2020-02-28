@@ -9,6 +9,7 @@ source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 ### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
 load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
 ################################################################################
 
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
@@ -81,7 +82,41 @@ registerDoParallel(cl)
 csq_mod.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq_mod.each(marb)
 csq_mod.pval <- do.call(rbind,csq_mod.pval)
 colnames(csq_mod.pval) <- rownames(csq_mod.pval) <- colnames(rf.gts)
+
 csq_mod.pval.bk <- csq_mod.pval
+csq_mod.pval <- csq_mod.pval.bk
+
+## Set within chromosomes to zero #####
+for (i in chrnames(cross)){
+ mars <- markernames(rf, i)
+ csq_mod.pval[mars,mars] <- NA
+}
+
+### TABLE OF THE HIGHEST HOMOZYGOTE LOD SCORES OF LINKAGE FOR EACH CHR
+maxdist_mod <- lapply(chrnames(cross)[-17], function(i) {
+  mars <- markernames(rf, i)
+  a <- which(csq_mod.pval[mars,] == min(csq_mod.pval[mars,], na.rm = T), arr.ind=T)
+  b <- markernames(rf)[a[,'col']][1]
+  a <- rownames(a)[1]
+  cbind(a, b, -log10(csq_mod.pval[cbind(a,b)]))
+})
+maxdist_mod <- do.call(rbind,maxdist_mod)
+maxdist_mod <- maxdist_mod[order(as.numeric(maxdist_mod[,3])),]
+maxdist_mod <- data.frame(maxdist_mod, stringsAsFactors = F)
+######################################################################
+
+csq_mod.pval[lower.tri(csq_mod.pval, diag = T)] <- NA
+csq_mod.pval <- data.matrix(-log10(csq_mod.pval))
+
+##### HEATMAP ##################################################################
+csq_mod.pval.hm <- data.matrix(-log10(csq_mod.pval))
+plot_test('heatmap_twoloc_elr',height=2000,width=2000)
+heatmap(csq_mod.pval.hm, Rowv=NA, Colv=NA, scale="column",symm =T)
+dev.off()
+################################################################################
+
+
+csq_mod.pval['2:35401205','13:22410721']
 
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
@@ -130,19 +165,8 @@ maxdist <- data.frame(maxdist, stringsAsFactors = F)
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 ######################################################################
 
-### TABLE OF THE HIGHEST HOMOZYGOTE LOD SCORES OF LINKAGE FOR EACH CHR
-maxdist_mod <- lapply(chrnames(cross)[-17], function(i) {
-  mars <- markernames(rf, i)
-  a <- which(csq_mod.pval.bk[mars,] == min(csq_mod.pval.bk[mars,], na.rm = T), arr.ind=T)
-  b <- markernames(rf)[a[,'col']][1]
-  a <- rownames(a)[1]
-  cbind(a, b, -log10(csq_mod.pval.bk[cbind(a,b)]))
-})
-maxdist_mod <- do.call(rbind,maxdist_mod)
-maxdist_mod <- maxdist_mod[order(as.numeric(maxdist_mod[,3])),]
-maxdist_mod <- data.frame(maxdist_mod, stringsAsFactors = F)
-######################################################################
 
+save.image(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
 
 ##### HEATMAP ######################################################################
 csq.pval.hm <- data.matrix(-log10(csq.pval))
@@ -153,9 +177,17 @@ dev.off()
 
 ##### HEATMAP ######################################################################
 csq_mod.pval.hm <- data.matrix(-log10(csq_mod.pval))
-plot_test('heatmap_dist_homz_elr',height=3000,width=3000)
-heatmap(csq_mod.pval.hm, scale="column")
+csq_mod.pval.hm <- csq_mod.pval.hm[markernames(cross,c(1,2,8,13,18,24)),markernames(cross,c(1,2,8,13,18,24))]
+
+plot_test('heatmap_dist_try_elr',height=1000,width=1000)
+heatmap(csq_mod.pval.hm)
 dev.off()
+
+csq_mod.pval.hm['2:35401205','13:22410721']
+
+max(csq_mod.pval.hm, na.rm=T)
+which(csq_mod.pval.hm == max(csq_mod.pval.hm, na.rm = T), arr.ind = T)
+
 ######################################################################
 
 ##### HEATMAP ######################################################################
@@ -192,16 +224,17 @@ maxdist2 <- data.frame(maxdist2, stringsAsFactors = F)
 ######################################################################
 
 
+geno.crosstab(cross,'17:12700256','18:20010144')
 
 
 
+which.max(-log10(csq_mod.pval[markernames(cross,18),markernames(cross,15)]))
 
 
+-log10(csq_mod.pval[9562])
 
 
-
-
-
+geno.crosstab(cross,'19:16684098',  '2:27895640')
 
 
 

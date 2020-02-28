@@ -1,6 +1,5 @@
 #!/bin/R
 mpath <- '/home/jmiller1/QTL_agri/data'
-#pop <- 'NBH'
 pop <- 'ELR'
 
 library('qtl')
@@ -8,99 +7,56 @@ library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 ################################################################################
+load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+load(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
 ################################################################################
 
-### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
-load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
+maxdist_mod
+
+################ INCOMPATABILITY ##############################################
+geno.crosstab(cross,'2:35401205','13:22410721')
+
+18:20010144
+
+plot_test('asf', width = 2000)
+plot(-log10(csq_mod.pval["2:27502173",]))
+dev.off()
+
+maxdist_mod
 
 
-#### THESE LOCI INTERACT IN NBH
+#### THESE LOCI DIST IN NBH
 ###c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
-
-aip_incompat <- find.marker(cross,2,80.59)
-arnt_incompat <- find.marker(cross,13,39.42)
-geno.crosstab(cross,aip_incompat,arnt_incompat)
+#####################
 
 
+summary(norm.em.2, thresholds=c(0, Inf, 6, Inf, Inf), what="int")
 
-plot_test('NBH_2_13_interaction_effect_plot_binary')
-effectplot(cross ,pheno.col=4, mname2 = aip_incompat, mname1 = arnt_incompat, ylim=c(0,1), var.flag="group")
+
+
+### CHR18 might be epis with chr15  1361816  1398816
+c15:c18  8.82  61.98    10.82    5.16    7.11   3.709 -1.94810
+
+c18 <- find.marker(cross,18,61.98)
+c15 <- find.marker(cross,15,8.82)
+
+geno.crosstab(cross,c18,c15)
+
+plot_test('norm_em_redblue_elr', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", gamma=0.8)
 dev.off()
 
-plot_test('NBH_2_13_interaction_effect_plot_orig_data')
-effectplot(cross ,pheno.col=5, mname2 = aip_incompat, mname1 = arnt_incompat, ylim=c(0,5), var.flag="group")
+plot_test('norm_em_gray_elr', width = 1000, height = 1000)
+ plot(norm.em.2, zmax = c(25,14), col.scheme = "gray")
 dev.off()
 
-plot_test('norm.em_gray_nbh', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(10,14), col.scheme = "gray")
-dev.off()
-
-plot_test('norm.em_heat_nbh', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(10,14), col.scheme = "heat" )
-dev.off()
-
-plot_test('norm.em_terrain_nbh', width = 1000, height = 1000)
- plot(norm.em.2, zlim = c(10,10), col.scheme = "terrain")
-dev.off()
-
-
-
-
-
-
-
-
-
-
-plot_test('sdf')
-effectplot(cross ,pheno.col=1, mname2 = aip_incompat, mname1 = arnt_incompat, ylim=c(0,5), var.flag="group")
-dev.off()
-
-plot_test('sdf')
-plotPXG(cross ,pheno.col=1, c(aip_incompat,arnt_incompat))
-dev.off()
-
-
-
-c("pooled",
-
-
-
-plot_test('sdf')
-plot(bin.mr.2)
-dev.off()
-
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
- col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
-
-
-plot_test('gray', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "gray", contours=T)
-dev.off()
-
-plot_test('heat', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "heat", contours=T)
-dev.off()
-
-plot_test('terrain', width = 1000, height = 1000)
+plot_test('norm.em_terrain_elr', width = 1000, height = 1000)
  plot(norm.em.2, zlim = c(20,10), col.scheme = "terrain", contours=T)
 dev.off()
 
-plot_test('topo', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "topo", contours=T)
-dev.off()
+### col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
+
 
 
 
@@ -160,6 +116,13 @@ dev.off()
 ######################################################################
 ######################################################################
 
+##### HEATMAP ######################################################################
+csq.pval.hm <- data.matrix(-log10(csq.pval.2))
+plot_test('heatmap_dist_elr',height=3000,width=3000)
+heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
+dev.off()
+######################################################################
+######################################################################
 
 
 
@@ -172,6 +135,20 @@ dev.off()
 
 
 
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
 
 
 ahr_genes_sub <- ahr_genes_sub[which(ahr_genes_sub$PATH == 'AHR'),]

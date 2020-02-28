@@ -12,6 +12,10 @@ load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 ################################################################################
 
+fl <- "NBH_5755_imputed_NW_tsp.csv"
+cross <- read.cross(file=fl , format = "csv", dir=mpath,
+ genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
 attr(cross$geno[["5"]], 'class') <- 'A'
 
@@ -111,8 +115,13 @@ for (i in chrnames(cross)){
  rf.plots$rf[mars,mars] <- NA
 }
 
+## Set within chromosomes to zero #####
+for (i in chrnames(cross)){
+ mars <- markernames(rf, i)
+ csq_mod.pval[mars,mars] <- NA
+}
 
-
+##lower.tri(csq_mod.pval, diag = T) <- NA
 
 ########################################
 ### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR
@@ -130,48 +139,17 @@ maxdist <- data.frame(maxdist, stringsAsFactors = F)
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 ######################################################################
 
-##### HEATMAP ######################################################################
-csq.pval.hm <- data.matrix(-log10(csq.pval))
-plot_test('heatmap_dist_elr',height=3000,width=3000)
-heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
-dev.off()
-######################################################################
-
-##### HEATMAP ######################################################################
-csq.pval.hm <- data.matrix(-log10(csq.pval))
-plot_test('heatmap_dist_elr',height=3000,width=3000)
-heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
-dev.off()
-######################################################################
-
-######################################################################
-### WHITHOUT DISTORTED 17
-csq.pval.2 <- csq.pval
-mars <- markernames(rf, 17)
-csq.pval.2[mars,] <- NA
-csq.pval.2[,mars] <- NA
-rf.plots.2 <- rf.plots
-rf.plots.2$rf[ ,mars] <- NA
-rf.plots.2$rf[mars, ] <- NA
-
-### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR
-maxdist2 <- lapply(chrnames(cross)[-17], function(i) {
+### TABLE OF THE HIGHEST HOMOZYGOTE LOD SCORES OF LINKAGE FOR EACH CHR
+maxdist_mod <- lapply(chrnames(cross)[-17], function(i) {
   mars <- markernames(rf, i)
-  a <- which(csq.pval.2[mars,] == min(csq.pval.2[mars,], na.rm = T), arr.ind=T)
+  a <- which(csq_mod.pval[mars,] == min(csq_mod.pval[mars,], na.rm = T), arr.ind=T)
   b <- markernames(rf)[a[,'col']][1]
   a <- rownames(a)[1]
-  cbind(a, b, -log10(csq.pval.2[cbind(a,b)]))
+  cbind(a, b, -log10(csq_mod.pval[cbind(a,b)]))
 })
-maxdist2 <- do.call(rbind,maxdist2)
-maxdist2 <- maxdist2[order(as.numeric(maxdist2[,3])),]
-maxdist2 <- data.frame(maxdist2, stringsAsFactors = F)
-
-##### HEATMAP ######################################################################
-csq.pval.hm <- data.matrix(-log10(csq.pval.2))
-plot_test('heatmap_dist_elr',height=3000,width=3000)
-heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
-dev.off()
-######################################################################
+maxdist_mod <- do.call(rbind,maxdist_mod)
+maxdist_mod <- maxdist_mod[order(as.numeric(maxdist_mod[,3])),]
+maxdist_mod <- data.frame(maxdist_mod, stringsAsFactors = F)
 ######################################################################
 
 
