@@ -7,10 +7,10 @@ library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 ################################################################################
+load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
-################################################################################
-
 load(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
+################################################################################
 
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
 attr(cross$geno[["5"]], 'class') <- 'A'

@@ -14,9 +14,6 @@ fl <- file.path(mpath,fl)
 ################################################################################
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ################################################################################
-
-
-
 cross <- switchAlleles(cross, markernames(cross,c(13)))
 ################################################################################
 ## Read cross
@@ -122,43 +119,6 @@ single <- function(mark, pop = 'NBH'){
 dev.off()
 }
 
-prop_sens[[aip_incompat]]
-##sapply(markers,single,pop = 'NBH')
-aip_incompat <- find.marker(cross,2,80.59)
-arnt_incompat <- find.marker(cross,13,39.42)
-
-geno.crosstab(cross,'2:35401205','13:22410721')
-
-
-sapply('13:22410721',single,pop = 'NBH')
-################################################################################
-## single plot AIP
-
-cex_single <- c(.25,.5,.25) * 94
-xdir <- c(1,2,3)
-ydir <- tol_18
-
-pdf(paste0("/home/jmiller1/public_html/",pdfL,".pdf"), width=3.5)
- plot(c(0.65,3.35), c(-0.1,1.1),
-  xaxs="i", xaxt="n", xlab="",
-  yaxs="i", yaxt="n", ylab="",
-  type="n", main='AHR',
-  cex.lab=1.5, cex.main=2)
-
-  lines(xdir, ydir[as.character(c(1,2,3))],col='black',lwd=5)
-
-  points(xdir, ydir[as.character(c(1,2,3))],col=c('black','darkblue','cornflowerblue'), pch=21,bg=c('black','darkblue','cornflowerblue'),
-   cex= (12 * (ahr[as.character(c(1,2,3))] / cex_single)))
-
-  text(xdir, ydir[as.character(c(1,2,3))], labels=ahr[as.character(c(1,2,3))],col='white',font=2, cex=2)
-
-  mtext(side=1, line=3, 'AHR', col="black", font=2,cex=1.5)
-  mtext(side=2, line=3, "Proportion Deformed", col="black", font=2, cex=1.5)
-
-  axis(side=1, at=c(1,2,3), labels=c('AA','AB','BB'),font=2, cex.axis=2)
-  axis(side=2, at=c(0,0.5,1.0), labels=c('0','0.5','1.0'),font=2, cex.lab=2, cex.axis=2)
-dev.off()
-}
 ################################################################################
 
 intxs.bin <- function(loc_a, loc_b, popchr, locbN, main){
@@ -225,23 +185,3 @@ pdf(paste0("/home/jmiller1/public_html/",popchr,".pdf"), width=10)
 dev.off()
 }
 ################################################################################
-
-single(loc_a,pop = 'ELR')
-single(loc_b,pop = 'ELR')
-
-loc_a <- find.marker(cross,2,80.59)
-loc_b <- find.marker(cross,13,39.42)
-
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-
-#### NBH INCOMPATABILITY AT 13 v 2
-#### WHAT ELSE IS 13 incompatable with?
-c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
-################################################################################
-
-(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
-summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")
-###########
-
-summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")

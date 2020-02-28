@@ -43,7 +43,7 @@ nbh_qtl8 <- find.marker(cross,8,22.28)
 nbh_qtl13 <- find.marker(cross,13,39.42)
 nbh_qtl18 <- find.marker(cross,18,39.51)
 nbh_qtl24 <- find.marker(cross,24,52.23)
-add.qtl <- c(nbh_qtl2,nbh_qtl8,nbh_qtl13,nbh_qtl18,nbh_qtl24)
+
 
 nbh_qtl4 <- find.marker(cross,4,6.14)
 nbh_qtlx <- find.marker(cross,'X',8.93)
@@ -149,7 +149,7 @@ elr_qtl13 <- find.marker(cross,13,16.7)
 elr_qtl18 <- find.marker(cross,18,74.7)
 elr_qtl15 <- find.marker(cross,15,8.82)
 
-add.qtl <- c(elr_qtl2,elr_qtl8,elr_qtl13,elr_qtl18,elr_qtl24)
+elr.add.qtl <- c(elr_qtl8,elr_qtl13,elr_qtl18,elr_qtl15)
 
 chr <- c(8,13,15,18)
 pos <- c(10.2,16.7,74.7,8.82)
@@ -189,3 +189,30 @@ fit_imp_3wINT_normal <- fitqtl(cross, pheno.col = 4, method="imp", model="binary
                 covar=NULL, formula = y~Q2+Q3+Q3:Q4, dropone=TRUE, get.ests=T,
                 run.checks=TRUE, tol=1e-4, maxit=1000, forceXcovar=FALSE)
 summary(fit_imp_3wINT_normal)
+
+
+################################################################################
+elr.add.qtl <- c(elr_qtl8,elr_qtl13,elr_qtl18,elr_qtl15)
+sapply(elr.add.qtl, single, pop = 'ELR')
+
+intxs.bin(loc_b = elr_qtl15,loc_a = elr_qtl18, popchr = 'ELR',locbN = 'CYP1b1', main = 'CYP1b1 v AHRb')
+intxs.bin(loc_b = elr_aip,loc_a = elr_arnt13, popchr = 'ELR',locbN = 'CYP1b1', main = 'CYP1b1 v AHRb')
+
+
+elr_aip
+
+
+nbh.add.qtl <- c(nbh_qtl2,nbh_qtl8,nbh_qtl13,nbh_qtl18,nbh_qtl24)
+
+
+
+#### NBH INCOMPATABILITY AT 13 v 2
+#### WHAT ELSE IS 13 incompatable with?
+c2 :c13 80.59 39.42    27.32    4.68    9.38  17.937 -4.7046
+################################################################################
+
+(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
+summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")
+###########
+
+summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")

@@ -8,6 +8,8 @@ source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 ################################################################################
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
+load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 ################################################################################
 
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
@@ -46,7 +48,12 @@ gt_gt <- cbind(rep(gtf,3),c(rep('AA',3),rep('AB',3),rep('BB',3)))
 gt_names <- paste0(gt_gt[,1],gt_gt[,2])
 gt_probs <- setNames(tr.table[gt_gt], gt_names)
 
-rf.gts <- pull.geno(rf)
+gtf_mod <- c('AA','AB','BB')
+gt_names_mod <- c('AAAA','AABB','BBAA','BBBB')
+gt_prob_mod <- setNames(c(0.25,0.25,0.25,0.25),gt_names_mod)
+
+################################################################################
+################################################################################
 
 csq <- function(mara, marb) {
  test <- factor(paste0(factor(mara, labels = gtf), factor(marb, labels = gtf)), levels = gt_names)
@@ -54,6 +61,20 @@ csq <- function(mara, marb) {
 }
 
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
+
+################################################################################
+################################################################################
+
+csq_mod <- function(mara, marb) {
+ test <- factor(paste0(factor(mara, labels = gtf_mod), factor(marb, labels = gtf_mod)), levels = gt_names_mod)
+ chisq.test(table(test), p = gt_prob_mod)$p.value
+}
+
+csq_mod.each <- function(X){ apply(rf.gts, 2, csq_mod, marb = X) }
+################################################################################
+################################################################################
+
+rf.gts <- pull.geno(rf)
 
 ### WITH PARALLEL #########################################
 #cores <- as.numeric(commandArgs(TRUE)[2])
@@ -67,6 +88,20 @@ colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
 csq.pval.bk <- csq.pval
 #############################################################
 
+### HOMOZYGOTE DISTORTION
+cores <- 20
+library(doParallel)
+cl <- makeCluster(cores)
+registerDoParallel(cl)
+csq_mod.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq_mod.each(marb)
+csq_mod.pval <- do.call(rbind,csq_mod.pval)
+colnames(csq_mod.pval) <- rownames(csq_mod.pval) <- colnames(rf.gts)
+csq_mod.pval.bk <- csq_mod.pval
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
+################################################################################
+
 rf.plots <- rf
 
 ## Set within chromosomes to zero #####
@@ -76,45 +111,7 @@ for (i in chrnames(cross)){
  rf.plots$rf[mars,mars] <- NA
 }
 
-### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
-load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 
-
-
-contours=T
-
-norm.em.2
-
-
-
-
-plot_test('sdf')
-plot(bin.mr.2)
-dev.off()
-
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
- col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
-
-
-
-plot_test('topo', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "topo", contours=T)
-dev.off()
-
-
-
-summary(bin.imp.2, thresholds=c(0, Inf, 5.5, Inf, Inf), what="int")
 
 
 ########################################
@@ -131,6 +128,13 @@ maxdist <- maxdist[order(as.numeric(maxdist[,3])),]
 maxdist <- data.frame(maxdist, stringsAsFactors = F)
 
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
+######################################################################
+
+##### HEATMAP ######################################################################
+csq.pval.hm <- data.matrix(-log10(csq.pval))
+plot_test('heatmap_dist_elr',height=3000,width=3000)
+heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
+dev.off()
 ######################################################################
 
 ##### HEATMAP ######################################################################

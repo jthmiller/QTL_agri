@@ -168,22 +168,3 @@ pdf(paste0("/home/jmiller1/public_html/",popchr,".pdf"), width=10)
 dev.off()
 }
 ################################################################################
-aip_incompat <- find.marker(cross,2,80.59)
-arnt_incompat <- find.marker(cross,13,39.42)
-
-
-### SINGLE
-##sapply(markers,single,pop = 'NBH')
-##sapply(mark, single, pop = 'ELR')
-single(loc_a,pop = 'ELR')
-single(loc_b,pop = 'ELR')
-
-loc_a <- find.marker(cross,2,80.59)
-loc_b <- find.marker(cross,13,39.42)
-
-intxs.bin(loc_a,loc_b, popchr = 'popchr',locbN = 'locbN', main = 'main')
-
-
-###########
-(file.path(mpath,paste0(pop,'_scan2_normal_em.rsave')))
-summary(bin.em.2, thresholds=c(0, Inf, 9.1, Inf, Inf), what="int")

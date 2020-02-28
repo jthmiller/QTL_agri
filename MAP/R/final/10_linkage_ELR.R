@@ -6,7 +6,8 @@ library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
-################################################################################
+### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
+load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ################################################################################
 
@@ -45,8 +46,12 @@ gt_gt <- cbind(rep(gtf,3),c(rep('AA',3),rep('AB',3),rep('BB',3)))
 gt_names <- paste0(gt_gt[,1],gt_gt[,2])
 gt_probs <- setNames(tr.table[gt_gt], gt_names)
 
-rf.gts <- pull.geno(rf)
+gtf_mod <- c('AA','AB','BB')
+gt_names_mod <- c('AAAA','AABB','BBAA','BBBB')
+gt_prob_mod <- setNames(c(0.25,0.25,0.25,0.25),gt_names_mod)
 
+################################################################################
+################################################################################
 csq <- function(mara, marb) {
  test <- factor(paste0(factor(mara, labels = gtf), factor(marb, labels = gtf)), levels = gt_names)
  chisq.test(table(test), p = gt_probs)$p.value
@@ -54,7 +59,35 @@ csq <- function(mara, marb) {
 
 csq.each <- function(X){ apply(rf.gts, 2, csq, marb = X) }
 
-### WITH PARALLEL #########################################
+################################################################################
+################################################################################
+
+csq_mod <- function(mara, marb) {
+ test <- factor(paste0(factor(mara, labels = gtf_mod), factor(marb, labels = gtf_mod)), levels = gt_names_mod)
+ chisq.test(table(test), p = gt_prob_mod)$p.value
+}
+
+csq_mod.each <- function(X){ apply(rf.gts, 2, csq_mod, marb = X) }
+################################################################################
+################################################################################
+
+rf.gts <- pull.geno(rf)
+
+### HOMOZYGOTE DISTORTION
+cores <- 20
+library(doParallel)
+cl <- makeCluster(cores)
+registerDoParallel(cl)
+csq_mod.pval  <- foreach(marb = iter(rf.gts, by='column'), .inorder = F, .packages = libs2load) %dopar% csq_mod.each(marb)
+csq_mod.pval <- do.call(rbind,csq_mod.pval)
+colnames(csq_mod.pval) <- rownames(csq_mod.pval) <- colnames(rf.gts)
+csq_mod.pval.bk <- csq_mod.pval
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
+################################################################################
+
+### TWO-LOCUS DISTORTION
 #cores <- as.numeric(commandArgs(TRUE)[2])
 cores <- 20
 library(doParallel)
@@ -66,6 +99,11 @@ colnames(csq.pval) <- rownames(csq.pval) <- colnames(rf.gts)
 csq.pval.bk <- csq.pval
 #############################################################
 
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
+################################################################################
+
+################################################################################
 rf.plots <- rf
 
 ## Set within chromosomes to zero #####
@@ -74,87 +112,9 @@ for (i in chrnames(cross)){
  csq.pval[mars,mars] <- NA
  rf.plots$rf[mars,mars] <- NA
 }
-
-save.image(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
 ################################################################################
 
-
-mara <- '2:28101458'
-marb <- '13:1369425'
-
-mara <- rf.gts[,'2:28101458']
-marb <- rf.gts[,'13:1369425']
-
 ################################################################################
-gtf_mod <- c('AA','BB')
-gt_names_mod <- c('AAAA','AABB','BBAA','BBBB')
-gt_prob_mod <- setNames(c(0.25,0.25,0.25,0.25),homsz)
-
-csq_mod <- function(mara, marb) {
- test <- factor(paste0(factor(mara, labels = gtf_mod), factor(marb, labels = gtf_mod)), levels = gt_names_mod)
- chisq.test(table(test), p = gt_probs)$p.value
-}
-################################################################################
-
-
-
-
-
-
-
-### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
-load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
-
-
-
-
-
-
-
-
-
-
-plot_test('sdf')
-plot(bin.mr.2)
-dev.off()
-
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
- col.scheme = c("viridis", "redblue","cm","gray","heat","terrain","topo")
-
-
-plot_test('sdf', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "redblue", contours=T, gamma=0.8)
-dev.off()
-
-
-
-plot_test('gray', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "gray", contours=T)
-dev.off()
-
-plot_test('heat', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "heat", contours=T)
-dev.off()
-
-plot_test('terrain', width = 1000, height = 1000)
- plot(norm.em.2, zlim = c(20,10), col.scheme = "terrain", contours=T)
-dev.off()
-
-plot_test('topo', width = 1000, height = 1000)
- plot(norm.em.2, zmax = c(25,14), col.scheme = "topo", contours=T)
-dev.off()
-
-
-
-summary(bin.em.2, thresholds=c(0, Inf, 5.5, Inf, Inf), what="int")
-
-
-########################################
 ### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR
 maxdist <- lapply(chrnames(cross), function(i) {
   mars <- markernames(rf, i)
@@ -170,11 +130,40 @@ maxdist <- data.frame(maxdist, stringsAsFactors = F)
 ##rownames(maxdist)  <- as.character(unique(bin.em.2$map$chr))
 ######################################################################
 
+### TABLE OF THE HIGHEST HOMOZYGOTE LOD SCORES OF LINKAGE FOR EACH CHR
+maxdist_mod <- lapply(chrnames(cross)[-17], function(i) {
+  mars <- markernames(rf, i)
+  a <- which(csq_mod.pval.bk[mars,] == min(csq_mod.pval.bk[mars,], na.rm = T), arr.ind=T)
+  b <- markernames(rf)[a[,'col']][1]
+  a <- rownames(a)[1]
+  cbind(a, b, -log10(csq_mod.pval.bk[cbind(a,b)]))
+})
+maxdist_mod <- do.call(rbind,maxdist_mod)
+maxdist_mod <- maxdist_mod[order(as.numeric(maxdist_mod[,3])),]
+maxdist_mod <- data.frame(maxdist_mod, stringsAsFactors = F)
+######################################################################
+
+
 ##### HEATMAP ######################################################################
 csq.pval.hm <- data.matrix(-log10(csq.pval))
 plot_test('heatmap_dist_elr',height=3000,width=3000)
 heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
 dev.off()
+######################################################################
+
+##### HEATMAP ######################################################################
+csq_mod.pval.hm <- data.matrix(-log10(csq_mod.pval))
+plot_test('heatmap_dist_homz_elr',height=3000,width=3000)
+heatmap(csq_mod.pval.hm, scale="column")
+dev.off()
+######################################################################
+
+##### HEATMAP ######################################################################
+csq.pval.hm <- data.matrix(-log10(csq.pval.2))
+plot_test('heatmap_dist_elr',height=3000,width=3000)
+heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
+dev.off()
+######################################################################
 ######################################################################
 
 ######################################################################
@@ -199,11 +188,6 @@ maxdist2 <- do.call(rbind,maxdist2)
 maxdist2 <- maxdist2[order(as.numeric(maxdist2[,3])),]
 maxdist2 <- data.frame(maxdist2, stringsAsFactors = F)
 
-##### HEATMAP ######################################################################
-csq.pval.hm <- data.matrix(-log10(csq.pval.2))
-plot_test('heatmap_dist_elr',height=3000,width=3000)
-heatmap(csq.pval.hm, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column")
-dev.off()
 ######################################################################
 ######################################################################
 

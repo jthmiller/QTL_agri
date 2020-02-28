@@ -25,9 +25,13 @@ cross <- read.cross(
 
 ## chr10 0 0 arntl
 
+### IN FILTERED DATA, jumps right over aip
+2:27374287   2       4 26  1  1      0      0 1.157103e-15
+2:27600770   2       1 29  1  1      0      0 1.335236e-17
 
 
 
+mpath <- '/home/jmiller1/QTL_agri/data'
 
 ###############
 AHR.bed <- read.table(file.path(mpath,"lift_AHR_genes.bed"), stringsAsFactors = F, header = F)
