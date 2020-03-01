@@ -1,5 +1,5 @@
 #!/bin/R
-pop <- 'ELR'
+#pop <- 'ELR'
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
@@ -11,6 +11,7 @@ cores <- 20
 pop <- 'NBH'
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
+ahr_genes <- get_AHR(cross)
 
 #### NBH INTERACTIONS ###########################################################
 ## summary(norm.em.2, thresholds=c(0, Inf, 6, Inf, Inf), what="int")

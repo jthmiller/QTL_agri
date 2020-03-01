@@ -70,15 +70,8 @@ csq_mod.each <- function(X){ apply(rf.gts, 2, csq_mod, marb = X) }
 ################################################################################
 ################################################################################
 
-#### RCOMBINATION FREQUENCY####################################################
-rf.plots <- rf
-## Set within chromosomes to zero #####
-for (i in chrnames(cross)){
- mars <- markernames(rf, i)
- rf.plots$rf[mars,mars] <- NA
-}
 
-rf.gts <- pull.geno(rf)
+rf.gts <- pull.geno(cross)
 ################################################################################
 
 ################################################################################
@@ -105,7 +98,7 @@ for (i in chrnames(cross)){
 ################################################################################
 ### TWO-LOCUS DISTORTION
 #cores <- as.numeric(commandArgs(TRUE)[2])
-cores <- 20
+cores <- 10
 library(doParallel)
 cl <- makeCluster(cores)
 registerDoParallel(cl)
@@ -124,6 +117,13 @@ for (i in chrnames(cross)){
 ################################################################################
 ################################################################################
 ################################################################################
+#### RCOMBINATION FREQUENCY####################################################
+rf.plots <- rf
+## Set within chromosomes to zero #####
+for (i in chrnames(cross)){
+ mars <- markernames(rf, i)
+ rf.plots$rf[mars,mars] <- NA
+}
 
 
 ################################################################################

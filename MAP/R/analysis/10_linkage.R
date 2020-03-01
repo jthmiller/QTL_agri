@@ -1,7 +1,7 @@
 #!/bin/R
 mpath <- '/home/jmiller1/QTL_agri/data'
-pop <- 'NBH'
-pop <- 'ELR'
+#pop <- 'NBH'
+#pop <- 'ELR'
 library('qtl')
 library('snow')
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
@@ -11,10 +11,6 @@ load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
 load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 ################################################################################
-
-fl <- "NBH_5755_imputed_NW_tsp.csv"
-cross <- read.cross(file=fl , format = "csv", dir=mpath,
- genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
 attr(cross$geno[["5"]], 'class') <- 'A'

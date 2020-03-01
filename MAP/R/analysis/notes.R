@@ -277,6 +277,11 @@ WIDE: 1,2,5,8,14,16,22
 ### NBH (18 does NOT appear to interact with 15
 ###
 
+
+Is the distortion between 2 and 22 at hsp?
+
+csq.pval[,which(markernames(cross)=='22:19589026')]
+
 ################################################################################
 ### NOTES FROM FIGURES (SEGDIST)
 ### ELR
@@ -301,7 +306,7 @@ CHR17 - None
 CHR19 - NONE
 CHR20 - FNS outlier (no div change) at 34 MB
 CHR21 - NONE - Possible FNS
-**CHR22 - Wide D/F/FNS outlier at 19 MB
+**CHR22 - Wide D/F/FNS outlier at 19 MB (LIKELY HSP)
 CHR23 - FNS outlier at 3 MB, Deletion? at 24 MB
 CHR24 - NONE
 

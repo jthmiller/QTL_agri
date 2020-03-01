@@ -7,15 +7,13 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 library(circlize)
 
 load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
-load(file.path(mpath,paste0(pop,'_scan2_normal_mr.rsave')))
-load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
-load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+
+#load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
 ###############
-ahr_genes <- get_AHR(rf)
+ahr_genes <- get_AHR(cross)
 gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
 ###############
-
 
 ###############
 map <- map2table(pull.map(cross))
@@ -23,50 +21,36 @@ mars <- grep('NW',markernames(cross), invert=T,value=T)
 ###############
 
 ###############
-cross <- est.rf(cross)
-save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
+#cross <- est.rf(cross)
 ###############
 
+###############
 lod <- pull.rf(cross, what='lod')
-lod <- matrix(lod, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
 lod <- lod[mars,mars]
-
-rf <- pull.rf(cross)
-rf <- matrix(rf, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
-rf <- rf[mars,mars]
+lod <- data.matrix(lod)
+###############
 
 ###############
-mar.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
-mat.names <- matrix(mars, nrow = dim(rf.df)[1], ncol = dim(rf.df)[2])
+rf <- pull.rf(cross)
+rf <- rf[mars,mars]
+rf <- data.matrix(rf)
+###############
+
+###############
+mar.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
+mat.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
 mat.names <- gsub(":.*","",mat.names)
 ###############
 
-###############
-lod_ab <- pull.rf(rf, what='lod')
-lod_ab <- matrix(lod.df, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
-rownames(lod_ab) <- markernames(rf)
-colnames(lod_ab) <- markernames(rf)
-
-#mat = lod.df
-#mat <- mat[mars,mars]
-#diag(mat) = 0
-#mat[lower.tri(mat)] = 0
-#n = nrow(mat)
-#rn = rownames(mat)
-#
-#diag(mat.names) = 0
-#mat.names[lower.tri(mat.names)] = 0
-#n = nrow(mat.names)
-#
-#rownames(mat.names) <- rownames(mat)
-#colnames(mat.names) <- rownames(mat)
-#rn = rownames(mat.names)
-###############
 
 ###############
-s1 <- scanone(rf,pheno.col=4, model="binary", method="mr")
-s1l <- matrix(s1$lod, nrow = sum(nmar(rf)), ncol = sum(nmar(rf)))
-s1l[lower.tri(s1l, diag = T)] <- NA
+s1 <- scanone(cross, pheno.col=5, model="normal", method="mr")
+s1 <- s1[mars,'lod']
+
+s1 <- matrix(s1, nrow = length(mars), ncol = length(mars))
+rownames(s1) <- colnames(s1) <- mars
+
+#s1l[lower.tri(s1l, diag = T)] <- NA
 ###############
 
 ###############
@@ -75,23 +59,28 @@ s1l[lower.tri(s1l, diag = T)] <- NA
 #diag(lod_phen) = 0
 #lod_phen[lower.tri(lod_phen)] = 0
 
-lod_phen <- matrix(norm.mr.2$lod, nrow = sum(nmar(cross)), ncol = sum(nmar(cross)))
+load(file.path(mpath,paste0(pop,'_scan2_normal_mr.rsave')))
+
+lod_phen <- data.matrix(norm.mr.2$lod)
 rownames(lod_phen) <- markernames(cross)
 colnames(lod_phen) <- markernames(cross)
+lod_phen <- lod_phen[mars,mars]
+lod_phen <- data.matrix(lod_phen)
 
 ###########################################################################
 
+load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
+
 lod_hom <- data.matrix(-log10(csq_mod.pval[mars,mars]))
 lod_inc <- data.matrix(-log10(csq.pval[mars,mars]))
-lod_phen <- data.matrix(lod_phen[mars,mars])
-lod_ab <- data.matrix(lod_ab[mars,mars])
-rf.df <- data.matrix(rf.df[mars,mars])
+###########################################################################
 
-ab <- lod_ab[cbind(mar_a, mar_b), drop = T]
+ab <- lod[cbind(mar_a, mar_b), drop = T]
 phen <- lod_phen[cbind( mar_a, mar_b), drop = T]
 rfs <- rf.df[cbind( mar_a, mar_b), drop = T]
 homz <- lod_hom[cbind( mar_a, mar_b), drop = T]
 inco <- lod_inc[cbind(mar_a, mar_b), drop = T]
+s1 <- s1[cbind(mar_a, mar_b), drop = T]
 
 
 chr_a <- map[mar_a, c('chr','pos')]
@@ -99,7 +88,7 @@ chr_b <- map[mar_b, c('chr','pos')]
 
 ##links <- data.frame(cbind(chr_a,chr_b,lod_ab,lod_p,rfs),stringsAsFactors=F)
 
-links <- data.frame(cbind(chr_a,chr_b,ab,rfs,homz,inco,phen),stringsAsFactors=F)
+links <- data.frame(cbind(chr_a,chr_b,ab,rfs,homz,inco,phen,s1),stringsAsFactors=F)
 
 ###########################################################################
 ##save.image(file.path(mpath,paste0(pop,'_circos_wo_Coef.rsave')))
@@ -107,7 +96,6 @@ save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
 ###########################################################################
 ###########################################################################
 ###########################################################################
-
 ################################################################################
 
 pc <- function(links){
@@ -172,55 +160,88 @@ lod_hom[lower.tri(lod_hom, diag = T)] <- NA
 lod_inc[lower.tri(lod_inc, diag = T)] <- NA
 rfs[lower.tri(rfs, diag = T)] <- NA
 lod_phen[lower.tri(lod_phen, diag = T)] <- NA
-lod_ab[lower.tri(lod_ab, diag = T)] <- NA
+lod[lower.tri(lod, diag = T)] <- NA
 rf.df[lower.tri(rf.df, diag = T)] <- NA
+s1[lower.tri(s1, diag = T)] <- NA
 
-hoz <- quantile(lod_hom, 0.999, na.rm=T)
-inc <- quantile(lod_inc, 0.999, na.rm=T)
-rfq <- quantile(rfs, 0.9999, na.rm=T)
-phe <- quantile(lod_phen, 0.9999, na.rm=T)
-abq <- quantile(lod_ab, 0.9999, na.rm=T)
+hoz <- quantile(lod_hom, 0.9999, na.rm=T)
+inc <- quantile(lod_inc, 0.9999, na.rm=T)
+rfq <- quantile(rfs, 0.999, na.rm=T)
+phe <- quantile(lod_phen, 0.999, na.rm=T)
+abq <- quantile(lod_ab, 0.999, na.rm=T)
 
+################################################################################
+################################################################################
+################################################################################
 
-toplot <- links[which(links$lod_homz > hz | links$lod_inco > hi),]
+lod_gtl <- which(links$s1 > 4)
+linked <- which(links$homz > hoz | links$inco > inc)
+ind <- intersect(lod_gtl,linked)
+toplot <- links[ind,]
 dim(toplot)
+
+################################################################################
+
 plot_test(paste0(pop,'circ_incompat'))
 pc(toplot)
 dev.off()
 
+################################################################################
+################################################################################
 
-geno.crosstab(cross, '1:291287','19:38646154')
+lod_gtl <- which(links$phen > 10)
+linked <- which(links$homz > hoz | links$inco > inc)
+ind <- intersect(lod_gtl,linked)
+toplot <- links[ind,]
+dim(toplot)
 
+################################################################################
 
-lp <- quantile(links$lod_p, 0.85,na.rm=T)
-hab <- quantile(links$lod_ab, 0.9999,na.rm=T)
-low_p <- links[which(links$lod_p < lp & links$lod_ab > hab),]
-plot_test(paste0(pop,'circ_low_p_hi_ab'))
-pc(low_p)
+plot_test(paste0(pop,'circ_incompat'))
+pc(toplot)
 dev.off()
 
-hp <- quantile(links$lod_p, 0.98,na.rm=T)
-hab <- quantile(links$lod_ab, 0.98,na.rm=T)
-hi_p <- links[which(links$lod_p > hp & links$lod_ab > hab),]
-plot_test(paste0(pop,'_circ_hi_p_hi_ab_98'))
-pc(hi_p)
-dev.off()
+################################################################################
+################################################################################
 
-hrf <- quantile(links$rfs, 0.9999,na.rm=T)
-lrf <- quantile(links$rfs, 0.0001,na.rm=T)
-hp <- quantile(links$lod_p, 0.85,na.rm=T)
-hilo_rf <- links[which(links$lod_p > hp & links$rfs < lrf | links$lod_p > hp & links$rfs > hrf),]
-plot_test(paste0(pop,'circ_hilo_rf_med_dp'))
-pc(hilo_rf)
-dev.off()
 
-mhrf <- quantile(links$rfs, 0.99,na.rm=T)
-mlrf <- quantile(links$rfs, 0.01,na.rm=T)
-hp <- quantile(links$lod_p, 0.99,na.rm=T)
-hi_p <- links[which(links$lod_p > hp & links$rfs > mhrf | links$lod_p > hp & links$rfs < mlrf ),]
-plot_test(paste0(pop,'circ_hi_rf_hi_p'))
-pc(hi_p)
-dev.off()
+which(toplot$chr.1 == 15)
+
+##### INCOMPATABILITY WITH CYP IN NBH TOO?
+a <- find.marker(cross,15,6.562248)
+b <- '2:21870833'
+          2:21870833
+15:3296707  - AA AB BB
+        -   0  0  0  0
+        AA  0 11 18  1
+        AB  0 10 14 12
+        BB  0 13  2 11
+
+a <- '15:4060195'
+
+### INCOMPAT WITH
+a <- find.marker(cross,14,63.452152)
+b <- '2:24377353'
+
+
+
+
+a <- links[which.max(links$inco),]
+b <- find.marker(cross,a$chr.1,a$pos.1)
+a <- find.marker(cross,a$chr,a$pos)
+geno.crosstab(cross,a,b)
+
+
+links[which.max(links$phen),]
+
+a <- links[which.max(links$homz),]
+a <- find.marker(cross,a$chr.1,a$pos.1)
+geno.crosstab(cross, '1:291287',"24:23237312")
+### LOD 4
+
+
+
+
 
 ################################################################################
 
