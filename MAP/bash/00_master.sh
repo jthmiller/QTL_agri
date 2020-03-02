@@ -69,8 +69,8 @@ sbatch -J "NBH_SWBH" $bashsc/04c_bin_hk_step.sh 'NBH' 22 22
 
 ### BIN HK STEPWISE QTL
 bashsc="$HOME/QTL_agri/MAP/bash/"
-sbatch -J "NBH_SWBH" $bashsc/10_linkage.sh 'NBH' 22
-
+sbatch -J "NBH_link" $bashsc/10_linkage.sh 'NBH' 22
+sbatch -J "ELR_link" $bashsc/10_linkage.sh 'ELR' 22
 #################################################################################
 
 #################################################################################
