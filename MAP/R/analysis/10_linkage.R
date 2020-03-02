@@ -6,6 +6,8 @@ library('snow')
 cores <- as.numeric(commandArgs(TRUE)[3])
 pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
 
+print(commandArgs(TRUE))
+
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
 ################################################################################
