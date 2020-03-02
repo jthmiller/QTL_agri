@@ -9,7 +9,7 @@ source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 ################################################################################
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ### HEATMAP WITH INTERACTION LOD AND TWO_LOCUS SEG DISTORTION
-load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
+##load(file.path(mpath,paste0(pop,'_scan2_bin_mr.rsave')))
 ################################################################################
 
 names(cross$geno) <- ifelse(names(cross$geno) == "X","5",names(cross$geno))
@@ -52,6 +52,8 @@ gtf_mod <- c('AA','AB','BB')
 gt_names_mod <- c('AAAA','AABB','BBAA','BBBB')
 gt_prob_mod <- setNames(c(0.25,0.25,0.25,0.25),gt_names_mod)
 
+rf.gts <- pull.geno(rf)
+
 ################################################################################
 ################################################################################
 
@@ -73,8 +75,6 @@ csq_mod <- function(mara, marb) {
 csq_mod.each <- function(X){ apply(rf.gts, 2, csq_mod, marb = X) }
 ################################################################################
 ################################################################################
-
-rf.gts <- pull.geno(rf)
 
 ### WITH PARALLEL #########################################
 #cores <- as.numeric(commandArgs(TRUE)[2])
@@ -117,7 +117,11 @@ for (i in chrnames(cross)){
  csq_mod.pval[mars,mars] <- NA
 }
 
-##lower.tri(csq_mod.pval, diag = T) <- NA
+mf1 <- file.path(mpath,paste0(pop,'_csq.pval.tsv'))
+write.table(csq.pval,mf1)
+
+mf2 <- file.path(mpath,paste0(pop,'_csq_mod.pval.tsv'))
+write.table(csq_mod.pval,mf2)
 
 ########################################
 ### TABLE OF THE HIGHEST LOD SCORES OF LINKAGE FOR EACH CHR

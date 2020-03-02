@@ -4,47 +4,70 @@ library(circlize)
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 
-library(circlize)
 
-load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
-
+###########################################################################
 #load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
+cross1 <- est.rf(cross)
+
+rf <- pull.rf(cross1)
+lod <- pull.rf(cross1, what='lod')
+
+mf1 <- file.path(mpath,paste0(pop,'_rf.tsv'))
+write.table(rf,mf1)
+
+mf2 <- file.path(mpath,paste0(pop,'_lod.tsv'))
+write.table(lod,mf2)
+
+test <- read.table(mf1)
+
+###########################################################################
 
 ###############
-ahr_genes <- get_AHR(cross)
-gens <- cnv.ahrs(rf, AHRdf = AHR.bed, EXP = F)
+ahr_genes <- get_AHR(cross1)
 ###############
 
 ###############
-map <- map2table(pull.map(cross))
-mars <- grep('NW',markernames(cross), invert=T,value=T)
+map <- map2table(pull.map(cross1))
+mars <- grep('NW',markernames(cross1), invert=T,value=T)
 ###############
 
 ###############
-#cross <- est.rf(cross)
+mat <- rf
+mat <- mat[mars,mars]
+diag(mat) = 0
+
+#mat[lower.tri(mat)] = 0
+n = nrow(mat)
+rn = rownames(mat)
 ###############
 
+mar.names <- matrix(mars, nrow = length(mars), ncol = length(mars))
+mat.names <- matrix(mars, nrow = length(mars), ncol = length(mars))
+##mar.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
+##mat.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
+mat.names <- gsub(":.*","",mat.names)
+
+diag(mat.names) = 0
+mat.names[lower.tri(mat.names)] = 0
+n = nrow(mat.names)
+
+rownames(mat.names) <- rownames(mat)
+colnames(mat.names) <- rownames(mat)
+rn = rownames(mat.names)
+
+mar_b <- colnames(mat)
+mar_a <- rownames(mat)
+
 ###############
-lod <- pull.rf(cross, what='lod')
 lod <- lod[mars,mars]
 lod <- data.matrix(lod)
-###############
-
-###############
-rf <- pull.rf(cross)
 rf <- rf[mars,mars]
 rf <- data.matrix(rf)
 ###############
 
 ###############
-mar.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
-mat.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
-mat.names <- gsub(":.*","",mat.names)
-###############
-
-
-###############
-s1 <- scanone(cross, pheno.col=5, model="normal", method="mr")
+s1 <- scanone(cross1, pheno.col=5, model="normal", method="mr")
 s1 <- s1[mars,'lod']
 
 s1 <- matrix(s1, nrow = length(mars), ncol = length(mars))
@@ -59,11 +82,11 @@ rownames(s1) <- colnames(s1) <- mars
 #diag(lod_phen) = 0
 #lod_phen[lower.tri(lod_phen)] = 0
 
-load(file.path(mpath,paste0(pop,'_scan2_normal_mr.rsave')))
+#load(file.path(mpath,paste0(pop,'_scan2_normal_mr.rsave')))
 
 lod_phen <- data.matrix(norm.mr.2$lod)
-rownames(lod_phen) <- markernames(cross)
-colnames(lod_phen) <- markernames(cross)
+rownames(lod_phen) <- markernames(cross1)
+colnames(lod_phen) <- markernames(cross1)
 lod_phen <- lod_phen[mars,mars]
 lod_phen <- data.matrix(lod_phen)
 
@@ -73,7 +96,19 @@ load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
 
 lod_hom <- data.matrix(-log10(csq_mod.pval[mars,mars]))
 lod_inc <- data.matrix(-log10(csq.pval[mars,mars]))
+
 ###########################################################################
+
+
+
+ab <- lod
+phen <- lod_phen
+rfs <- rf.df
+homz <- lod_hom
+inco <- lod_inc
+s1 <- s1
+
+
 
 ab <- lod[cbind(mar_a, mar_b), drop = T]
 phen <- lod_phen[cbind( mar_a, mar_b), drop = T]
@@ -82,13 +117,14 @@ homz <- lod_hom[cbind( mar_a, mar_b), drop = T]
 inco <- lod_inc[cbind(mar_a, mar_b), drop = T]
 s1 <- s1[cbind(mar_a, mar_b), drop = T]
 
-
 chr_a <- map[mar_a, c('chr','pos')]
 chr_b <- map[mar_b, c('chr','pos')]
 
 ##links <- data.frame(cbind(chr_a,chr_b,lod_ab,lod_p,rfs),stringsAsFactors=F)
 
 links <- data.frame(cbind(chr_a,chr_b,ab,rfs,homz,inco,phen,s1),stringsAsFactors=F)
+
+try <- data.frame(cbind(lod,rf))
 
 ###########################################################################
 ##save.image(file.path(mpath,paste0(pop,'_circos_wo_Coef.rsave')))
@@ -117,42 +153,13 @@ for(i in 1:length(links[,1])){
 ################################################################################
 
 
-make_lodrf_tables <- function(X,Y,Z){
- df <- Y[which(Y[,1] == X | Y[,3] == X),]
- ch <- unique(c(df[,1],df[,3]))
-
- xmax <- lapply(ch, function(chx){
-   z <- which.max(df[which(df[,1] == chx | df[,3] == chx),][,Z])
-   df[which(df[,1] == chx | df[,3] == chx),][z,]
-  })
- xmax <- data.frame(do.call(rbind,xmax))
- ##ind <- order(xmin[,Z])
- ##print(head(xmin))
- xmax <- xmax[order(xmax[,Z],decreasing = T),]
-
-
- xmin <- lapply(ch, function(chx){
-   z <- which.min(df[which(df[,1] == chx | df[,3] == chx),][,Z])
-   df[which(df[,1] == chx | df[,3] == chx),][z,]
-  })
- xmin <- data.frame(do.call(rbind,xmin))
- ##ind <- order(xmin[,Z])
- ##print(order(xmin[,Z]))
- xmin <- xmin[order(xmin[,Z]),]
-
- list(xmin=xmin,xmax=xmax)
-
-}
 chroms <- unique(c(as.character(links[,1]),as.character(links[,3])))
 ab_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_ab')
 p_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_p')
 rf_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'rfs')
 hom_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_homz')
 dist_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_inco')
-
-
 names(ab_tables) <- names(p_tables) <- names(rf_tables) <- chroms
-
 
 ################################################################################
 
@@ -172,6 +179,9 @@ abq <- quantile(lod_ab, 0.999, na.rm=T)
 
 ################################################################################
 ################################################################################
+
+load(file.path(mpath,paste0(pop,'_circos.rsave')))
+
 ################################################################################
 
 lod_gtl <- which(links$s1 > 4)
@@ -241,7 +251,38 @@ geno.crosstab(cross, '1:291287',"24:23237312")
 
 
 
+################################################################################
 
+make_lodrf_tables <- function(X,Y,Z){
+ df <- Y[which(Y[,1] == X | Y[,3] == X),]
+ ch <- unique(c(df[,1],df[,3]))
+
+ xmax <- lapply(ch, function(chx){
+   z <- which.max(df[which(df[,1] == chx | df[,3] == chx),][,Z])
+   df[which(df[,1] == chx | df[,3] == chx),][z,]
+  })
+ xmax <- data.frame(do.call(rbind,xmax))
+ ##ind <- order(xmin[,Z])
+ ##print(head(xmin))
+ xmax <- xmax[order(xmax[,Z],decreasing = T),]
+
+
+ xmin <- lapply(ch, function(chx){
+   z <- which.min(df[which(df[,1] == chx | df[,3] == chx),][,Z])
+   df[which(df[,1] == chx | df[,3] == chx),][z,]
+  })
+ xmin <- data.frame(do.call(rbind,xmin))
+ ##ind <- order(xmin[,Z])
+ ##print(order(xmin[,Z]))
+ xmin <- xmin[order(xmin[,Z]),]
+
+ list(xmin=xmin,xmax=xmax)
+
+}
+
+################################################################################
+################################################################################
+################################################################################
 
 ################################################################################
 

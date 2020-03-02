@@ -7,10 +7,6 @@ mpath <- '/home/jmiller1/QTL_agri/data'
 cores <- 6
 ################################################################################
 fl <- "NBH_5755_imputed_NW_tsp.csv"
-
-fl <- "NBH_4822_imputed_high_confidence_tsp_mapped.csv"
-
-fl <- "NBH_8498_imputed_high_confidence_tsp_mapped.csv"
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 cross$pheno <- as.data.frame(cross$pheno)
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
@@ -23,12 +19,11 @@ cross$pheno$pheno_norm <- nqrank(cross$pheno$Pheno)
 error <- 0.001
 cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", stepwidth="fixed")
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
+cross <- est.rf(cross, maxit=100, tol=1e-6)
+
+save.image(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
 ################################################################################
-
-
-
-
 
 
 
