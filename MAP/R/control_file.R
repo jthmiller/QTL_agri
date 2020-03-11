@@ -1,5 +1,4 @@
 ## Directories
-basedir <- "/home/jmiller1/QTL_agri"
 plotdir <- file.path(basedir, "rQTL/plots")
 indpops <- file.path(basedir, "plinkfiles/ind.pops")
 popdir <- file.path(basedir, "rQTL", pop, "REMAPS")

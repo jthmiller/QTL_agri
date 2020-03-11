@@ -168,3 +168,10 @@ pdf(paste0("/home/jmiller1/public_html/",popchr,".pdf"), width=10)
 dev.off()
 }
 ################################################################################
+
+elr_qtl18 <- find.marker(cross,18,74.7)
+elr_qtl15 <- find.marker(cross,15,8.82)
+
+intxs.bin(elr_qtl18,elr_qtl15,  popchr = "18v15", locbN = 'AHR Genotype', main = 'AHR x CYP')
+single(elr_qtl18, pop = 'ELR')
+single(elr_qtl15, pop = 'ELR')

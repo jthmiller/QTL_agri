@@ -301,6 +301,12 @@ movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
 move <- read.table(movefl, stringsAsFactors = F, header=T, sep = " ")
 move <- move[which(move$nw_marks_assign %in% markernames(cross)),]
 
+a <- c('NW_012224817.1','NW_012225741.1','NW_012224621.1')
+try[which(move$nw_old %in% a),]
+
+
+
+
 ### ASSIGN UNMAPPED MARKERS
 for (i in 1:length(move[,1])){
  cross <<- movemarker(cross, marker = move[i,'nw_marks_assign'], newchr = move[i,'nw_ch'], newpos = as.numeric(move[i,'nw_pos']))

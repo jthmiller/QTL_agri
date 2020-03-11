@@ -145,6 +145,8 @@ plogen_data <- function(...){
  if(pop == 'NBH') pops <- 'NBH'
  cross.popgen <- read.table(file.path(mpath,paste0("outliers",pops,".txt.ncbi.lifted")), sep = "\t", header = T)
 
+
+
  ################################################################################
  ### Use nbh coords but elr and new popgen
 

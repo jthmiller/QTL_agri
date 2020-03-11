@@ -1,217 +1,429 @@
 #load(file.path(mpath,paste0(pop,'_scan2_bin_em.rsave')))
+pop <- 'NBH'
+pop <- 'ELR'
+
 library('qtl')
 library(circlize)
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 
+###################
+load(file.path(mpath,paste0(pop,'_circos.rsave')))
+###################
 
-###########################################################################
-#load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
-load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
-cross1 <- est.rf(cross)
+inc200 <- top_links(links2 = links_ord,n = 200, col = 'lod_inc')
+lod200 <- top_links(links2 = links_ord,n = 200, col = 'lod')
+hom200 <- top_links(links2 = links_ord,n = 200, col = 'lod_hom')
+phen5 <- top_links(links2 = links_ord,n = 5, col = 'lod_phen')
+s300 <- top_links(links2 = links_ord,n = 300, col = 's1')
+rf300 <- top_links(links2 = links_ord,n = 300, col = 'rf')
 
-rf <- pull.rf(cross1)
-lod <- pull.rf(cross1, what='lod')
-
-mf1 <- file.path(mpath,paste0(pop,'_rf.tsv'))
-write.table(rf,mf1)
-
-mf2 <- file.path(mpath,paste0(pop,'_lod.tsv'))
-write.table(lod,mf2)
-
-test <- read.table(mf1)
-
-###########################################################################
-
-###############
-ahr_genes <- get_AHR(cross1)
-###############
-
-###############
-map <- map2table(pull.map(cross1))
-mars <- grep('NW',markernames(cross1), invert=T,value=T)
-###############
-
-###############
-mat <- rf
-mat <- mat[mars,mars]
-diag(mat) = 0
-
-#mat[lower.tri(mat)] = 0
-n = nrow(mat)
-rn = rownames(mat)
-###############
-
-mar.names <- matrix(mars, nrow = length(mars), ncol = length(mars))
-mat.names <- matrix(mars, nrow = length(mars), ncol = length(mars))
-##mar.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
-##mat.names <- matrix(mars, nrow = dim(rf)[1], ncol = dim(rf)[2])
-mat.names <- gsub(":.*","",mat.names)
-
-diag(mat.names) = 0
-mat.names[lower.tri(mat.names)] = 0
-n = nrow(mat.names)
-
-rownames(mat.names) <- rownames(mat)
-colnames(mat.names) <- rownames(mat)
-rn = rownames(mat.names)
-
-mar_b <- colnames(mat)
-mar_a <- rownames(mat)
-
-###############
-lod <- lod[mars,mars]
-lod <- data.matrix(lod)
-rf <- rf[mars,mars]
-rf <- data.matrix(rf)
-###############
-
-###############
-s1 <- scanone(cross1, pheno.col=5, model="normal", method="mr")
-s1 <- s1[mars,'lod']
-
-s1 <- matrix(s1, nrow = length(mars), ncol = length(mars))
-rownames(s1) <- colnames(s1) <- mars
-
-#s1l[lower.tri(s1l, diag = T)] <- NA
-###############
-
-###############
-#lod_phen <- norm.mr.2$lod
-#lod_phen[lower.tri(lod_phen, diag = T)] <- NA
-#diag(lod_phen) = 0
-#lod_phen[lower.tri(lod_phen)] = 0
-
-#load(file.path(mpath,paste0(pop,'_scan2_normal_mr.rsave')))
-
-lod_phen <- data.matrix(norm.mr.2$lod)
-rownames(lod_phen) <- markernames(cross1)
-colnames(lod_phen) <- markernames(cross1)
-lod_phen <- lod_phen[mars,mars]
-lod_phen <- data.matrix(lod_phen)
-
-###########################################################################
-
-load(file.path(mpath,paste0(pop,'_csq_scan.rsave')))
-
-lod_hom <- data.matrix(-log10(csq_mod.pval[mars,mars]))
-lod_inc <- data.matrix(-log10(csq.pval[mars,mars]))
-
-###########################################################################
+inc5 <- top_links(links2 = links_ord,n = 5, col = 'lod_inc')
+hom5 <- top_links(links2 = links_ord,n = 5, col = 'lod_hom')
 
 
-
-ab <- lod
-phen <- lod_phen
-rfs <- rf.df
-homz <- lod_hom
-inco <- lod_inc
-s1 <- s1
-
-
-
-ab <- lod[cbind(mar_a, mar_b), drop = T]
-phen <- lod_phen[cbind( mar_a, mar_b), drop = T]
-rfs <- rf.df[cbind( mar_a, mar_b), drop = T]
-homz <- lod_hom[cbind( mar_a, mar_b), drop = T]
-inco <- lod_inc[cbind(mar_a, mar_b), drop = T]
-s1 <- s1[cbind(mar_a, mar_b), drop = T]
-
-chr_a <- map[mar_a, c('chr','pos')]
-chr_b <- map[mar_b, c('chr','pos')]
-
-##links <- data.frame(cbind(chr_a,chr_b,lod_ab,lod_p,rfs),stringsAsFactors=F)
-
-links <- data.frame(cbind(chr_a,chr_b,ab,rfs,homz,inco,phen,s1),stringsAsFactors=F)
-
-try <- data.frame(cbind(lod,rf))
-
-###########################################################################
-##save.image(file.path(mpath,paste0(pop,'_circos_wo_Coef.rsave')))
-save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
-###########################################################################
-###########################################################################
-###########################################################################
+top_links(links2 = links_ord,n = 10, col = 'lod_hom')
+top_links(links2 = links_ord,n = 10, col = 'lod_inc')
 ################################################################################
 
-pc <- function(links){
+
+
+
+################################################################################
+################################################################################
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'5:33290434','1:291287')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'5:33290434','1:291287')
+
+
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'1:857165','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'1:857165','24:23951185')
+
+geno.crosstab(cross1,'24:23951185','1:291287')
+geno.crosstab(cross1,'5:33290434','1:291287')
+geno.crosstab(cross1,'13:25406978','24:23951185')
+
+################################################################################
+################################################################################
+
+
+################################################################################
+################################################################################
+plot_test('dsf')
+effectplot(cross1,pheno.col=1,mname1='13:25406978',mname2='24:23951185')
+dev.off()
+
+plot_test('dsf2')
+plotPXG(cross1,pheno.col=1,'1:291287')
+dev.off()
+################################################################################
+################################################################################
+
+
+
+### SCANONE PLOTS ##############################################################
+cross1$pheno$homa <- pull.geno(cross1)[,'24:23951185']
+cross1$pheno$incb1 <- as.numeric(pull.geno(cross1)[,'1:291287'] == 1)
+cross1$pheno$incb2 <- as.numeric(pull.geno(cross1)[,'1:291287'] == 2)
+cross1$pheno$incb3 <- as.numeric(pull.geno(cross1)[,'1:291287'] == 3)
+cross1$pheno$inca <- pull.geno(cross1)[,'22:19409957']
+cross1$pheno$incb <- pull.geno(cross1)[,'2:31789344']
+
+### MAKE COVARIATES
+mar <- '1:291287'
+mar <- '2:31789344'
+mar <- '24:23951185'
+
+g.int <- pull.geno(fill.geno(cross1))[,mar]
+g.int <- data.frame(cbind(as.numeric(g.int == 1), as.numeric(g.int == 2)))
+
+sone.int1 <- scanone(cross1, pheno.col=1, model="normal", method="em")
+sone.int2 <- scanone(cross1, pheno.col=1, model="normal", method="em", intcovar = as.matrix(g.int))
+sone.int3 <- scanone(cross1, pheno.col=1, model="normal", method="em", addcovar = as.matrix(g.int))
+################################################################################
+
+
+chrs <- c(1:23)
+plot_test('segdist_s1_int',width=1000)
+plot(sone.int2, col='red', chr = chrs)
+plot(sone.int1, col='green', chr = chrs, add=T)
+plot(sone.int3, col='blue', chr = chrs, add=T)
+dev.off()
+
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'14:1738185','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'14:1738185','24:23951185')
+
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'13:25406978','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'13:25406978','24:23951185')
+
+################################################################################
+
+segdist_int_1 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores, intcovar = cross2$pheno[,'incb1'])
+segdist_int_2 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores, intcovar = cross2$pheno[,'incb2'])
+segdist_int_3 <- scan1(pr2, pheno=cross2$pheno[,'bin'] , model = "binary", cores = cores, addcovar = cross2$pheno[,'incb3'])
+
+segdist_homa <- scan1(pr2, pheno=cross2$pheno[,'homa'], model = "normal", cores = cores)
+segdist_homb <- scan1(pr2, pheno=cross2$pheno[,'homb'], model = "normal", cores = cores)
+segdist_inca <- scan1(pr2, pheno=cross2$pheno[,'inca'], model = "normal", cores = cores)
+segdist_incb <- scan1(pr2, pheno=cross2$pheno[,'incb'], model = "normal", cores = cores)
+
+
+plot_test('segdist_int',width=1000)
+plot(segdist_int_1, map2, col='red')
+plot(segdist_int_2, map2, col='green')
+plot(segdist_int_3, map2, col='blue')
+dev.off()
+
+
+
+################################################################################
+################################################################################
+################################################################################
+
+
+plot_test(paste0(pop,'_5_circ_homz'))
+ circos.par("track.height" = 0.15)
+ circos.initialize(factors = map$chr, x = map$pos)
+
+## Track of LOD phenotype
+ circos.track(factors = map$chr, y = yP,
+    panel.fun = function(x, y) {
+        circos.text(CELL_META$xcenter, CELL_META$cell.ylim[2] + uy(5, "mm"),CELL_META$sector.index)
+        circos.axis(labels.cex = 0.6)
+     })
+ circos.trackLines(facP, x = xP, y = yP, pch = 16, cex = 0.5, type = 'I', area = T, col = 'blue')
+ ## Track of LOD phenotype
+
+ ## Track of segregation distortion
+ circos.track(factor = map$chr, x = map$pos, ylim=c(0,4))
+ circos.trackLines(facp, x = xp, y = yp, col = 'purple', pch = 16, cex = 0.5, type = 'I', area = T)
+ ## Track of segregation distortion
+
+ ## Connections
+
+ pc.plot(top_links(links2 = links_ord,n = 5, col = 'lod_hom'), col = 'red')
+ pc.plot(top_links(links2 = links_ord,n = 5, col = 'lod_inc'), col = 'blue')
+ pc.plot(top_links(links2 = links_ord,n = 5, col = 'lod_phen'), col = 'green')
+
+dev.off()
+circos.clear()
+################################################################################
+################################################################################
+################################################################################
+
+
+
+################################################################################
+### ELR
+################################################################################
+plot_test(paste0(pop,'_circ_homz'))
+ circos.par("track.height" = 0.15)
+ circos.initialize(factors = map$chr, x = map$pos)
+ circos.track(factors = map$chr, y = yP,
+    panel.fun = function(x, y) {
+        circos.text(CELL_META$xcenter, CELL_META$cell.ylim[2] + uy(5, "mm"),CELL_META$sector.index)
+        circos.axis(labels.cex = 0.6)
+     })
+ circos.trackLines(facP, x = xP, y = yP, pch = 16, cex = 0.5, type = 'I', area = T, col = 'red')
+
+ circos.track(factor = map$chr, x = map$pos, ylim=c(0,4))
+ circos.trackLines(facp, x = xp, y = yp, col = 'purple', pch = 16, cex = 0.5, type = 'I', area = T)
+
+ pc.plot(hom200, col = 'red')
+ pc.plot(inc200, col = 'red')
+ pc.plot(phen5, col = 'green')
+
+dev.off()
+circos.clear()
+################################################################################
+################################################################################
+
+
+################################################################################
+pan1_fun <- function(x, y) {
+    circos.text(CELL_META$xcenter, CELL_META$cell.ylim[2] + uy(5, "mm"), CELL_META$sector.index)
+    circos.axis(labels.cex = 0.6)
+ }
+
+
+
+try <- inc500[1,]
+
+circos.link(  map[as.character(try['mat.names1']),]
+
+
+plot_test(paste0(pop,'_circ_homz'))
 
 circos.par("track.height" = 0.1)
-circos.initialize(factors = map$chr, x = map$pos)
 
-circos.track(factor = map$chr, y = map$pos,
+ circos.initialize(factors = map$chr, x = map$pos)
+
+ circos.track(factor = map$chr, y = map$pos, panel.fun = pan1_fun(x,y))
+ circos.trackLines(facP, x = xP, y = yP, col = 'red', pch = 16, cex = 0.5, type = 'I', area = T)
+
+ circos.track(factor = map$chr, x = map$pos, ylim=c(0,3))
+ circos.trackLines(facp, x = xp, y = yp, col = 'red', pch = 16, cex = 0.5, type = 'I', area = T)
+
+##pc.plot(inc500, col = 'red')
+
+ pc.plot(hom500, col = 'green')
+
+ circos.text(-1, 0.5, "text", sector.index = "a", track.index = 1)
+dev.off()
+
+
+
+
+
+
+
+
+
+ circos.trackPoints(facp, x = xp, y = yp, col = 'red', pch = 16, cex = 0.5)
+
+### seg dist
+circos.track(factors = df$factors, x = df$x, y = df$y,
     panel.fun = function(x, y) {
-        circos.text(CELL_META$xcenter, CELL_META$cell.ylim[2] + uy(5, "mm"),
-            CELL_META$sector.index)
-        circos.axis(labels.cex = 0.6)
+        ind = sample(length(x), 10)
+        x2 = x[ind]
+        y2 = y[ind]
+        od = order(x2)
+        circos.lines(x2[od], y2[od])
 })
-for(i in 1:length(links[,1])){
- circos.link(links[i,1], links[i,2],links[i,3], links[i,4], h = 0.4)
- }
-}
 
+ circos.track(fac, x, y, panel.fun = function(x, y) { circos.lines(x, y)})
+ #circos.track(fac, x, y, panel.fun = function(x, y) { circos.lines(x, y)})
+
+
+
+
+
+
+
+
+hom <- top_links(links_ord,100,'lod_hom')
+geno.crosstab(cross,'24:24013348','1:291287')
+
+geno.crosstab(cross,'24:24013348','1:291287')
+
+
+geno.crosstab(cross,'13:22410641','7:946994')
+geno.crosstab(cross,'24:30529145','1:291287')
+
+inc <- top_links(links_ord,100,'lod_inc')
+geno.crosstab(cross,'19:37446878','1:33855817')
+geno.crosstab(cross,'22:19409957','2:31789344')
+################################################################################
 ################################################################################
 
+hoz <- quantile(lod_hom, 0.999, na.rm=T)
+inc <- quantile(lod_inc, 0.999, na.rm=T)
+rfq <- quantile(rf, 0.999, na.rm=T)
+phe <- quantile(lod_phen, 0.999, na.rm=T)
+abq <- quantile(lod, 0.999, na.rm=T)
+s1q <- quantile(s1, 0.95, na.rm=T)
 
-chroms <- unique(c(as.character(links[,1]),as.character(links[,3])))
-ab_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_ab')
-p_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_p')
-rf_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'rfs')
-hom_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_homz')
-dist_tables <- lapply(chroms, make_lodrf_tables, Y = links, Z = 'lod_inco')
-names(ab_tables) <- names(p_tables) <- names(rf_tables) <- chroms
+lod_gtl <- which(links$s1 > 2)
+linked <- which(links$lod_hom > hoz | links$lod_inc > inc)
+ind <- intersect(lod_gtl,linked)
 
+###########################################################################
+################################################################################
+################################################################################
+### INCOMPATABILITIES
 ################################################################################
 
-lod_hom[lower.tri(lod_hom, diag = T)] <- NA
-lod_inc[lower.tri(lod_inc, diag = T)] <- NA
-rfs[lower.tri(rfs, diag = T)] <- NA
-lod_phen[lower.tri(lod_phen, diag = T)] <- NA
-lod[lower.tri(lod, diag = T)] <- NA
-rf.df[lower.tri(rf.df, diag = T)] <- NA
-s1[lower.tri(s1, diag = T)] <- NA
 
 hoz <- quantile(lod_hom, 0.9999, na.rm=T)
+ind <- which(links$lod_hom > hoz)
+toplot <- links[ind,]
+dim(toplot)
+
+plot_test(paste0(pop,'_circ_homz'))
+pc(toplot)
+dev.off()
+
+################################################################################
+##### GENOTYPE
+################################################################################
+
+lod_gtl <- which(links$s1 > 3)
+linked <- which(links$lod_inc > inc)
+ind <- intersect(lod_gtl,linked)
+
 inc <- quantile(lod_inc, 0.9999, na.rm=T)
-rfq <- quantile(rfs, 0.999, na.rm=T)
-phe <- quantile(lod_phen, 0.999, na.rm=T)
-abq <- quantile(lod_ab, 0.999, na.rm=T)
+ind <- which(links$lod_inc > inc)
+toplot <- links[ind,]
+dim(toplot)
 
+plot_test(paste0(pop,'_circ_inc'))
+pc(toplot)
+dev.off()
 ################################################################################
 ################################################################################
 
-load(file.path(mpath,paste0(pop,'_circos.rsave')))
+################################################################################
+##### Both
+################################################################################
+
+inc <- quantile(lod_inc, 0.999, na.rm=T)
+hoz <- quantile(lod_hom, 0.999, na.rm=T)
+
+linked1 <- which(links$lod_hom > hoz)
+linked2 <- which(links$lod_inc > inc)
+
+ind <- intersect(linked1,linked2)
+toplot <- links[ind,]
+dim(toplot)
+
+plot_test(paste0(pop,'_circ_inc'))
+pc(toplot)
+dev.off()
+################################################################################
+################################################################################
+
 
 ################################################################################
+
+ind <- which(links$lod_inc > inc)
+toplot <- links[ind,]
+dim(toplot)
+
+plot_test(paste0(pop,'circ_incompat'))
+pc(toplot)
+dev.off()
+
+################################################################################
+
+ind <- which(links$lod_inc > inc)
+toplot <- links[ind,]
+dim(toplot)
+
+plot_test(paste0(pop,'circ_incompat'))
+pc(toplot)
+dev.off()
+
+################################################################################
+csq.pval.hm <- data.matrix(-log10(csq_mod.pval))
+
+for (i in chrnames(cross)){
+ mars2 <- markernames(cross, i)
+ ##mars2 <- mars2[which(mars2 %in% mars)]
+ csq.pval.hm[mars2, mars2] <- NA
+}
+
+csq.pval.hm[lower.tri(csq.pval.hm, diag = T)] <- NA
+
+plot_test('heatmap_homozygotes_elr',height=3000,width=3000)
+heatmap(csq.pval.hm, Rowv=NA, Colv=NA, scale="column")
+dev.off()
+
+################################################################################
+geno.crosstab(cross,'18:19222949','13:20651592')
+geno.crosstab(cross,'18:17874376','7:35475725')
+geno.crosstab(cross,'24:23237312','1:291287')
+geno.crosstab(cross,'24:10521322','1:291287')
+geno.crosstab(cross,'17:29388433','2:13880632')
+geno.crosstab(cross,'18:20771373','17:14629450')
+geno.crosstab(cross,'8:10228388','2:30305156')
+geno.crosstab(cross,'18:19222949','2:32379535')
+geno.crosstab(cross,'18:20010144','17:12700256')
+geno.crosstab(cross,'24:27146556','1:291287')
+geno.crosstab(cross,'18:20745539','17:14629450')
+geno.crosstab(cross,'17:7480177','8:37635736')
+geno.crosstab(cross,'17:33155007','5:1282903')
+geno.crosstab(cross,'17:29007925','5:1896342')
+geno.crosstab(cross,'24:23951185','1:291287')
+geno.crosstab(cross,'19:37446878','1:33855817')
+geno.crosstab(cross,'1:857165','24:23363287')
+geno.crosstab(cross1,'1:857165','24:24242668')
+geno.crosstab(cross1,'1:857165','24:23951185')
+
+
+55   13   hspa14  60   1 23552848   81768  13:23471080  HSP
+56   13   tmtc2a  34   1 10549074   37468  13:10586542 <NA>
+57   13     ARNT  61   2 24528101   71711  13:24456390
+
+28    7    hspb7  62   0 30894102   97788   7:30991891  HSP
+29    7    rnd1a  22   1  9736976  198968    7:9538008 <NA>
+30    7    rnd1b  48   0 21809146   19110   7:21790036 <NA>
+31    7     vdra  66   0 33273622     976   7:33274599 <NA>
+32    7    fkbpl  41   0 19289922   56853   7:19346775 <NA>
+33    8   atxn1b  56   2 21146220   13720   8:21132501  AHR
+
+
+1     1     AHR1   0   2   741331  115834     1:857165  AHR
+
+96393   24:23363287  1:5578105 1.956 0.644   4.775   3.079    2.726 1.884
+
+
+### Incompat in
+geno.crosstab(cross,'18:17874376','7:35475725')
+intxs.bin('7:35475725','18:17874376',  popchr = "18v7", locbN = 'test', main = 'test2')
+
+geno.crosstab(cross,'8:10228388','2:30305156')
+intxs.bin('8:10228388','2:30305156',  popchr = "2v8", locbN = 'test', main = 'test2')
+
+###################################rfgterD#############################################
+################################################################################
+################################################################################
+################################################################################
+
+head(links)
+
+links[which.max(links$lod_hom),]
+links[which.max(links$lod_inc),]
+
 
 lod_gtl <- which(links$s1 > 4)
 linked <- which(links$homz > hoz | links$inco > inc)
 ind <- intersect(lod_gtl,linked)
+
 toplot <- links[ind,]
 dim(toplot)
 
 ################################################################################
 
-plot_test(paste0(pop,'circ_incompat'))
-pc(toplot)
-dev.off()
-
-################################################################################
-################################################################################
-
-lod_gtl <- which(links$phen > 10)
-linked <- which(links$homz > hoz | links$inco > inc)
-ind <- intersect(lod_gtl,linked)
-toplot <- links[ind,]
-dim(toplot)
-
-################################################################################
-
-plot_test(paste0(pop,'circ_incompat'))
-pc(toplot)
-dev.off()
-
-################################################################################
+##############################################################################
 ################################################################################
 
 

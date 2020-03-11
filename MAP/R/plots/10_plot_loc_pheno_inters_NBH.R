@@ -14,7 +14,7 @@ fl <- file.path(mpath,fl)
 ################################################################################
 load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 ################################################################################
-cross <- switchAlleles(cross, markernames(cross,c(13)))
+##cross <- switchAlleles(cross, markernames(cross,c(13)))
 ################################################################################
 ## Read cross
 
@@ -185,3 +185,21 @@ pdf(paste0("/home/jmiller1/public_html/",popchr,".pdf"), width=10)
 dev.off()
 }
 ################################################################################
+
+nbh_qtl2 <- find.marker(cross,2,89.41)
+nbh_qtl8 <- find.marker(cross,8,22.28)
+nbh_qtl13 <- find.marker(cross,13,39.42)
+
+
+geno.crosstab(cross,'24:23951185','1:291287')
+
+intxs.bin('24:23951185', '1:291287', popchr = "1v24", locbN = 'test', main = 'test2')
+
+
+intxs.bin('1:291287','24:23951185',  popchr = "1v24", locbN = 'test', main = 'test2')
+
+
+
+intxs.bin(nbh_qtl2,nbh_qtl13,  popchr = "2v13", locbN = 'AIP Genotype', main = 'AIP x ARNT')
+single('2:27373969', pop = 'NBH')
+single(nbh_qtl13, pop = 'NBH')
