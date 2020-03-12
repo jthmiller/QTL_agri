@@ -109,14 +109,8 @@ yP = s1a[rownames(map),'lod']
 ################################################################################
 ################################################################################
 
-top_links <- function(links2,n,col){
- tp <- links2[which.max(links2[,col]),col] - n
- return(links[which(links2[,col] > tp),])
-}
-################################################################################
-################################################################################
 
-
+################################################################################
 ################################################################################
 cross2 <- convert2cross2(cross1)
 map2 <- insert_pseudomarkers(cross2$gmap, step=0.5)
@@ -135,13 +129,19 @@ dev.off()
 ################################################################################
 ################################################################################
 pc.plot <- function(link, col){
-
  for (i in 1:length(link[,1])){
-
  circos.link( map[link[i,'mat.names1'],'chr'], map[link[i,'mat.names1'],'pos'],
    map[link[i,'mat.names2'],'chr'], map[link[i,'mat.names2'],'pos'], col = col,  h = 0.2, border = 1)
-
  }
+}
+
+top_links <- function(links2,n,col){
+ tp <- links2[which.max(links2[,col]),col] - n
+ return(links[which(links2[,col] > tp),])
+}
+
+quant_links <- function(links2, n, col){
+ return( links2[ which(col > quantile(col, n, na.rm=T)) ,] )
 }
 ################################################################################
 ################################################################################
@@ -153,9 +153,7 @@ viz_inc <- data.matrix(-log10(csq.pval))
 rownames(viz_inc) <- colnames(viz_inc) <- markernames(cross1)
 
 ################################################################################
-################################################################################
-save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
-################################################################################
+
 ################################################################################
 ahr <- ahr_genes[!is.na(ahr_genes$PATH),]
 
@@ -171,12 +169,15 @@ chrs <- as.factor(gt$chr)
 ymx <- max(c(gt.AA,gt.AB,gt.BB))
 ymn <- min(c(gt.AA,gt.AB,gt.BB))
 
+## vectors of genotype counts
 gts <- list(gt.AA,gt.AB,gt.BB)
 
+### Standard deviation
 gts.sd <- lapply(gts,sd)
 me <- lapply(gts.sd, function(X){  qnorm(.995)*(as.numeric(X)/sqrt(sum(nmar(cross1)))) })
 gts.mean <- lapply(gts,mean)
 
+### mean for each vector
 gts.H <- mapply(function(X,Y){ X + Y },gts.mean,me)
 gts.L <- mapply(function(X,Y){ X - Y },gts.mean,me)
 
@@ -184,11 +185,9 @@ gts.L <- mapply(function(X,Y){ X - Y },gts.mean,me)
 ################################################################################
 ### PREDICTION INTERVALS #######################################################
 lm_preds <- lapply(gts,function(X){
-
  lms <- lm(X~1)
  lms_pred <- predict(lms,  interval="predict")[1,]
  list(lms,lms_pred)
-
 })
 
 outliers <- mapply(function(X,Y) {  which(X < Y[[2]]['lwr'] | X > Y[[2]]['upr'])  },gts,lm_preds)
@@ -204,46 +203,9 @@ models <- lapply(gts, function(X){
 ### PLOT LINES #################################################################
 models.predicted <- lapply(models,function(X){
  lapply(X,predict)
-}
+})
 ################################################################################
 
-
 ################################################################################
+save.image(file.path(mpath,paste0(pop,'_circos.rsave')))
 ################################################################################
-plot_test(paste0(pop,'_allele_balance'), width = 4000, height = 2000)
-par(mfrow = c(4,6))
-
-for(i in 1:24){
-
- ind <- which(gt$chr == i)
-
- x <- map[names(gt.AB[ind]),'pos']
-
-
-
- #par(mfrow = c(2,1), new=TRUE)
- #plot(x, s1a[rownames(map[names(gt.AB[ind]),]),'lod'], ylim = c(0,15), col = 'cornflowerblue', xlab = NA, ylab = NA, cex.axis=3)
-
- plot(x, gt.AB[ind], ylim = c(-15,15), type='n', col = 'purple', xlab = NA, ylab = NA, cex.axis=3)
-
- ## xleft, ybottom, xright, ytop
- rect(0, aa_lm_pred['lwr']  , max(x,na.rm=T), aa_lm_pred['upr'], density = 30, col = 'red',border=F)
- rect(0, bb_lm_pred['lwr']  , max(x,na.rm=T), bb_lm_pred['upr'], density = 30, col = 'blue',border=F)
- rect(0, ab_lm_pred['lwr']  , max(x,na.rm=T), ab_lm_pred['upr'], density = 30, col = 'purple', border=F)
-
- abline(h = 0, col = 'black')
-
-lapply(
-
- lines(x, predict(yAB), col = 'purple', lwd = 3)
- lines(x, predict(yAA), col = 'red', lwd = 3)
- lines(x, predict(yBB), col = 'blue', lwd = 3)
- text(0,14,i, cex=4)
-
- if(any(ahr$chr == i)) {
-  sapply(which(ahr$chr == i), function(X) {
-   abline(v = ahr[X,'pos'], col = 'black')
-  })
- }
-}
-dev.off()
