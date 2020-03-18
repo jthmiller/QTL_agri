@@ -81,7 +81,8 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
 ################################################################################
 
 ################################################################################
-pop <- 'NBH'
+##pop <- 'NBH'
+
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 library("ggridges")
 library("plyr")
@@ -144,8 +145,6 @@ plogen_data <- function(...){
  if(pop == 'ELR') pops <- 'ER'
  if(pop == 'NBH') pops <- 'NBH'
  cross.popgen <- read.table(file.path(mpath,paste0("outliers",pops,".txt.ncbi.lifted")), sep = "\t", header = T)
-
-
 
  ################################################################################
  ### Use nbh coords but elr and new popgen

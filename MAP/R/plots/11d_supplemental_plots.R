@@ -7,13 +7,13 @@
 #location the labels (i.e. xlab and ylab in plot), the second the tick-mark labels, and third the tick marks
 
 
-plogen <- function(ch, stat){
+plogen <- function(ch, stat = 'pfst'){
 
  ##load(file.path(mpath,paste0(pop,'_supplemental_plot_env.rsave')))
 
  ################################################################################
  ################################################################################
- stat = 'pfst'
+
  erp <- 0.001
  norm <- scanone(cross, method = "imp", model = "normal", pheno.col = 5)
  bin <- scanone(cross, method = "em", model = "binary", pheno.col = 4)
@@ -33,8 +33,10 @@ plogen <- function(ch, stat){
 
  rank <- pop.rank
 
- if(pop == 'NBH') pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH'
- if(pop == 'ELR') pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC'
+ if(pop == 'NBH') { pbsname <- 'NBH'; pfstNSname <- 'F.NBH' ; piname <- pfstname <- 'BI.NBH' }
+ if(pop == 'ELR') { pbsname <- 'ER'; pfstNSname <- 'ER.SH' ; piname <- pfstname <- 'ER.KC' }
+
+ print(paste('plotting pfst for',pfstNSname))
 
 ################################################################################
 pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5,height=6)
@@ -53,17 +55,20 @@ pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5
 
  ################################################################################
  plot_pgen(
-  crs = cross, chrs=ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
-  ahr = ahr, ahr_clm= 'stp',  colnm = pfstNSname, popgen = rank,
-  rank_clm='end', ylimo=c(-0.025, 1), stat_name='pfst NxS', pch=16,
+  crs = cross, chrs = ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
+  ahr = ahr, ahr_clm = 'stp',  colnm = pfstNSname, popgen = rank,
+  rank_clm='end', ylimo=c(-0.025, 1), stat_name= paste0('pfst NxS (',pfstNSname,')'), pch=16,
   cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75, xaxt="n"
  )
 
  if(stat == 'pfst'){
+
+  print(paste('plotting pfst for',pfstNSname))
+
   plot_pgen(
    crs = cross, chrs=ch, stat = pfst, map = 'mid', mgp = c(1.25, 0.5, 0),
-   ahr = ahr, ahr_clm= 'stp',  colnm = pfstname, popgen = rank,
-   rank_clm='end', ylimo=c(-0.025,1), stat_name='pfst', pch=16,
+   ahr = ahr, ahr_clm = 'stp',  colnm = pfstname, popgen = rank,
+   rank_clm = 'end', ylimo = c(-0.025,1), stat_name = 'pfst', pch=16,
    cex=0.15, cex.axis = 0.75, cex.lab=0.75, cex.main=0.75, xaxt="n"
   )
  } else {
@@ -118,17 +123,14 @@ pdf(paste0("/home/jmiller1/public_html/",pop,"_all",ch,"segdist.pdf"), width=4.5
 }
 ################################################################################
 
-pop <- 'NBH'
-plogen_data(pop,stat = 'pfst')
+#plogen_data('ELR')
+#sapply(1:24,plogen, stat = 'pfst')
 
-plogen
-sapply(1:24, plogen, stat = 'pfst')
+#plogen_data('NBH')
+sapply(c(1:24),function(ch) { plogen(ch, stat = 'pfst') } )
+sapply(22,function(ch) { plogen(ch, stat = 'pfst') } )
+sapply(17,function(ch) { plogen(ch, stat = 'pfst') } )
 
 
-plogen_data('ELR')
-sapply(1:24,plogen, stat = 'pfst')
-
-plogen_data('NBH')
-sapply(1:24,plogen, stat = 'pfst')
-
+plogen(17, stat = 'pfst')
 ################################################################################

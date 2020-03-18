@@ -79,19 +79,20 @@ cross <- drop.markers(cross,c(drop.na,drop))
 
 ################################################################################
 toss.missing <- names(which(nmissing(cross)/(sum(nmar(cross))) > 0.50))
-##toss.missing <- c("NBH_5525","NBH_6177","NBH_5528","NBH_6137","NBH_5646")
 ### is "NBH_5646" another grandparent sample??
 toss.missing <- c(toss.missing,"NBH_5646")
 cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,'NBH_NBH1M','NBH_NBH1F'))
 ################################################################################
 
 ################################################################################
-### DROP DISTORTED UNMAPPED (pvalues later shown to retain good markers)
+### DROP DISTORTED UNMAPPED (pvalues later shown to retain good markers on all LGs)
 gt <- geno.table(cross)
 toss <- rownames(gt[which(gt[,'P.value'] < 3.16e-4),])
 cross <- drop.markers(cross,toss)
+################################################################################
 
-### ALL BUT 2, 13, and 18 can be filtered down to 9e-3
+################################################################################
+### ALL BUT 2, 13, and 18 can be filtered down to 9e-3. Truncates these LGS (see plots)
 gt.sub <- geno.table(cross,chr=c(1,3:12,14:24))
 toss.sub <- rownames(gt.sub[which(gt.sub[,'P.value'] < 9e-3),])
 cross <- drop.markers(cross,toss.sub)
@@ -122,7 +123,25 @@ drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
 cross <- drop.markers(cross,drop)
 ################################################################################
 
+################################################################################
+### READ THE UNMAPPED MARKER ASSIGNMENT TABLE
+movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
+move <- read.table(movefl, stringsAsFactors = F, header=T, sep = " ")
+move <- move[which(move$nw_marks_assign %in% markernames(cross)),]
 
+### ASSIGN UNMAPPED MARKERS
+for (i in 1:length(move[,1])){
+ cross <<- movemarker(cross, marker = move[i,'nw_marks_assign'], newchr = move[i,'nw_ch'], newpos = as.numeric(move[i,'nw_pos']))
+ print(i)
+}
+cross <- subset(cross,chr=1:24)
+################################################################################
+
+### WRITE THE ABOVE CROSS OBJECT ###############################################
+mapfile <- paste0(pop,'_filtered_unphased_NW_moved')
+filename <- file.path(mpath,mapfile)
+write.cross(cross,filestem=filename,format="csv")
+################################################################################
 
 
 
@@ -194,7 +213,7 @@ sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
 Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
 X <- 1:length(Y)
 gt <- geno.table(cross)
-plot_test('postfilt_nbh_mar_regression_low_conf', width = 5500, height = 750)
+plot_test('premap_nbh_mar_regression_low_conf', width = 5500, height = 750)
 par(mfrow=c(3,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
  plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
@@ -209,7 +228,6 @@ sm <- scanone(cross_thin10, pheno.col=4, model="binary",method="mr")
 Y <- c(0, as.numeric(gsub(".*:","",markernames(cross_thin10))))/1000000
 X <- 1:length(Y)
 gt <- geno.table(cross_thin10)
-
 plot_test('premap_nbh_mar_regression_no_conf', width = 5500, height = 750)
 par(mfrow=c(3,1))
  plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
@@ -302,8 +320,11 @@ movefl <- file.path(mpath,'NBH_NW_scaffold_assignments.tsv')
 move <- read.table(movefl, stringsAsFactors = F, header=T, sep = " ")
 move <- move[which(move$nw_marks_assign %in% markernames(cross)),]
 
-#a <- c('NW_012224817.1','NW_012225741.1','NW_012224621.1')
-##try[which(move$nw_old %in% a),]
+a <- c('NW_012224817.1','NW_012225741.1','NW_012224621.1')
+try[which(move$nw_old %in% a),]
+
+
+
 
 ### ASSIGN UNMAPPED MARKERS
 for (i in 1:length(move[,1])){
@@ -342,6 +363,7 @@ badmarks <- function(X){
 cl <- makeCluster(20)
 registerDoParallel(cl)
 drops <- foreach(X = 1:24, .inorder = F, .packages = libs2load) %dopar% badmarks(X)
+
 
 high <- unlist(lapply(drops,"[[",1))
 low <- unlist(lapply(drops,"[[",2))

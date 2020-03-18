@@ -6,7 +6,8 @@ source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 cores <- 6
 ################################################################################
-fl <- "NBH_5755_imputed_NW_tsp.csv"
+##fl <- "NBH_5755_imputed_NW_tsp.csv"
+fl <- "NBH_7370_imputed_tsp_mapped.csv"
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 cross$pheno <- as.data.frame(cross$pheno)
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))

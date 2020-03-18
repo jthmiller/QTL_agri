@@ -35,18 +35,42 @@ sex.vec <- sex[as.character(cross$pheno$ID), 'sex']
 cross$pheno$sex <- sex.vec
 ################################################################################
 
-toss.badata <- c("ELR_10869","ELR_10987","ELR_11580")
-toss.missing <- c('ELR_10967','ELR_11103','ELR_11587','ELR_11593','ELR_11115')
+################################################################################
+### The parents are wrong in this population
+pars <- c('BLI_BI1124M','ELR_ER1124F')
+cross.par <- subset(cross,ind=cross$pheno$ID %in% pars)
 
-cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
+### Toss individuals that have high missing data
+toss.missing <- names(which(nmissing(cross)/(sum(nmar(cross))) > 0.50))
+cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,pars))
+################################################################################
 
-
+################################################################################
 ### TOSS MARKERS WITH HIGH PERCENTAGE OF MISSING DATA ##########################
 misg <- function(X,perc) { nind(cross) * perc }
-mis <- misg(cross,0.10)
+mis <- misg(cross,0.35)
 drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
 cross <- drop.markers(cross,drop)
 ################################################################################
+
+################################################################################
+### DROP DISTORTED UNMAPPED (pvalues later shown to retain good markers)
+gt <- geno.table(cross)
+toss <- rownames(gt[which(gt[,'P.value'] < 1.00e-4),])
+cross <- drop.markers(cross,toss)
+################################################################################
+
+################################################################################
+toss.badata <- c("ELR_10869","ELR_10987","ELR_11580")
+toss.missing <- c('ELR_10967','ELR_11103','ELR_11587','ELR_11593','ELR_11115')
+cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
+
+#### TOSS MARKERS WITH HIGH PERCENTAGE OF MISSING DATA ##########################
+#misg <- function(X,perc) { nind(cross) * perc }
+#mis <- misg(cross,0.10)
+#drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
+#cross <- drop.markers(cross,drop)
+#################################################################################
 
 ### PLOTS ######################################################################
 sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
@@ -67,6 +91,10 @@ dev.off()
 gt <- geno.table(cross)
 toss <- rownames(gt[which(gt[,'P.value'] < 1e-4),])
 cross <- drop.markers(cross,toss)
+################################################################################
+
+## RETAIN BEST (LEAST DISTORTED) MARKER PER RADTAG #############################
+cross <- thin_by_distortion(cross,1)
 ################################################################################
 
 ### WRITE THE ABOVE CROSS OBJECT
@@ -153,7 +181,7 @@ mapit <- function(i){
  cross8 <- fill.geno(cross8, method="maxmarginal", error.prob = 0.05, min.prob=0.98)
  #############################
  ## REMOVE MARKERS WITH HIGH MISSING DATA
- mis <- misg(cross8,0.10)
+ mis <- misg(cross8,0.15)
  bfixA <- names(which(colSums(is.na(pull.geno(cross8))) > mis))
  print(paste('dropped',length(bfixA),'markers due to missing data'))
  cross8 <- drop.markers(cross8, bfixA)

@@ -1,5 +1,5 @@
 #!/bin/R
-pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR','ELR.missing')]
+pop <- 'ELR'
 
 source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 
@@ -90,7 +90,6 @@ library(scales)
 ### READ IN THE CROSS
 fl <- paste0(pop,'_filtered_unphased.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
 sd <- 1
 
 mapit <- function(i){

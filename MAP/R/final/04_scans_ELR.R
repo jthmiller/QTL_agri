@@ -9,7 +9,8 @@ cores <- 20
 ################################################################################
 ################################################################################
 #fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
-fl <- 'ELR_7457_imputed_high_confidence_tsp_mapped.csv'
+#fl <- 'ELR_7457_imputed_high_confidence_tsp_mapped.csv'
+fl <- 'ELR_6482_imputed_high_confidence_tsp_mapped.csv'
 cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 cross$pheno <- as.data.frame(cross$pheno)
@@ -24,14 +25,9 @@ cross <- sim.geno(cross,n.draws=160, error.prob=error, map.function="kosambi", s
 cross <- calc.genoprob(cross, error.prob=error, map.function="kosambi", stepwidth="fixed")
 cross <- est.rf(cross, maxit=100, tol=1e-6)
 
+################################################################################
 save.image(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
-
-
-
-
-
-
-
+################################################################################
 
 
 

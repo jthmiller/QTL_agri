@@ -13,6 +13,24 @@ load(file.path(mpath,paste0(pop,'_circos.rsave')))
 ################################################################################
 ################################################################################
 
+counts <- table(mtcars$vs, mtcars$gear)
+barplot(counts, main="Car Distribution by Gears and VS",
+  xlab="Number of Gears", col=c("darkblue","red"),
+  legend = rownames(counts))
+
+
+
+################################################################################
+################################################################################
+
+plot_test(paste0(pop,'_allele_balance2'), width = 4000, height = 2000)
+par(mfrow = c(4,6))
+for(i in 1:24){
+counts <- geno.table(cross,i)[,c('AA','AB','BB')]
+barplot(t(counts), col=c("red","purple","darkblue"),space=c(0,0,0,0), border = NA, xlab=NA)
+}
+dev.off()
+
 ################################################################################
 ################################################################################
 plot_test(paste0(pop,'_allele_balance'), width = 4000, height = 2000)
@@ -78,7 +96,7 @@ plot_test(paste0(pop,'_999_circ_homz'))
  #pc.plot(top_links(links2 = links_ord,n = 500, col = 'lod_hom'), col = 'red')
  #pc.plot(top_links(links2 = links_ord,n = 500, col = 'lod_inc'), col = 'blue')
  ##pc.plot(top_links(links2 = links_ord,n = 5, col = 'lod_phen'), col = 'green')
- pc.plot(quant_links(links2 = links, n = 0.99999, col = lod_hom), col = 'red')
+ pc.plot(quant_links(links2 = links, n = 0.999975, col = lod_hom), col = 'red')
  pc.plot(quant_links(links2 = links, n = 0.99999, col = lod_inc), col = 'blue')
 
 dev.off()
@@ -86,25 +104,18 @@ circos.clear()
 ################################################################################
 ################################################################################
 
-top_links(links2 = links_ord,n = 200, col = 'lod_inc')
-top_links(links2 = links_ord,n = 200, col = 'lod')
-top_links(links2 = links_ord,n = 200, col = 'lod_hom')
-top_links(links2 = links_ord,n = 5, col = 'lod_phen'
-top_links(links2 = links_ord,n = 300, col = 's1')
-top_links(links2 = links_ord,n = 300, col = 'rf')
-
 ################################################################################
 ################################################################################
 ################################################################################
 
 ################################################################################
 ################################################################################
-plot_test('dsf')
-effectplot(cross1,pheno.col=1,mname1='13:25406978',mname2='24:23951185')
+plot_test('elr18_17')
+effectplot(cross1,pheno.col=1,mname1='18:20273448',mname2='17:11276576')
 dev.off()
 
-plot_test('dsf2')
-plotPXG(cross1,pheno.col=1,'1:291287')
+plot_test('elr_18')
+plotPXG(cross1,pheno.col=1,'18:20273448')
 dev.off()
 ################################################################################
 ################################################################################
@@ -193,6 +204,18 @@ dev.off()
 
 ################################################################################
 ################################################################################
+top_links(links2 = links_ord,n = 200, col = 'lod_inc')
+top_links(links2 = links_ord,n = 200, col = 'lod')
+top_links(links2 = links_ord,n = 200, col = 'lod_hom')
+top_links(links2 = links_ord,n = 5, col = 'lod_phen'
+top_links(links2 = links_ord,n = 300, col = 's1')
+top_links(links2 = links_ord,n = 300, col = 'rf')
+################################################################################
+################################################################################
+
+################################################################################
+################################################################################
+geno.crosstab(cross,'18:20273448','17:11276576')
 geno.crosstab(cross,'18:19222949','13:20651592')
 geno.crosstab(cross,'18:17874376','7:35475725')
 geno.crosstab(cross,'24:23237312','1:291287')
@@ -213,17 +236,6 @@ geno.crosstab(cross,'1:857165','24:23363287')
 geno.crosstab(cross1,'1:857165','24:24242668')
 geno.crosstab(cross1,'1:857165','24:23951185')
 geno.crosstab(cross1,'13:22410641','7:946994')
-
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'14:1738185','24:23951185')
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'14:1738185','24:23951185')
-
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'13:25406978','24:23951185')
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'13:25406978','24:23951185')
-
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'5:33290434','1:291287')
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'5:33290434','1:291287')
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'1:857165','24:23951185')
-geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'1:857165','24:23951185')
 geno.crosstab(cross1,'24:23951185','1:291287')
 geno.crosstab(cross1,'5:33290434','1:291287')
 geno.crosstab(cross1,'13:25406978','24:23951185')
@@ -233,6 +245,22 @@ geno.crosstab(cross,'13:22410641','7:946994')
 geno.crosstab(cross,'24:30529145','1:291287')
 geno.crosstab(cross,'19:37446878','1:33855817')
 geno.crosstab(cross,'22:19409957','2:31789344')
+geno.crosstab(cross1,'18:20509237','17:12700256')
+
+
+HSP and AIP
+geno.crosstab(cross1,'22:19528880','2:27373969')
+geno.crosstab(cross1,'22:19409957','2:32539238')
+
+
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'14:1738185','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'14:1738185','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'13:25406978','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'13:25406978','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'5:33290434','1:291287')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'5:33290434','1:291287')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 0),'1:857165','24:23951185')
+geno.crosstab(subset(cross1, ind=cross1$pheno$bin == 1),'1:857165','24:23951185')
 
 ################################################################################
 ################################################################################
@@ -249,15 +277,11 @@ geno.crosstab(cross,'22:19409957','2:31789344')
 1     1     AHR1   0   2   741331  115834     1:857165  AHR
 
 96393   24:23363287  1:5578105 1.956 0.644   4.775   3.079    2.726 1.884
-
 ################################################################################
 ################################################################################
 
-
-
 ################################################################################
 ################################################################################
-
 ### Incompat in
 geno.crosstab(cross,'18:17874376','7:35475725')
 intxs.bin('7:35475725','18:17874376',  popchr = "18v7", locbN = 'test', main = 'test2')
@@ -281,31 +305,6 @@ b <- '2:21870833'
         AA  0 11 18  1
         AB  0 10 14 12
         BB  0 13  2 11
-
-a <- '15:4060195'
-
-### INCOMPAT WITH
-a <- find.marker(cross,14,63.452152)
-b <- '2:24377353'
-
-
-
-
-a <- links[which.max(links$inco),]
-b <- find.marker(cross,a$chr.1,a$pos.1)
-a <- find.marker(cross,a$chr,a$pos)
-geno.crosstab(cross,a,b)
-
-
-links[which.max(links$phen),]
-
-a <- links[which.max(links$homz),]
-a <- find.marker(cross,a$chr.1,a$pos.1)
-geno.crosstab(cross, '1:291287',"24:23237312")
-### LOD 4
-
-
-
 ################################################################################
 
 make_lodrf_tables <- function(X,Y,Z){

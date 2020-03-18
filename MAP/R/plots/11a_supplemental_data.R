@@ -52,7 +52,7 @@ plot_ef <- function(crs,map,pr,ahr,popgen,chs,main,model=c("bin","pheno_norm"),.
 ################################################################################
 ################################################################################
 
-plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,rank_clm,stat_name,...){
+plot_pgen <- function(crs, chrs, stat, map, ahr, ahr_clm, colnm, popgen, ylimo, rank_clm, stat_name,...){
 
  for (chr in chrs){
 
