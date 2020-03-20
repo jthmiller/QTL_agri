@@ -79,6 +79,8 @@ write.cross(cross,filestem=filename,format="csv")
 
 print(paste(filename, 'cross written'))
 
+cross <- est.rf(cross)
+
 ################################################################################
 save.image(file.path(mpath,paste0(pop,'_estrf_imputed.rsave')))
 ################################################################################
@@ -93,7 +95,7 @@ dev.off()
 ################################################################################
 
 ################################################################################
-plot_test('_high_confid_rf')
+plot_test(paste0(pop,'_high_confid_rf'))
  plotRF(cross,zmax=10,col.scheme="redblue")
 dev.off()
 ################################################################################

@@ -39,68 +39,51 @@ cross$pheno$sex <- sex.vec
 ### The parents are wrong in this population
 pars <- c('BLI_BI1124M','ELR_ER1124F')
 cross.par <- subset(cross,ind=cross$pheno$ID %in% pars)
+################################################################################
 
+################################################################################
 ### Toss individuals that have high missing data
+toss.parents <- c('BLI_BI1124M','ELR_ER1124F')
+toss.badata <- c("ELR_10869","ELR_10987","ELR_11580")
 toss.missing <- names(which(nmissing(cross)/(sum(nmar(cross))) > 0.50))
-cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.missing,pars))
+cross <- subset(cross, ind=!cross$pheno$ID %in% c(toss.badata,toss.missing,pars))
 ################################################################################
 
 ################################################################################
 ### TOSS MARKERS WITH HIGH PERCENTAGE OF MISSING DATA ##########################
 misg <- function(X,perc) { nind(cross) * perc }
-mis <- misg(cross,0.35)
+mis <- misg(cross,0.125)
 drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
 cross <- drop.markers(cross,drop)
 ################################################################################
 
 ################################################################################
-### DROP DISTORTED UNMAPPED (pvalues later shown to retain good markers)
+### DROP DISTORTED UNMAPPED (pvalues later shown to retain good markers on all LGs)
 gt <- geno.table(cross)
-toss <- rownames(gt[which(gt[,'P.value'] < 1.00e-4),])
+toss <- rownames(gt[which(gt[,'P.value'] < 5.0e-3),])
 cross <- drop.markers(cross,toss)
 ################################################################################
 
 ################################################################################
-toss.badata <- c("ELR_10869","ELR_10987","ELR_11580")
-toss.missing <- c('ELR_10967','ELR_11103','ELR_11587','ELR_11593','ELR_11115')
-cross <- subset(cross,ind=!cross$pheno$ID %in% c(toss.missing,toss.badata,'BLI_BI1124M','ELR_ER1124F'))
-
-#### TOSS MARKERS WITH HIGH PERCENTAGE OF MISSING DATA ##########################
-#misg <- function(X,perc) { nind(cross) * perc }
-#mis <- misg(cross,0.10)
-#drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
-#cross <- drop.markers(cross,drop)
-#################################################################################
-
-### PLOTS ######################################################################
-sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
-Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
-X <- 1:length(Y)
-gt <- geno.table(cross)
-plot_test('elr_mar_regression', width = 5500, height = 750)
-par(mfrow=c(3,1))
- plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,8), cex = 0.25)
- plot(1:length(gt[,1]), -log10(gt[,'P.value']), pch = 19, col = factor(sm$chr), ylim = c(0,8), cex = 0.25)
- abline(h=4)
- plot(c(1,length(X)),c(0,max(Y)),type="n", ylab='physical position', pch = 19, cex = 0.5)
-  points(X,Y)
-dev.off()
-################################################################################
-
-#### THIS PVALUE APPEARS TO RETAIN EVEN DISTRIBUTION
-gt <- geno.table(cross)
-toss <- rownames(gt[which(gt[,'P.value'] < 1e-4),])
-cross <- drop.markers(cross,toss)
+### ALL BUT 17 can be filtered down to 1e-2. Truncates these LGS (see plots)
+gt.sub <- geno.table(cross,chr=c(1:16,18:24))
+toss.sub <- rownames(gt.sub[which(gt.sub[,'P.value'] < 5.0e-2),])
+cross <- drop.markers(cross,toss.sub)
 ################################################################################
 
 ## RETAIN BEST (LEAST DISTORTED) MARKER PER RADTAG #############################
-cross <- thin_by_distortion(cross,1)
+cross <- thin_by_distortion(cross,5)
 ################################################################################
 
-### WRITE THE ABOVE CROSS OBJECT
+### WRITE THE ABOVE CROSS OBJECT ###############################################
 mapfile <- paste0(pop,'_filtered_unphased')
 filename <- file.path(mpath,mapfile)
 write.cross(cross,filestem=filename,format="csv")
+################################################################################
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_filter.rsave')))
+################################################################################
 
 ### READ IN THE MARKER TABLE
 #mfh <- file.path(mpath,'NBH_high_confid.tsv')
@@ -118,9 +101,142 @@ library(scales)
 ### READ IN THE CROSS
 fl <- paste0(pop,'_filtered_unphased.csv')
 cross <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+################################################################################
 
-sd <- 1
+################################################################################
+linked_marks <- function(X, LOD = 12, RF = 1){
 
+ crossX <- est.rf(subset(cross,chr=X))
+ crossX <- formLinkageGroups(crossX, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ markernames(crossX, chr=1)
+}
+linked <- foreach(X = 1:24, .inorder = F, .packages = libs2load) %dopar% linked_marks(X)
+cross <- pull.markers(cross,unlist(linked))
+################################################################################
+
+################################################################################
+unphased_marks <- function(X, crossX, LOD = 12, RF = 0.15){
+ crossX <- est.rf(subset(crossX,chr=X))
+ crossX <- formLinkageGroups(crossX, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ mk1 <- markernames(crossX, chr=1)
+ crossX <- switchAlleles(crossX, mk1)
+ crossX <- formLinkageGroups(crossX, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ markernames(crossX,1)[!markernames(crossX,1) %in% mk1]
+}
+switch <- foreach(X = 1:24, .inorder = F, .packages = libs2load) %dopar% unphased_marks(X, crossX = cross)
+cross <- switchAlleles(cross, unlist(switch))
+################################################################################
+
+################################################################################
+switched_marks <- function(X){
+ checkAlleles(subset(cross,chr=X), threshold = 3)
+}
+switched <- foreach(X = 1:24, .inorder = F, .packages = libs2load) %dopar% switched_marks(X)
+switched <- switched[!sapply(switched,is.null)]
+switched <- do.call(rbind,switched)
+cross <- switchAlleles(cross, as.character(switched$marker))
+################################################################################
+
+################################################################################
+cross <- est.rf(cross)
+################################################################################
+
+################################################################################
+cross.sub <- tspOrder(cross = cross, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
+cross.sub <- fill.geno(cross.sub, method="maxmarginal", error.prob = 0.05, min.prob=0.95)
+plotit(cross.sub)
+
+
+################################################################################
+save.image(file.path(mpath,paste0(pop,'_filter.rsave')))
+################################################################################
+
+
+
+
+
+
+ cross1 <- subset(cross,chr=i)
+ cross2 <- formLinkageGroups(cross1, max.rf = 0.2, min.lod = 10, reorgMarkers = TRUE)
+
+ cross1 <- use_phys_map(cross1)
+ cross1 <- est.rf(cross1)
+
+ lod <- pull.rf(est.rf(cross1), what = 'lod')
+ rf <- pull.rf(est.rf(cross1))
+
+ cross2 <- formLinkageGroups(cross1, max.rf = 1, min.lod = 10, reorgMarkers = TRUE)
+
+
+
+
+ ### MAKE LOW/NO RECOMB GROUPS FOR CLEANUP #####################################
+ ## high LOD initial check phase ###############################################
+ highlod <- markernames(formLinkageGroups(cross1, max.rf = 1, min.lod = LOD, reorgMarkers = TRUE),1)
+
+ RF <- 5/nind(cross1)
+ LOD <- 10
+ cross2 <- formLinkageGroups(cross1, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+
+ switch1 <- highlod[highlod %in% markernames(cross2,chrnames(cross2)[-1])]
+ cross2 <- switchAlleles(cross2,switch1)
+ cross3 <- formLinkageGroups(cross2, max.rf = 1, min.lod = LOD, reorgMarkers = TRUE)
+
+ chk <- as.character(checkAlleles(cross2)$marker)
+ cross2 <- switchAlleles(cross2,checkAlleles(cross2)$marker)
+
+ #### REMOVE NON AB AB ###################################################
+ dist <- sapply(chrnames(cross2), function(X) { mean(-log10(geno.table(cross2, chr=X)$P.value)) })
+ drops <- names(which(dist > 3))
+ drops <- markernames(cross2,chr=drops)
+ cross3 <- drop.markers(cross1,drops)
+ RF <- 4/nind(cross3)
+ LOD <- 10
+ cross4 <- formLinkageGroups(cross3, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ #####################################################################
+
+ ## Switch phase of groups that are out of phase with LG1
+ rf <- pull.rf(est.rf(cross4))
+ lod <- pull.rf(est.rf(cross4), what = 'lod')
+
+ chr <- chrnames(cross4)[-1]
+ rf.mean <- sapply(chr, function(X) { mean(rf[markernames(cross4,chr=1), markernames(cross4,chr=X)],na.rm=T) })
+ lod.mean <- sapply(chr, function(X) { mean(lod[markernames(cross4,chr=1), markernames(cross4,chr=X)],na.rm=T) })
+
+ flips <- names(which(rf.mean > 0.5))
+ switch <- markernames(cross4,flips)
+ cross5 <- switchAlleles(cross4, markers = switch)
+
+ RF <- 8/nind(cross5)
+ LOD <- 10
+ cross5 <- formLinkageGroups(cross5, max.rf = RF, min.lod = LOD, reorgMarkers = TRUE)
+ keep <- markernames(cross5,1)
+
+ list(switch,keep)
+}
+
+marks <- foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit(i)
+flips <- unlist(sapply(marks,"[[",1))
+keep <- unlist(sapply(marks,"[[",2))
+
+
+cross <- switchAlleles(cross,flips)
+cross <- pull.markers(cross,keep)
+################################################################################
+################################################################################
+################################################################################
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
 mapit <- function(i){
 
  erprob <- 0.05
@@ -203,6 +319,7 @@ mapit <- function(i){
 library(doParallel)
 cl <- makeCluster(20)
 registerDoParallel(cl)
+sd <- 1
 foreach(i = 1:24, .inorder = F, .packages = libs2load) %dopar% mapit(i)
 #a <- c(11,10,9,13,12,16)
 

@@ -20,22 +20,6 @@ cross <- read.cross(file=fl , format = "csv", dir=mpath,
  genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 #################################################################################
 
-
-## High missing
-drop <- 'NBH_6137'
-cross <- subset(cross, ind = !cross$pheno$ID == drop)
-#################################################################################
-
-drop <- c('NW_012234461.1:562796','NW_012234461.1:1059423','NW_012234494.1:872524','8:12257474','NW_012234558.1:739273','NW_012234311.1:628953','NW_012234311.1:166994','NW_012234311.1:628953','NW_012234311.1:166994','NW_012234520.1:169476','NW_012225526.1:51452','NW_012234326.1:397833','NW_012234326.1:380172')
-cross <- drop.markers(cross,drop)
-
-drop2 <- c('10:9960308','NW_012234311.1:3468744', 'NW_012234311.1:3445534','NW_012234311.1:3383007','NW_012234326.1:2162519','NW_012224981.1:180658','NW_012224824.1:3425')
-cross <- drop.markers(cross,drop2)
-
-
-
-
-
 ###
 NWs <- grep('NW',markernames(cross), value=T)
 crossX <- drop.markers(cross, NWs)
@@ -63,7 +47,7 @@ dev.off()
 drop <- names(which(colSums(is.na(pull.geno(crossX))) > 10))
 crossX <- drop.markers(crossX,drop)
 pull <- markernames(crossX)
-cross <- pull.markers(cross, pull)
+cross2 <- pull.markers(cross, pull)
 ################################################################################
 
 ### READ THE UNMAPPED MARKER ASSIGNMENT TABLE ##################################
@@ -96,14 +80,6 @@ mis <- misg(cross,0.10)
 drop <- names(which(colSums(is.na(pull.geno(cross))) > mis))
 cross <- drop.markers(cross,drop)
 ################################################################################
-
-################################################################################
-### REORDER MARKERS
-cross <- est.rf(cross,maxit=1000)
-cross <- tspOrder(cross = cross, hamiltonian = TRUE, method="concorde",concorde_path='/home/jmiller1/concorde_build/TSP/')
-save.image(file.path(mpath,paste0(pop,'_estrf_no_impute.rsave')))
-################################################################################
-
 
 ################################################################################
 ### REORDER MARKERS

@@ -10,8 +10,8 @@ cores <- 20
 ################################################################################
 #fl <- paste0(pop,'_',sum(nmar(cross)),'_imputed_high_confidence_tsp_mapped.csv')
 #fl <- 'ELR_7457_imputed_high_confidence_tsp_mapped.csv'
-fl <- 'ELR_6482_imputed_high_confidence_tsp_mapped.csv'
-cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+#fl <- 'ELR_6482_imputed_high_confidence_tsp_mapped.csv'
+#cross <- read.cross(file=fl , format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 
 cross$pheno <- as.data.frame(cross$pheno)
 names(cross$geno) <- ifelse(names(cross$geno) == "5","X",names(cross$geno))
