@@ -3,6 +3,9 @@
 ####################################################################################
 
 
+
+
+
 ################################################################################
 ## FUNCTIONS ###
 ################################################################################
@@ -94,7 +97,7 @@ library('parallel')
 mpath <- '/home/jmiller1/QTL_agri/data'
 setwd(mpath)
 
-load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
+#load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
 
 plogen_data <- function(...){
@@ -130,6 +133,10 @@ plogen_data <- function(...){
  AHR.bed$stp <- as.numeric(AHR.bed$stp)
  AHR.notmap <- AHR.bed[is.na(AHR.bed$chrom), ]
  AHR.bed <- AHR.bed[!is.na(AHR.bed$chrom), ]
+
+
+ AHR.bed <- AHR.bed[which(!AHR.bed$gene == 'EXP'),]
+ AHR.bed <- AHR.bed[which(!AHR.bed$gene %in% grep('rna',AHR.bed$gene, value = T)),]
 
 
  # add arnts (forgot to scan for them)

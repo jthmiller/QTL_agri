@@ -12,9 +12,10 @@
 
 bwagenind=/home/nreid/popgen/kfish3/killifish20130322asm.fa
 
-my_freebayes=/home/jmiller1/bin/freebayes/bin/freebayes
-my_bedtools=/home/jmiller1/bin/bedtools2/bin/bedtools
-my_bamtools=/home/jmiller1/bin/bamtools-master/bin/bamtools
+base=/home/jmiller1/bin
+my_freebayes=$base/freebayes/bin/freebayes
+my_bedtools=$base/bedtools2/bin/bedtools
+my_bamtools=$base/bamtools-master/bin/bamtools
 #module load $my_freebayes
 
 scafnum=$(expr $SLURM_ARRAY_TASK_ID + -1)

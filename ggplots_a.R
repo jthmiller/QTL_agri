@@ -16,55 +16,10 @@ setwd(mpath)
 
 ## Phenotypes
 ################################################
-
-#################################################################################
-pop <- 'NBH'
-mapfile <- paste0(pop,'_reorder_imp_nopar')
-filename <- file.path(mpath,mapfile)
-cross_NBH <- read.cross(file = paste0(mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#################################################################################
-
-#################################################################################
-pop <- 'ELR'
-mapfile <- paste0(pop,'_reorder_imp_mapped')
-filename <- file.path(mpath,mapfile)
-cross_ELR <- read.cross(file = paste0(mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#################################################################################
-
-#################################################################################
-pop <- 'BRP'
-mapfile <- paste0(pop,'_reorder_imp_mapped')
-filename <- file.path(mpath,mapfile)
-cross_BRP <- read.cross(file = paste0(mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#################################################################################
-
-#################################################################################
-pop <- 'NEW'
-mapfile <- paste0(pop,'_reorder_imp_mapped')
-filename <- file.path(mpath,mapfile)
-cross_NEW <- read.cross(file = paste0(mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#################################################################################
-
-
-#cross_ELR <- read.cross(format = "csv", dir = mpath, file = 'ELR.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-#cross_NBH <- read.cross(format = "csv", dir = mpath, file = 'NBH.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-
-fl <- file.path('BRP_unmapped_filtered.csv')
-cross_BRP <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#cross_BRP <- read.cross(format = "csv", dir = mpath, file = 'BRP.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-
-fl <- file.path('NEW_unmapped_filtered.csv')
-cross_NEW <- read.cross(file=fl,format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#cross_NEW <- read.cross(format = "csv", dir = mpath, file = 'NEW.mapped.tsp.csv', genotypes=c("1","2","3"), estimate.map = FALSE)
-
-
-
-#cross_NBH <- read.cross(file = paste0(nbh_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#cross_NEW <- read.cross(file = paste0(new_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#cross_ELR <- read.cross(file = paste0(elr_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-#cross_BRP <- read.cross(file = paste0(brp_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
-
-
+cross_NBH <- read.cross(file = paste0(nbh_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross_NEW <- read.cross(file = paste0(new_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross_ELR <- read.cross(file = paste0(elr_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
+cross_BRP <- read.cross(file = paste0(brp_mapfile,'.csv'), format = "csv", dir=mpath, genotypes=c("AA","AB","BB"), alleles=c("A","B"),estimate.map = FALSE)
 ################################################################################
 remap_orders <- function(cross_tomap, cross_usemap){
 
@@ -100,8 +55,6 @@ NBH_BRP <- pull.markers(cross_NBH, markernames(reorder_BRP))
 
 reorder_NEW <- replace.map(reorder_NEW, pull.map(NBH_NEW))
 reorder_BRP <- replace.map(reorder_BRP, pull.map(NBH_BRP))
-
-THIS DIDNT WORK
 
 ################################################################################
 ################################################################################

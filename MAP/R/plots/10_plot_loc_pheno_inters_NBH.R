@@ -6,7 +6,7 @@ pop <- commandArgs(TRUE)[commandArgs(TRUE) %in% c('NBH','BRP','NEW','ELR')]
 
 pop <- 'NBH'
 library('qtl')
-source("/home/jmiller1/QTL_agri/MAP/control_file.R")
+source("/home/jmiller1/QTL_agri/MAP/R/control_file.R")
 mpath <- '/home/jmiller1/QTL_agri/data'
 fl <- paste0(pop,'.mapped.tsp.csv')
 fl <- file.path(mpath,fl)
@@ -39,6 +39,7 @@ load(file.path(mpath,paste0(pop,'_scan1_imputed.rsave')))
 
 markers <- markernames(cross)
 bin.em <- scanone(cross, pheno.col=4, model='binary', method = "em")
+bin.hk <- scanone(cross, pheno.col=4, model='binary', method = "hk")
 
 sens <- as.character(cross$pheno$ID[which(cross$pheno$ID %in% pheno_ind(cross,1))])
 tol <- as.character(cross$pheno$ID[which(cross$pheno$ID %in% pheno_ind(cross,0))])
@@ -186,20 +187,20 @@ dev.off()
 }
 ################################################################################
 
-nbh_qtl2 <- find.marker(cross,2,89.41)
-nbh_qtl8 <- find.marker(cross,8,22.28)
-nbh_qtl13 <- find.marker(cross,13,39.42)
+nbh_qtl2 <- find.marker(cross,2, 39.87)
+nbh_qtl8 <- find.marker(cross,8, 59.22)
+nbh_qtl13 <- find.marker(cross,13,46.602)
+nbh_qtl24 <- find.marker(cross,24,10.455051)
+nbh_qtl1 <- find.marker(cross,1,60.559873)
 
+geno.crosstab(cross, nbh_qtl24,nbh_qtl1)
 
-geno.crosstab(cross,'24:23951185','1:291287')
+intxs.bin(nbh_qtl24, nbh_qtl1, popchr = "1v24", locbN = 'test', main = 'test2')
 
-intxs.bin('24:23951185', '1:291287', popchr = "1v24", locbN = 'test', main = 'test2')
-
-
-intxs.bin('1:291287','24:23951185',  popchr = "1v24", locbN = 'test', main = 'test2')
-
-
+intxs.bin(nbh_qtl1,nbh_qtl24,  popchr = "1v24", locbN = 'test', main = 'test2')
 
 intxs.bin(nbh_qtl2,nbh_qtl13,  popchr = "2v13", locbN = 'AIP Genotype', main = 'AIP x ARNT')
+
 single('2:27373969', pop = 'NBH')
+
 single(nbh_qtl13, pop = 'NBH')

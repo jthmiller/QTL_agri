@@ -37,9 +37,11 @@ cgb_step2 <- reduce2grid(cgb)
 ################################################################################
 # MQM ##########################################################################
 ## a possible rule of thumb may be to set minprob to the percentage of data missing
+dwnsmpl <- cross
+
 
 crossaug <- mqmaugment(dwnsmpl, minprob=0.75, strategy="impute")  # Augmentation
-result <- mqmscan(crossaug)    ## scan show LOD interval of the QTL on chr 3
+result <- mqmscan(crossaug, pheno.col = 4, n.clusters=1)    ## scan show LOD interval of the QTL on chr 3
 
 #multitoset <- find.markerindex(maug, "GH.117C")
 setcofactors <- mqmsetcofactors(maug, cofactors=multitoset)

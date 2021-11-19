@@ -1160,6 +1160,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 
     return(datac)
 }
+################################################
 cleanGeno_jm <-
 function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
 {
@@ -1220,7 +1221,7 @@ function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
     for (i in names(cleaned$geno)) cross$geno[[i]] <- cleaned$geno[[i]]
     cross
 }
-
+################################################
 cleanGeno_jm_2 <-
 function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
 {
@@ -1274,7 +1275,7 @@ function (cross, chr, maxdist = 2.5, maxmark = 2, verbose = TRUE)
     for (i in names(cleaned$geno)) cross$geno[[i]] <- cleaned$geno[[i]]
     cross
 }
-
+################################################
 conv_popstat <- function(cross2, popgen, whichcol, newname) {
 
   nbhmap <- convert2cross2(cross2)
@@ -1730,7 +1731,17 @@ plot_pgen <- function(crs,chrs,stat, map, ahr, ahr_clm, colnm, popgen, ylimo,ran
   points(X, Y, col='black',...)
  }
 }
-
+################################################################################
+po2 <- function(cross,nme){
+ sm <- scanone(cross, pheno.col=4, model="binary",method="mr")
+ Y <- c(0, as.numeric(gsub(".*:","",markernames(cross))))/1000000
+ X <- 1:length(Y)
+ gt <- geno.table(cross)
+ plot_test(nme, width = 5500, height = 250)
+ plot(1:length(sm$lod), sm$lod, pch = 19, col = factor(sm$chr), ylim = c(0,18), cex = 0.25)
+ dev.off()
+}
+################################################################################
 ################################################################################
 misg <- function(X,perc) { nind(cross) * perc }
 ################################################################################
