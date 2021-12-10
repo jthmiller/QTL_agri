@@ -763,8 +763,8 @@ rels <- function(X){
 }
 mega.cross <- function(pope){
   pop <- pope
-  basedir <- '/home/jmiller1/QTL_Map_Raw/popgen'
-  indpops <- file.path(basedir,'plinkfiles/ind.pops')
+
+  indpops <- file.path('/home/jmiller1/QTL_Map_Raw/popgen/plinkfiles/ind.pops')
 
   cross <- read.cross.jm(file=file.path(indpops,paste(pop,'.unphased.f2.csvr',sep='')),
     format='csvr', geno=c(1:3),estimate.map=FALSE)
