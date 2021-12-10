@@ -13,10 +13,13 @@
 bwagenind=/home/nreid/popgen/kfish3/killifish20130322asm.fa
 
 base=/home/jmiller1/bin
-my_freebayes=$base/freebayes/bin/freebayes
+my_freebayes=$base/freebayes/bin/freebayes #version:  v1.0.2-6-g3ce827d
 my_bedtools=$base/bedtools2/bin/bedtools
 my_bamtools=$base/bamtools-master/bin/bamtools
 #module load $my_freebayes
+
+
+
 
 scafnum=$(expr $SLURM_ARRAY_TASK_ID + -1)
 #scaf=$(sed -n "$SLURM_ARRAY_TASK_ID p" /home/jmiller1/QTL_Map_Raw/bedfiles/unique.scaf.lg.txt)
@@ -38,4 +41,9 @@ bam_list=/home/jmiller1/QTL_Map_Raw/align/bamlist.txt
 $my_bamtools merge -list $bam_list -region $region| \
 $my_bamtools filter -in stdin -mapQuality '>30' -isProperPair true | \
 $my_bedtools intersect -sorted -a stdin -b $bed_regions | \
-$my_freebayes -f $bwagenind --use-best-n-alleles 4 --pooled-discrete --stdin > $vcf_out/$outfile
+$my_freebayes -f $bwagenind --use-best-n-alleles 4 --pooled-discrete --stdin > $vcf_out/$outfile && \
+echo 'Done' || echo 'pipe failed'
+
+date 
+
+
